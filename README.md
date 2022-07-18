@@ -1,9 +1,9 @@
 # z80
-A csharp emulator for the Zilog Z80 CPU.
+A csharp and swift emulator for the Zilog Z80 CPU.
 
 ## The project
 
-z80 a Z80 emulator that works in real time written in C#.
+z80 a Z80 emulator that works in real time written in C# and Swift.
 
 These are contained:
 
@@ -15,7 +15,7 @@ The tests are a translation of the documentation, the assembler backend is neede
 
 There's a very basic step debugger in the tests (`TestSystem`) which basically came for free with them.
 
-## Usage example
+## Usage example C#
 
 ```csharp
 var ram = new byte[65536];
@@ -38,6 +38,11 @@ while (!myZ80.Halt)
 
 // Show the registers
 Console.WriteLine(myZ80.DumpState());
+```
+
+## Usage example Swift
+
+```swift
 ```
 
 ## Status
