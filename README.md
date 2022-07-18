@@ -42,6 +42,8 @@ Console.WriteLine(myZ80.DumpState());
 
 ## Usage example Swift
 
+Add this repository as a package into Xcode or Swift Playgrounds 4 app project.
+
 ```swift
 ```
 
