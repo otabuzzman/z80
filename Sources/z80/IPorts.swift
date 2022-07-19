@@ -5,5 +5,5 @@ public protocol IPorts {
     var NMI: Bool { get }
     var INT: Bool { get }
 
-    var data: Bool { get }
+    var data: UInt8 { get }
 }

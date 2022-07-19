@@ -37,8 +37,8 @@
         write(value)
     }
 
-    public mutating func loadRegReg(_ register: UInt8, _ register2: UInt8) {
-        write(register * 8 + register2 + 64)
+    public mutating func loadRegReg(_ register1: UInt8, _ register2: UInt8) {
+        write(register1 * 8 + register2 + 64)
     }
 
     public mutating func loadReg16Val(_ register16: UInt8, _ value: UInt16) {
