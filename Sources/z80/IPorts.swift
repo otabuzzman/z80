@@ -1,6 +1,6 @@
 public protocol IPorts {
-    func readPort(address: UInt16) -> UInt8
-    func writePort(address: UInt16, value: UInt8)
+    func readPort(_ address: UInt8) -> UInt8
+    func writePort(_ address: UInt8, _ value: UInt8)
 
     var NMI: Bool { get }
     var INT: Bool { get }
