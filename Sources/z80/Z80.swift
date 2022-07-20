@@ -31,11 +31,11 @@ public struct Z80 {
     private var interruptMode: Int = 0
 
     private var Hl: UInt16 { UInt16(registers[L]) + (UInt16(registers[H]) << 8) }
-    private var Sp: UInt16 { UInt16(registers[SP + 1]) + (UInt16(registers[SP]) << 8) }
+    private var De: UInt16 { UInt16(registers[E]) + (UInt16(registers[D]) << 8) }
+    private var Bc: UInt16 { UInt16(registers[C]) + (UInt16(registers[B]) << 8) }
     private var Ix: UInt16 { UInt16(registers[IX + 1]) + (UInt16(registers[IX]) << 8) }
     private var Iy: UInt16 { UInt16(registers[IY + 1]) + (UInt16(registers[IY]) << 8) }
-    private var Bc: UInt16 { (UInt16(registers[B]) << 8) + UInt16(registers[C]) }
-    private var De: UInt16 { (UInt16(registers[D]) << 8) + UInt16(registers[E]) }
+    private var Sp: UInt16 { UInt16(registers[SP + 1]) + (UInt16(registers[SP]) << 8) }
     private var Pc: UInt16 { UInt16(registers[PC + 1]) + (UInt16(registers[PC]) << 8) }
 
     private(set) var Halt = false
