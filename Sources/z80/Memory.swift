@@ -1,21 +1,22 @@
-public struct Memory {
-    private(set) var memory: [UInt8]
-    private(set) var ramStart: UInt16
+public struct Memory
+{
+    private(set) var _memory: [byte] 
+    private(set) var _ramStart: ushort 
 
-    public subscript(address: UInt16) -> UInt8 {
-        get {
-            memory[Int(address)]
-        }
-
-        set(newValue) {
-            if address >= ramStart {
-                memory[Int(address)] = newValue
-            }
-        }
+    init(_ memory: [byte], ramStart: ushort)
+    {
+        _memory = memory
+        _ramStart = ramStart
     }
 
-    init(_ memory: [UInt8], _ ramStart: UInt16) {
-        self.memory = memory
-        self.ramStart = ramStart
+    public subscript(address: ushort) -> byte {
+        get {
+            _memory[Int(address)]
+        }
+        set(newValue) {
+            if address >= _ramStart {
+                _memory[Int(address)] = newValue
+            }
+        }
     }
 }
