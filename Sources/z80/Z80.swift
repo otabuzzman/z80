@@ -199,7 +199,7 @@ import Foundation
                         registers[r + 1] = Fetch();
                         registers[r] = Fetch();
 #if DEBUG
-                        print(String(format: "LD {RName(r)}{RName((byte)(r + 1))}, 0x{registers[r]:X2}{registers[r + 1]:X2}"));
+                        print(String(format: "LD %s%s, 0x%2X%2X\n", Z80.RName(r), Z80.RName((byte)(r + 1)), registers[r], registers[r + 1]));
 #endif
                         Wait(10);
                         return;
@@ -210,18 +210,18 @@ import Foundation
                         registers[SP + 1] = Fetch();
                         registers[SP] = Fetch();
 #if DEBUG
-                        print(String(format: "LD SP, 0x{registers[SP]:X2}{registers[SP + 1]:X2}"));
+                        print(String(format: "LD SP, 0x%2X%2X\n", registers[SP], registers[SP + 1]));
 #endif
                         Wait(10);
                         return;
 
                 case 0x06, 0x0e, 0x16, 0x1e, 0x26, 0x2e, 0x3e:
 
-                        // LD r,n
+                        // LD r, n
                         let n = Fetch();
                         registers[r] = n;
 #if DEBUG
-                        print(String(format: "LD {RName(r)}, 0x{n:X2}"));
+                        print(String(format: "LD %s, 0x%2X\n", Z80.RName(r), n));
 #endif
                         Wait(7);
                         return;
@@ -232,7 +232,7 @@ import Foundation
                         let n = Fetch();
                         mem[Hl] = n;
 #if DEBUG
-                        print(String(format: "LD (HL), {n}"));
+                        print(String(format: "LD (HL), 0x%2X\n", n));
 #endif
                         Wait(10);
                         return;
@@ -263,7 +263,7 @@ import Foundation
                         let addr = Fetch16();
                         registers[A] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD A, (0x{addr:X4})"));
+                        print(String(format: "LD A, (0x54X)\n", addr));
 #endif
                         Wait(13);
                         return;
@@ -294,7 +294,7 @@ import Foundation
                         let addr = Fetch16();
                         mem[addr] = registers[A];
 #if DEBUG
-                        print(String(format: "LD (0x{addr:X4}), A"));
+                        print(String(format: "LD (0x%4X), A\n", addr));
 #endif
                         Wait(13);
                         return;
@@ -307,7 +307,8 @@ import Foundation
 						addr += 1
                         registers[H] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD HL, (0x{--addr:X4})"));
+                        addr -= 1
+						print(String(format: "LD HL, (0x%4X)\n", addr));
 #endif
                         Wait(16);
                         return;
@@ -320,7 +321,8 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[H];
 #if DEBUG
-                        print(String(format: "LD (0x{--addr:X4}), HL"));
+                        addr -= 1
+						print(String(format: "LD (0x%4X), HL\n", addr));
 #endif
                         Wait(16);
                         return;
@@ -527,7 +529,7 @@ import Foundation
                         // ADD A, r
                         Add(registers[lo]);
 #if DEBUG
-                        print(String(format: "ADD A, {RName(lo)}"));
+                        print(String(format: "ADD A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -538,7 +540,7 @@ import Foundation
                         let b = Fetch();
                         Add(b);
 #if DEBUG
-                        print(String(format: "ADD A, 0x{b:X2}"));
+                        print(String(format: "ADD A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         Wait(4);
@@ -559,7 +561,7 @@ import Foundation
                         // ADC A, r
                         Adc(registers[lo]);
 #if DEBUG
-                        print(String(format: "ADC A, {RName(lo)}"));
+                        print(String(format: "ADC A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -570,7 +572,7 @@ import Foundation
                         let b = Fetch();
                         Adc(b);
 #if DEBUG
-                        print(String(format: "ADC A, 0x{b:X2}"));
+                        print(String(format: "ADC A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -590,7 +592,7 @@ import Foundation
                         // SUB A, r
                         Sub(registers[lo]);
 #if DEBUG
-                        print(String(format: "SUB A, {RName(lo)}"));
+                        print(String(format: "SUB A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -601,7 +603,7 @@ import Foundation
                         let b = Fetch();
                         Sub(b);
 #if DEBUG
-                        print(String(format: "SUB A, 0x{b:X2}"));
+                        print(String(format: "SUB A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -621,7 +623,7 @@ import Foundation
                         // SBC A, r
                         Sbc(registers[lo]);
 #if DEBUG
-                        print(String(format: "SBC A, {RName(lo)}"));
+                        print(String(format: "SBC A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -632,7 +634,7 @@ import Foundation
                         let b = Fetch();
                         Sbc(b);
 #if DEBUG
-                        print(String(format: "SBC A, 0x{b:X2}"));
+                        print(String(format: "SBC A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -653,7 +655,7 @@ import Foundation
                         // AND A, r
                         And(registers[lo]);
 #if DEBUG
-                        print(String(format: "AND A, {RName(lo)}"));
+                        print(String(format: "AND A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -665,7 +667,7 @@ import Foundation
 
                         And(b);
 #if DEBUG
-                        print(String(format: "AND A, 0x{b:X2}"));
+                        print(String(format: "AND A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -685,7 +687,7 @@ import Foundation
                         // OR A, r
                         Or(registers[lo]);
 #if DEBUG
-                        print(String(format: "OR A, {RName(lo)}"));
+                        print(String(format: "OR A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -696,7 +698,7 @@ import Foundation
                         let b = Fetch();
                         Or(b);
 #if DEBUG
-                        print(String(format: "OR A, 0x{b:X2}"));
+                        print(String(format: "OR A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -716,7 +718,7 @@ import Foundation
                         // XOR A, r
                         Xor(registers[lo]);
 #if DEBUG
-                        print(String(format: "XOR A, {RName(lo)}"));
+                        print(String(format: "XOR A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -727,7 +729,7 @@ import Foundation
                         let b = Fetch();
                         Xor(b);
 #if DEBUG
-                        print(String(format: "XOR A, 0x{b:X2}"));
+                        print(String(format: "XOR A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -770,7 +772,7 @@ import Foundation
                         // CP A, r
                         Cmp(registers[lo]);
 #if DEBUG
-                        print(String(format: "CP A, {RName(lo)}"));
+                        print(String(format: "CP A, %s\n", Z80.RName(lo)));
 #endif
                         Wait(4);
                         return;
@@ -781,7 +783,7 @@ import Foundation
                         let b = Fetch();
                         Cmp(b);
 #if DEBUG
-                        print(String(format: "CP A, 0x{b:X2}"));
+                        print(String(format: "CP A, 0x%2X\n", b));
 #endif
                         Wait(4);
                         return;
@@ -801,7 +803,7 @@ import Foundation
                         // INC r
                         registers[r] = Inc(registers[r]);
 #if DEBUG
-                        print(String(format: "INC {RName(r)}"));
+                        print(String(format: "INC %s\n", Z80.RName(r)));
 #endif
                         Wait(4);
                         return;
@@ -822,7 +824,7 @@ import Foundation
                         // DEC r
                         registers[r] = Dec(registers[r]);
 #if DEBUG
-                        print(String(format: "DEC {RName(r)}"));
+                        print(String(format: "DEC %s\n", Z80.RName(r)));
 #endif
                         Wait(7);
                         return;
@@ -1083,7 +1085,7 @@ import Foundation
                         registers[PC] = (byte)(addr >> 8);
                         registers[PC + 1] = (byte)(addr);
 #if DEBUG
-                        print(String(format: "JP 0x{addr:X4}"));
+                        print(String(format: "JP 0x%4X\n", addr));
 #endif
                         Wait(10);
                         return;
@@ -1097,7 +1099,7 @@ import Foundation
                             registers[PC + 1] = (byte)(addr);
                         }
 #if DEBUG
-                        print(String(format: "JP {JCName(r)}, 0x{addr:X4}"));
+                        print(String(format: "JP %s, 0x%4X\n", Z80.JCName(r), addr));
 #endif
                         Wait(10);
                         return;
@@ -1111,7 +1113,7 @@ import Foundation
                         registers[PC] = (byte)(addr >> 8);
                         registers[PC + 1] = (byte)(addr);
 #if DEBUG
-                        print(String(format: "JR 0x{addr:X4}"));
+                        print(String(format: "JR 0x%4X\n", addr));
 #endif
                         Wait(12);
                         return;
@@ -1132,7 +1134,7 @@ import Foundation
                             Wait(7);
                         }
 #if DEBUG
-                        print(String(format: "JR {JCName((byte)(r & 3))}, 0x{addr:X4}"));
+                        print(String(format: "JR %s, 0x%4X\n", Z80.JCName((byte)(r & 3)), addr));
 #endif
                         return;
 
@@ -1167,7 +1169,7 @@ import Foundation
                             Wait(8);
                         }
 #if DEBUG
-                        print(String(format: "DJNZ 0x{addr:X4}"));
+                        print(String(format: "DJNZ 0x%4X\n", addr));
 #endif
                         return;
 
@@ -1184,7 +1186,7 @@ import Foundation
                         registers[PC] = (byte)(addr >> 8);
                         registers[PC + 1] = (byte)(addr);
 #if DEBUG
-                        print(String(format: "CALL 0x{addr:X4}"));
+                        print(String(format: "CALL 0x%4X\n", addr));
 #endif
                         Wait(17);
                         return;
@@ -1210,7 +1212,7 @@ import Foundation
                             Wait(10);
                         }
 #if DEBUG
-                        print(String(format: "CALL {JCName(r)}, 0x{addr:X4}"));
+                        print(String(format: "CALL %s, 0x%4X\n", Z80.JCName(r), addr));
 #endif
                         return;
 
@@ -1248,7 +1250,7 @@ import Foundation
                             Wait(5);
                         }
 #if DEBUG
-                        print(String(format: "RET {JCName(r)}"));
+                        print(String(format: "RET %s\n", Z80.JCName(r)));
 #endif
                         return;
 
@@ -1265,7 +1267,7 @@ import Foundation
                         registers[PC] = 0;
                         registers[PC + 1] = (byte)(mc & 0x38);
 #if DEBUG
-                        print(String(format: "RST 0x{mc & 0x38:X4}"));
+                        print(String(format: "RST 0x%4X\n", mc & 0x38));
 #endif
                         Wait(17);
                         return;
@@ -1275,7 +1277,7 @@ import Foundation
                         let port = Fetch() + (registers[A] << 8);
                         registers[A] = ports.ReadPort((ushort)(port));
 #if DEBUG
-                        print(String(format: "IN A, (0x{port:X2})"));
+                        print(String(format: "IN A, (0x%2X)\n", port));
 #endif
                         Wait(11);
                         return;
@@ -1285,7 +1287,7 @@ import Foundation
                         let port = Fetch() + (registers[A] << 8);
                         ports.WritePort((ushort)(port), registers[A]);
 #if DEBUG
-                        print(String(format: "OUT (0x{port:X2}), A"));
+                        print(String(format: "OUT (0x%2X), A\n", port));
 #endif
                         Wait(11);
                         return;
@@ -1295,13 +1297,13 @@ import Foundation
             }
 
 #if DEBUG
-            print(String(format: "{mc:X2}: {hi:X} {r:X} {lo:X}"));
+            print(String(format: "%2X: %2X %2X %2X\n", mc, hi, lo, r));
             //throw new InvalidOperationException("Invalid Opcode: "+mc.ToString("X2"));
 #endif
             Halt = true;
         }
 
-        private func JCName(_ condition: byte) -> string
+        private static func JCName(_ condition: byte) -> string
         {
             switch (condition)
             {
@@ -1378,7 +1380,7 @@ import Foundation
 
                                 reg |= c;
 #if DEBUG
-                                print(String(format: "RLC {debug_target}"));
+                                print(String(format: "RLC {debug_target}\n"));
 #endif
                                 break;
 
@@ -1386,7 +1388,7 @@ import Foundation
 
                                 reg |= (byte)(c << 7);
 #if DEBUG
-                                print(String(format: "RRC {debug_target}"));
+                                print(String(format: "RRC {debug_target}\n"));
 #endif
                                 break;
 
@@ -1394,7 +1396,7 @@ import Foundation
 
                                 reg |= (byte)(f & (byte)(Fl.C.rawValue));
 #if DEBUG
-                                print(String(format: "RL {debug_target}"));
+                                print(String(format: "RL {debug_target}\n"));
 #endif
                                 break;
 
@@ -1402,14 +1404,14 @@ import Foundation
 
                                 reg |= (byte)((f & (byte)(Fl.C.rawValue)) << 7);
 #if DEBUG
-                                print(String(format: "RR {debug_target}"));
+                                print(String(format: "RR {debug_target}\n"));
 #endif
                                 break;
 
                         case 4:
 
 #if DEBUG
-                                print(String(format: "SLA {debug_target}"));
+                                print(String(format: "SLA {debug_target}\n"));
 #endif
                                 break;
 
@@ -1417,7 +1419,7 @@ import Foundation
 
                                 reg |= (byte)((reg & 0x40) << 1);
 #if DEBUG
-                                print(String(format: "SRA {debug_target}"));
+                                print(String(format: "SRA {debug_target}\n"));
 
 #endif
                                 break;
@@ -1426,14 +1428,14 @@ import Foundation
 
                                 reg |= 1;
 #if DEBUG
-                                print(String(format: "SLL {debug_target}"));
+                                print(String(format: "SLL {debug_target}\n"));
 #endif
                                 break;
 
                         case 7:
 
 #if DEBUG
-                                print(String(format: "SRL {debug_target}"));
+                                print(String(format: "SRL {debug_target}\n"));
 #endif
                                 break;
 
@@ -1456,7 +1458,7 @@ import Foundation
 
                         Bit(r, reg);
 #if DEBUG
-                        print(String(format: "BIT {r}, {debug_target}"));
+                        print(String(format: "BIT %d, {debug_target}\n", r));
 #endif
                         Wait(useHL ? 12 : 8);
                         return;
@@ -1464,14 +1466,14 @@ import Foundation
                 case 2:
                     reg &= (byte)(~(0x01 << r));
 #if DEBUG
-                    print(String(format: "RES {r}, {debug_target}"));
+                    print(String(format: "RES %d, {debug_target}\n", r));
 #endif
                     Wait(useHL ? 12 : 8);
                     break;
                 case 3:
                     reg |= (byte)(0x01 << r);
 #if DEBUG
-                    print(String(format: "SET {r}, {debug_target}"));
+                    print(String(format: "SET %d, {debug_target}\n", r));
 #endif
                     Wait(useHL ? 12 : 8);
                     break;
@@ -1729,7 +1731,8 @@ import Foundation
 						addr += 1
                         registers[B] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD BC, (0x{--addr:X4})"));
+                        addr -= 1
+						print(String(format: "LD BC, (0x%4X)\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1742,7 +1745,8 @@ import Foundation
 						addr += 1
                         registers[D] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD DE, (0x{--addr:X4})"));
+                        addr -= 1
+						print(String(format: "LD DE, (0x%4X)\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1755,7 +1759,8 @@ import Foundation
 						addr += 1
                         registers[H] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD HL, (0x{--addr:X4})*"));
+                        addr -= 1
+						print(String(format: "LD HL, (0x%4X)\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1768,7 +1773,8 @@ import Foundation
 						addr += 1
                         registers[SP] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD SP, (0x{--addr:X4})"));
+                        addr -= 1
+						print(String(format: "LD SP, (0x%4X)\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1781,7 +1787,8 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[B];
 #if DEBUG
-                        print(String(format: "LD (0x{--addr:X4}), BC"));
+                        addr -= 1
+						print(String(format: "LD (0x%4X), BC\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1794,7 +1801,8 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[D];
 #if DEBUG
-                        print(String(format: "LD (0x{--addr:X4}), DE"));
+                        addr -= 1
+						print(String(format: "LD (0x%4X), DE\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1807,7 +1815,8 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[H];
 #if DEBUG
-                        print(String(format: "LD (0x{--addr:X4}), HL"));
+                        addr -= 1
+						print(String(format: "LD (0x%4X), HL\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -1820,7 +1829,8 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[SP];
 #if DEBUG
-                        print(String(format: "LD (0x{--addr:X4}), SP"));
+                        addr -= 1
+						print(String(format: "LD (0x%4X), SP\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -2358,7 +2368,7 @@ import Foundation
                         }
 						registers[F] = f;
 #if DEBUG
-                        print(String(format: "IN {RName(r)}, (BC)"));
+                        print(String(format: "IN %s, (BC)\n", Z80.RName(r)));
 #endif
                         Wait(8);
                         return;
@@ -2484,7 +2494,7 @@ import Foundation
                         }
 						registers[F] = f;
 #if DEBUG
-                        print(String(format: "OUT (BC), {RName(r)}"));
+                        print(String(format: "OUT (BC), %s\n", Z80.RName(r)));
 #endif
                         Wait(8);
                         return;
@@ -2598,7 +2608,7 @@ import Foundation
 
             }
 #if DEBUG
-            print(String(format: "ED {mc:X2}: {r:X2}"));
+            print(String(format: "ED %2X: %2X\n", mc, r));
 #endif
             Halt = true;
         }
@@ -2626,7 +2636,7 @@ import Foundation
                         registers[IX + 1] = Fetch();
                         registers[IX] = Fetch();
 #if DEBUG
-                        print(String(format: "LD IX, 0x{Ix:X4}"));
+                        print(String(format: "LD IX, 0x%4X\n", Ix));
 #endif
                         Wait(14);
                         return;
@@ -2637,7 +2647,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         registers[mid] = mem[(ushort)(Ix + d)];
 #if DEBUG
-                        print(String(format: "LD {RName(mid)}, (IX{d:+0;-#})"));
+                        print(String(format: "LD %s, (IX+%d)\n", Z80.RName(mid), d));
 #endif
                         Wait(19);
                         return;
@@ -2648,7 +2658,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         mem[(ushort)(Ix + d)] = registers[lo];
 #if DEBUG
-                        print(String(format: "LD (IX{d:+0;-#}), {RName(lo)}"));
+                        print(String(format: "LD (IX+%d), %s\n", d, Z80.RName(lo)));
 #endif
                         Wait(19);
                         return;
@@ -2660,7 +2670,7 @@ import Foundation
                         let n = Fetch();
                         mem[(ushort)(Ix + d)] = n;
 #if DEBUG
-                        print(String(format: "LD (IX{d:+0;-#}), {n}"));
+                        print(String(format: "LD (IX+%d), %d\n", d, n));
 #endif
                         Wait(19);
                         return;
@@ -2673,7 +2683,7 @@ import Foundation
 						addr += 1
                         registers[IX] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD IX, (0x{addr:X4})*"));
+                        print(String(format: "LD IX, (0x%4X)\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -2686,7 +2696,7 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[IX];
 #if DEBUG
-                        print(String(format: "LD (0x{addr:X4}), IX"));
+                        print(String(format: "LD (0x%4X), IX\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -2762,7 +2772,7 @@ import Foundation
 
                         Add(mem[(ushort)(Ix + d)]);
 #if DEBUG
-                        print(String(format: "ADD A, (IX{d:+0;-#})"));
+                        print(String(format: "ADD A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2774,7 +2784,7 @@ import Foundation
                         // let a = registers[A];
                         Adc(mem[(ushort)(Ix + d)]);
 #if DEBUG
-                        print(String(format: "ADC A, (IX{d:+0;-#})"));
+                        print(String(format: "ADC A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2787,7 +2797,7 @@ import Foundation
 
                         Sub(b);
 #if DEBUG
-                        print(String(format: "SUB A, (IX{d:+0;-#})"));
+                        print(String(format: "SUB A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2799,7 +2809,7 @@ import Foundation
 
                         Sbc(mem[(ushort)(Ix + d)]);
 #if DEBUG
-                        print(String(format: "SBC A, (IX{d:+0;-#})"));
+                        print(String(format: "SBC A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2812,7 +2822,7 @@ import Foundation
 
                         And(b);
 #if DEBUG
-                        print(String(format: "AND A, (IX{d:+0;-#})"));
+                        print(String(format: "AND A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2825,7 +2835,7 @@ import Foundation
 
                         Or(b);
 #if DEBUG
-                        print(String(format: "OR A, (IX{d:+0;-#})"));
+                        print(String(format: "OR A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2838,7 +2848,7 @@ import Foundation
 
                         Xor(b);
 #if DEBUG
-                        print(String(format: "XOR A, (IX{d:+0;-#})"));
+                        print(String(format: "XOR A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2851,7 +2861,7 @@ import Foundation
 
                         Cmp(b);
 #if DEBUG
-                        print(String(format: "CP A, (IX{d:+0;-#})"));
+                        print(String(format: "CP A, (IX+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -2862,7 +2872,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         mem[(ushort)(Ix + d)] = Inc(mem[(ushort)(Ix + d)]);
 #if DEBUG
-                        print(String(format: "INC (IX{d:+0;-#})"));
+                        print(String(format: "INC (IX+%d)\n", d));
 #endif
                         Wait(7);
                         return;
@@ -2873,7 +2883,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         mem[(ushort)(Ix + d)] = Dec(mem[(ushort)(Ix + d)]);
 #if DEBUG
-                        print(String(format: "DEC (IX{d:+0;-#})"));
+                        print(String(format: "DEC (IX+%d)\n", d));
 #endif
                         Wait(7);
                         return;
@@ -2952,7 +2962,7 @@ import Foundation
 
             }
 #if DEBUG
-            print(String(format: "DD {mc:X2}: {hi:X} {mid:X} {lo:X}"));
+            print(String(format: "DD %2X: %2X %2X %2X\n", mc, hi, lo, mid));
 #endif
             Halt = true;
         }
@@ -2980,7 +2990,7 @@ import Foundation
                         registers[IY + 1] = Fetch();
                         registers[IY] = Fetch();
 #if DEBUG
-                        print(String(format: "LD IY, 0x{Iy:X4}"));
+                        print(String(format: "LD IY, 0x%4X\n", Iy));
 #endif
                         Wait(14);
                         return;
@@ -2992,7 +3002,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         registers[r] = mem[(ushort)(Iy + d)];
 #if DEBUG
-                        print(String(format: "LD {RName(r)}, (IY{d:+0;-#})"));
+                        print(String(format: "LD %s, (IY+%d)\n", Z80.RName(r), d));
 #endif
                         Wait(19);
                         return;
@@ -3003,7 +3013,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         mem[(ushort)(Iy + d)] = registers[lo];
 #if DEBUG
-                        print(String(format: "LD (IY{d:+0;-#}), {RName(lo)}"));
+                        print(String(format: "LD (IY+%d), %s\n", d, Z80.RName(lo)));
 #endif
                         Wait(19);
                         return;
@@ -3015,7 +3025,7 @@ import Foundation
                         let n = Fetch();
                         mem[(ushort)(Iy + d)] = n;
 #if DEBUG
-                        print(String(format: "LD (IY{d:+0;-#}), {n}"));
+                        print(String(format: "LD (IY+%d), %d\n", d, n));
 #endif
                         Wait(19);
                         return;
@@ -3028,7 +3038,8 @@ import Foundation
 						addr += 1
                         registers[IY] = mem[addr];
 #if DEBUG
-                        print(String(format: "LD IY, (0x{--addr:X4})*"));
+                        addr -= 1
+						print(String(format: "LD IY, (0x%4X)\n", addr));
 #endif
                         Wait(20);
                         return;
@@ -3042,7 +3053,8 @@ import Foundation
 						addr += 1
                         mem[addr] = registers[IY];
 #if DEBUG
-                        print(String(format: "LD (0x{--addr:X4}), IY"));
+                        addr -= 1
+						print(String(format: "LD (0x%4X), IY", addr));
 #endif
                         Wait(20);
                         return;
@@ -3115,7 +3127,7 @@ import Foundation
 
                         Add(mem[(ushort)(Iy + d)]);
 #if DEBUG
-                        print(String(format: "ADD A, (IY{d:+0;-#})"));
+                        print(String(format: "ADD A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3128,7 +3140,7 @@ import Foundation
                         Adc(mem[(ushort)(Iy + d)]);
 
 #if DEBUG
-                        print(String(format: "ADC A, (IY{d:+0;-#})"));
+                        print(String(format: "ADC A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3140,7 +3152,7 @@ import Foundation
 
                         Sub(mem[(ushort)(Iy + d)]);
 #if DEBUG
-                        print(String(format: "SUB A, (IY{d:+0;-#})"));
+                        print(String(format: "SUB A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3152,7 +3164,7 @@ import Foundation
 
                         Sbc(mem[(ushort)(Iy + d)]);
 #if DEBUG
-                        print(String(format: "SBC A, (IY{d:+0;-#})"));
+                        print(String(format: "SBC A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3165,7 +3177,7 @@ import Foundation
 
                         And(b);
 #if DEBUG
-                        print(String(format: "AND A, (IY{d:+0;-#})"));
+                        print(String(format: "AND A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3178,7 +3190,7 @@ import Foundation
 
                         Or(b);
 #if DEBUG
-                        print(String(format: "OR A, (IY{d:+0;-#})"));
+                        print(String(format: "OR A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3191,7 +3203,7 @@ import Foundation
 
                         Xor(b);
 #if DEBUG
-                        print(String(format: "XOR A, (IY{d:+0;-#})"));
+                        print(String(format: "XOR A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3203,7 +3215,7 @@ import Foundation
 
                         Cmp(mem[(ushort)(Iy + d)]);
 #if DEBUG
-                        print(String(format: "CP A, (IY{d:+0;-#})"));
+                        print(String(format: "CP A, (IY+%d)\n", d));
 #endif
                         Wait(19);
                         return;
@@ -3214,7 +3226,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         mem[(ushort)(Iy + d)] = Inc(mem[(ushort)(Iy + d)]);
 #if DEBUG
-                        print(String(format: "INC (IY{d:+0;-#})"));
+                        print(String(format: "INC (IY+%d)\n", d));
 #endif
                         Wait(7);
                         return;
@@ -3225,7 +3237,7 @@ import Foundation
                         let d = (sbyte)(Fetch());
                         mem[(ushort)(Iy + d)] = Dec(mem[(ushort)(Iy + d)]);
 #if DEBUG
-                        print(String(format: "DEC (IY{d:+0;-#})"));
+                        print(String(format: "DEC (IY+%d)\n", d));
 #endif
                         Wait(7);
                         return;
@@ -3304,7 +3316,7 @@ import Foundation
 
             }
 #if DEBUG
-            print(String(format: "FD {mc:X2}: {hi:X2} {lo:X2} {r:X2}"));
+            print(String(format: "FD %2X: %2X %2X %2X\n", mc, hi, lo, r));
 #endif
             Halt = true;
         }
@@ -3618,32 +3630,32 @@ import Foundation
 
             _clock = Date()
         }
-/*
-        public byte[] GetState()
-        {
-            var length = registers.Length;
-            var ret = new byte[length + 2];
-            Array.Copy(registers, ret, length);
-            ret[length] = (byte)(IFF1 ? 1 : 0);
-            ret[length + 1] = (byte)(IFF2 ? 1 : 0);
-            return ret;
+
+    public func GetState() -> [UInt8] {
+        let count = registers.count
+        var state = Array<UInt8>(repeating: 0, count: count + 2)
+        for i in 0..<count {
+            state[i] = registers[i]
+        }
+        state[count] = IFF1 ? 1 : 0
+        state[count + 1] = IFF2 ? 1 : 0
+        return state
+    }
+
+    public func DumpState() -> String {
+        return " BC   DE   HL  SZ-H-PNC A\n"
+        + String(format: "%4X %4X %4X %d%d%d%d%d%d%d%d %2X\n", registers[B], registers[C], registers[D], registers[E], registers[H], registers[L],
+            (registers[F] & 0x80) >> 7, (registers[F] & 0x40) >> 6, (registers[F] & 0x20) >> 5, (registers[F] & 0x10) >> 4,
+            (registers[F] & 0x08) >> 3, (registers[F] & 0x04) >> 2, (registers[F] & 0x02) >> 1, registers[F] & 0x01, registers[A])
+        + String(format: "%4X %4X %4X %d%d%d%d%d%d%d%d %2X\n", registers[Bp], registers[Cp], registers[Dp], registers[Ep], registers[Hp], registers[Lp],
+            (registers[Fp] & 0x80) >> 7, (registers[Fp] & 0x40) >> 6, (registers[Fp] & 0x20) >> 5, (registers[Fp] & 0x10) >> 4,
+            (registers[Fp] & 0x08) >> 3, (registers[Fp] & 0x04) >> 2, (registers[Fp] & 0x02) >> 1, registers[Fp] & 0x01, registers[Ap])
+        + "I  R   IX   IY   SP   PC\n"
+        + String(format: "%2X %2X %2X%2X %2X%2X %2X%2X %2X%2X\n", registers[I], registers[R],
+            registers[IX], registers[IX + 1], registers[IY], registers[IY + 1],
+            registers[SP], registers[SP + 1], registers[PC], registers[PC + 1])
         }
 
-        public string DumpState()
-        {
-            var ret = " BC   DE   HL  SZ-H-PNC A" + Environment.NewLine;
-            ret +=
-                $"{registers[B]:X2}{registers[C]:X2} {registers[D]:X2}{registers[E]:X2} {registers[H]:X2}{registers[L]:X2} {(registers[F] & 0x80) >> 7}{(registers[F] & 0x40) >> 6}{(registers[F] & 0x20) >> 5}{(registers[F] & 0x10) >> 4}{(registers[F] & 0x08) >> 3}{(registers[F] & 0x04) >> 2}{(registers[F] & 0x02) >> 1}{(registers[F] & 0x01)} {registers[A]:X2}";
-            ret +=
-                $"\n{registers[Bp]:X2}{registers[Cp]:X2} {registers[Dp]:X2}{registers[Ep]:X2} {registers[Hp]:X2}{registers[Lp]:X2} {(registers[Fp] & 0x80) >> 7}{(registers[Fp] & 0x40) >> 6}{(registers[Fp] & 0x20) >> 5}{(registers[Fp] & 0x10) >> 4}{(registers[Fp] & 0x08) >> 3}{(registers[Fp] & 0x04) >> 2}{(registers[Fp] & 0x02) >> 1}{registers[Fp] & 0x01} {registers[Ap]:X2}";
-            ret += Environment.NewLine + Environment.NewLine + "I  R   IX   IY   SP   PC" + Environment.NewLine;
-            ret +=
-                $"{registers[I]:X2} {registers[R]:X2} {registers[IX]:X2}{registers[IX + 1]:X2} {registers[IY]:X2}{registers[IY + 1]:X2} {registers[SP]:X2}{registers[SP + 1]:X2} {registers[PC]:X2}{registers[PC + 1]:X2} ";
-
-            ret += Environment.NewLine;
-            return ret;
-        }
-*/
         private mutating func Wait(_ t: int)
         {
             registers[R] += (byte)((t + 3) / 4);
