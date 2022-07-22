@@ -1,14 +1,16 @@
 ﻿    public struct Z80Asm
     {
 
-        private(set) var _ram = Array<byte>(repeating: 0, count: 64*1024)
+        private(set) var _ram: Memory
         private(set) var Position: ushort = 0
+
+		init(_ ram: Memory) {
+			_ram = ram
+		}
 
         public mutating func Reset()
         {
-            for i in 0..<_ram.count {
-				_ram[i] = 0
-			}
+            _ram.clear()
 			Position = 0;
         }
 

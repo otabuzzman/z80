@@ -20,9 +20,27 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "z80",
-            dependencies: []),
+            dependencies: [],
+            sources: [
+                "CSharp.swift",
+                "IPorts.swift",
+                "Memory.swift",
+                "Z80.swift",
+                "Z80Asm.swift",
+                ],
+            swiftSettings: [
+                .define("DEBUG", .when(configuration: .debug)),
+                ]),
         .testTarget(
             name: "z80Tests",
-            dependencies: ["z80"]),
+            dependencies: ["z80"],
+            sources: [
+                "TestSystem.swift",
+                "TestPorts.swift",
+                "GeneralPurposeArithmeticCpuControlGroupTests.swift",
+                ],
+            swiftSettings: [
+                .define("DEBUG", .when(configuration: .debug)),
+                ]),
     ]
 )
