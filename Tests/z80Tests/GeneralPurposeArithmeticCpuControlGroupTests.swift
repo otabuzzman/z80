@@ -7,7 +7,6 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
     var _ram: Memory!
 
     override func setUp() {
-        // called before invocation of each test method
         super.setUp()
 
         _ram = Memory(0x10000, 0)
@@ -19,7 +18,6 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
     }
 
     override func tearDown() {
-        // called after invocation of each test method
         super.tearDown()
     }
 
@@ -67,111 +65,124 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertEqual(false, en.Iff2);
     }
 
-    //[TestCase(0x01, 0x99, 0x100)]
-    //[TestCase(0x01, 0x98, 0x99)]
-    //[TestCase(0x10, 0x89, 0x99)]
-    //[TestCase(0x01, 0x89, 0x90)]
-    //[TestCase(0x10, 0x90, 0x100)]
-//    public func test_DAA_Add()
-//    {
-//		let a: byte = 0x10
-//		let val: byte = 0x90
-//		let correct: int = 0x100
-//        asm.LoadRegVal(7, a);
-//        asm.AddAVal(val);
-//        asm.Daa();
-//        asm.Halt();
-//
-//        en.Run();
-//            en.DumpCpu();
-//
-//        XCTAssertEqual(asm.Position, en.PC);
-//        let trueSum = correct;
-//        let byteSum: byte = byte(trueSum % 256);
-//        let sbyteSum = (sbyte)(byteSum);
-//        XCTAssertEqual(byteSum, en.A);
-//        XCTAssertEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-//        XCTAssertEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-//        XCTAssertEqual(false, en.FlagH, "Flag H contained the wrong value");
-//        let overflow = trueSum > 256;
-//        XCTAssertEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-//        XCTAssertEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-//    }
+    public func test_DAA_Add()
+    {
+		[
+			(a: byte(0x01), val: byte(0x99), correct: 0x100),
+			(a: byte(0x01), val: byte(0x98), correct: 0x99),
+			(a: byte(0x10), val: byte(0x89), correct: 0x99),
+			(a: byte(0x01), val: byte(0x89), correct: 0x90),
+			(a: byte(0x10), val: byte(0x90), correct: 0x100),
+		].forEach { testCase in
+			tearDown()
+			setUp()
+			
+			asm.LoadRegVal(7, testCase.a);
+			asm.AddAVal(testCase.val);
+			asm.Daa();
+			asm.Halt();
+	
+			en.Run();
+	
+			XCTAssertEqual(asm.Position, en.PC);
+			let trueSum = testCase.correct;
+			let byteSum = trueSum % 256;
+			let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum);
+			XCTAssertEqual(byte(byteSum), en.A);
+			XCTAssertEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
+			XCTAssertEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
+			XCTAssertEqual(false, en.FlagH, "Flag H contained the wrong value");
+			let overflow = trueSum > 256;
+			XCTAssertEqual(overflow, en.FlagP, "Flag P contained the wrong value");
+			XCTAssertEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
+		}
+    }
 
-        //[TestCase(0x00, '0')]
-        //[TestCase(0x01, '1')]
-        //[TestCase(0x02, '2')]
-        //[TestCase(0x03, '3')]
-        //[TestCase(0x04, '4')]
-        //[TestCase(0x05, '5')]
-        //[TestCase(0x06, '6')]
-        //[TestCase(0x07, '7')]
-        //[TestCase(0x08, '8')]
-        //[TestCase(0x09, '9')]
-        //[TestCase(0x0A, 'A')]
-        //[TestCase(0x0B, 'B')]
-        //[TestCase(0x0C, 'C')]
-        //[TestCase(0x0D, 'D')]
-        //[TestCase(0x0E, 'E')]
-        //[TestCase(0x0F, 'F')]
         public func test_DAA_ByteToHex()
         {
-            let a: byte = 0x0F
-			let val: byte = 0x46 // 'F'
-			asm.LoadRegVal(7, a);
-            asm.AndVal(0x0F);
-            asm.AddAVal(0x90);
-            asm.Daa();
-            asm.AdcAVal(0x40);
-            asm.Daa();
-            asm.Halt();
-
-            en.Run();
-
-            XCTAssertEqual(asm.Position, en.PC);
-            XCTAssertEqual(val, en.A);
+		[
+				(a: byte(0x00), val: "0"),
+				(a: byte(0x01), val: "1"),
+				(a: byte(0x02), val: "2"),
+				(a: byte(0x03), val: "3"),
+				(a: byte(0x04), val: "4"),
+				(a: byte(0x05), val: "5"),
+				(a: byte(0x06), val: "6"),
+				(a: byte(0x07), val: "7"),
+				(a: byte(0x08), val: "8"),
+				(a: byte(0x09), val: "9"),
+				(a: byte(0x0A), val: "A"),
+				(a: byte(0x0B), val: "B"),
+				(a: byte(0x0C), val: "C"),
+				(a: byte(0x0D), val: "D"),
+				(a: byte(0x0E), val: "E"),
+				(a: byte(0x0F), val: "F"),
+		].forEach { testCase in
+				tearDown()
+				setUp()
+				
+				asm.LoadRegVal(7, testCase.a);
+				asm.AndVal(0x0F);
+				asm.AddAVal(0x90);
+				asm.Daa();
+				asm.AdcAVal(0x40);
+				asm.Daa();
+				asm.Halt();
+	
+				en.Run();
+	
+				XCTAssertEqual(asm.Position, en.PC);
+				XCTAssertEqual(Character(testCase.val).asciiValue!, en.A);
+			}
         }
 
-        //[TestCase(1, 1, 0x00)]
-        //[TestCase(2, 1, 0x01)]
-        //[TestCase(10, 1, 0x09)]
-        //[TestCase(16, 1, 0x15)]
-        //[TestCase(0xA0, 0x10, 0x90)]
-        //[TestCase(0xAA, 0x11, 0x99)]
-        //[TestCase(10, 0, 0x10)]
-        //[TestCase(100, 1, 99)]
         public func test_DAA_Sub()
         {
-            let a: byte = 100
-			let val: byte = 1
-			let correct: int = 99
-			asm.LoadRegVal(7, a);
-            asm.SubVal(val);
+		[
+(a: byte(1),     val: byte(1),    correct: 0x00),
+(a: byte(2),     val: byte(1),    correct: 0x01),
+(a: byte(10),    val: byte(1),    correct: 0x09),
+(a: byte(16),    val: byte(1),    correct: 0x15),
+(a: byte(0xA0),  val: byte(0x10), correct: 0x90),
+(a: byte(0xAA),  val: byte(0x11), correct: 0x99),
+(a: byte(10),    val: byte(0),    correct: 0x10),
+(a: byte(100),   val: byte(1),    correct: 99),
+		].forEach { testCase in
+				tearDown()
+				setUp()
+				
+			asm.LoadRegVal(7, testCase.a);
+            asm.SubVal(testCase.val);
             asm.Daa();
             asm.Halt();
 
             en.Run();
 
             XCTAssertEqual(asm.Position, en.PC);
-            let trueSum = correct;
-            let byteSum: byte = byte(trueSum % 256);
-            let sbyteSum = (sbyte)(byteSum);
-            XCTAssertEqual(byteSum, en.A);
+            let trueSum = testCase.correct;
+            let byteSum = trueSum % 256;
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum);
+            XCTAssertEqual(byte(byteSum), en.A);
             XCTAssertEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             XCTAssertEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
             XCTAssertEqual(false, en.FlagH, "Flag H contained the wrong value");
             let overflow = trueSum > 256;
             XCTAssertEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             XCTAssertEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
+			}
         }
 
-        //[TestCase(0x00)]
-        //[TestCase(0x08)]
-        //[TestCase(0x80)]
-        //[TestCase(0xFF)]
         public func test_CPL()
         {
-			let a: byte = 0xFF
+		[
+			byte(0x00),
+			byte(0x08),
+			byte(0x80),
+			byte(0xFF),
+		].forEach { a in
+				tearDown()
+				setUp()
+				
             asm.LoadRegVal(7, a);
             asm.Cpl();
             asm.Halt();
@@ -182,41 +193,50 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             XCTAssertEqual((byte)(a ^ 0xFF), en.A);
             XCTAssertEqual(true, en.FlagH, "Flag H contained the wrong value");
             XCTAssertEqual(true, en.FlagN, "Flag N contained the wrong value");
+			}
         }
 
-        //[TestCase(0x00)]
-        //[TestCase(0x08)]
-        //[TestCase(0x80)]
-        //[TestCase(0xFF)]
         public func test_NEG()
         {
-			let a: byte = 0xFF
+		[
+			byte(0x00),
+			byte(0x08),
+			byte(0x80),
+			byte(0xFF),
+		].forEach { a in
+				tearDown()
+				setUp()
+				
             asm.LoadRegVal(7, a);
             asm.Neg();
             asm.Halt();
 
             en.Run();
 
-            let exp = (~a) + 1 // 2's complement
+            let exp = -short(a) //(~a) + 1 // 2's complement
             XCTAssertEqual(asm.Position, en.PC);
-            XCTAssertEqual(exp, en.A);
-            XCTAssertEqual(exp < 0, en.FlagS, "Flag S contained the wrong value");
+            XCTAssertEqual(byte(truncatingIfNeeded: exp), en.A);
+            XCTAssertEqual(sbyte(truncatingIfNeeded: exp) < 0, en.FlagS, "Flag S contained the wrong value");
             XCTAssertEqual(exp == 0, en.FlagZ, "Flag Z contained the wrong value");
             XCTAssertEqual((a & 15) > 0, en.FlagH, "Flag H contained the wrong value");
             XCTAssertEqual(a == 0x80, en.FlagP, "Flag P contained the wrong value");
             XCTAssertEqual(true, en.FlagN, "Flag N contained the wrong value");
             XCTAssertEqual(a != 0, en.FlagC, "Flag C contained the wrong value");
+			}
         }
 
-        //[TestCase(true, true)]
-        //[TestCase(true, false)]
-        //[TestCase(false, true)]
-        //[TestCase(false, false)]
         public func test_CCF()
         {
-			let carry = false
-			let rest = false
-            asm.LoadReg16Val(2, (ushort)((carry ? 1 : 0) + (rest ? 254 : 0)));
+		[
+			(carry: true, rest: true),
+			(carry: true, rest: false),
+			(carry: false, rest: true),
+			(carry: false, rest: false),
+		].forEach { testCase in
+				tearDown()
+				setUp()
+				
+            asm.LoadReg16Val(2, (ushort)((testCase.carry ? 1 : 0) + (testCase.rest ? 254 : 0)));
             asm.PushReg16(2);
             asm.PopReg16(3);
             asm.Ccf();
@@ -224,26 +244,28 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             en.Run();
 
-            en.DumpCpu();
-
             XCTAssertEqual(asm.Position, en.PC);
-            XCTAssertEqual(rest, en.FlagS, "Flag S contained the wrong value");
-            XCTAssertEqual(rest, en.FlagZ, "Flag Z contained the wrong value");
-            XCTAssertEqual(rest, en.FlagH, "Flag H contained the wrong value");
-            XCTAssertEqual(rest, en.FlagP, "Flag P contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagS, "Flag S contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagZ, "Flag Z contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagH, "Flag H contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagP, "Flag P contained the wrong value");
             XCTAssertEqual(false, en.FlagN, "Flag N contained the wrong value");
-            XCTAssertEqual(!carry, en.FlagC, "Flag C contained the wrong value");
+            XCTAssertEqual(!testCase.carry, en.FlagC, "Flag C contained the wrong value");
+			}
         }
 
-        //[TestCase(true, true)]
-        //[TestCase(true, false)]
-        //[TestCase(false, true)]
-        //[TestCase(false, false)]
         public func test_SCF()
         {
-			let carry = false
-			let rest = false
-            asm.LoadReg16Val(2, (ushort)((carry ? 1 : 0) + (rest ? 254 : 0)));
+		[
+			(carry: true, rest: true),
+			(carry: true, rest: false),
+			(carry: false, rest: true),
+			(carry: false, rest: false),
+		].forEach { testCase in
+				tearDown()
+				setUp()
+				
+            asm.LoadReg16Val(2, (ushort)((testCase.carry ? 1 : 0) + (testCase.rest ? 254 : 0)));
             asm.PushReg16(2);
             asm.PopReg16(3);
             asm.Scf();
@@ -252,15 +274,15 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             en.Run();
 
             XCTAssertEqual(asm.Position, en.PC);
-            XCTAssertEqual(rest, en.FlagS, "Flag S contained the wrong value");
-            XCTAssertEqual(rest, en.FlagZ, "Flag Z contained the wrong value");
-            XCTAssertEqual(rest, en.FlagH, "Flag H contained the wrong value");
-            XCTAssertEqual(rest, en.FlagP, "Flag P contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagS, "Flag S contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagZ, "Flag Z contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagH, "Flag H contained the wrong value");
+            XCTAssertEqual(testCase.rest, en.FlagP, "Flag P contained the wrong value");
             XCTAssertEqual(false, en.FlagN, "Flag N contained the wrong value");
             XCTAssertEqual(true, en.FlagC, "Flag C contained the wrong value");
+			}
         }
 
-        //[Test, Ignore]
         public func test_IM_0()
         {
             asm.Im0();
@@ -269,10 +291,9 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             en.Run();
 
 			XCTAssertEqual(asm.Position, en.PC);
-            XCTSkip("IM 0 not implemented");
+            XCTAssertTrue(false, "IM 0 not implemented");
         }
 
-        //[Test, Ignore]
         public func test_IM_1()
         {
             asm.Im1();
@@ -281,10 +302,9 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             en.Run();
 
 			XCTAssertEqual(asm.Position, en.PC);
-            XCTSkip("IM 1 not implemented");
+            XCTAssertTrue(false, "IM 1 not implemented");
         }
 
-        //[Test, Ignore]
         public func test_IM_2()
         {
             asm.Im2();
@@ -293,6 +313,6 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             en.Run();
 
 			XCTAssertEqual(asm.Position, en.PC);
-            XCTSkip("IM 2 not implemented");
+            XCTAssertTrue(false, "IM 2 not implemented");
         }
 }

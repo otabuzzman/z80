@@ -543,7 +543,6 @@ import Foundation
                         print(String(format: "ADD A, 0x%02X\n", b));
 #endif
                         Wait(4);
-                        Wait(4);
                         return;
 
                 case 0x86:
@@ -1108,7 +1107,7 @@ import Foundation
                 case 0x18:
 
                         // order is important here
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let addr = Pc + d;
                         registers[PC] = (byte)(addr >> 8);
                         registers[PC + 1] = (byte)(addr);
@@ -1121,7 +1120,7 @@ import Foundation
                 case 0x20, 0x28, 0x30, 0x38:
 
                         // order is important here
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let addr = Pc + d;
                         if (JumpCondition((byte)(r & 3)))
                         {
@@ -1153,7 +1152,7 @@ import Foundation
                 case 0x10:
 
                         // order is important here
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let addr = Pc + d;
                         var b = registers[B];
 						b -= 1
@@ -1334,7 +1333,7 @@ import Foundation
             var d: sbyte = 0;
             if (mode != 0)
             {
-                d = (sbyte)(Fetch());
+                d = sbyte(truncatingIfNeeded: Fetch());
             }
             if (Halt) {
 				return;
@@ -2141,17 +2140,17 @@ import Foundation
 
                         // NEG
                         let a = registers[A];
-                        let diff = (~a) + 1 // 2's complement
-                        registers[A] = (byte)(diff);
+                        let diff = -short(truncatingIfNeeded: a)
+                        registers[A] = (byte)(truncatingIfNeeded: diff);
 
                         var f = (byte)(registers[F] & 0x28);
-                        if (((byte)(diff) & 0x80) > 0) {
+                        if (((byte)(truncatingIfNeeded: diff) & 0x80) > 0) {
 							f |= (byte)(Fl.S.rawValue);
                         }
 						if (diff == 0) {
 							f |= (byte)(Fl.Z.rawValue);
                         }
-						if ((a & 0xF) != 0) {
+						if ((a & 0x0F) != 0) {
 							f |= (byte)(Fl.H.rawValue);
                         }
 						if (a == 0x80) {
@@ -2644,7 +2643,7 @@ import Foundation
                 case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
 
                         // LD r, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         registers[mid] = mem[(ushort)(Ix + d)];
 #if DEBUG
                         print(String(format: "LD %@, (IX+%d)\n", Z80.RName(mid), d));
@@ -2655,7 +2654,7 @@ import Foundation
                 case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
 
                         // LD (IX+d), r
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         mem[(ushort)(Ix + d)] = registers[lo];
 #if DEBUG
                         print(String(format: "LD (IX+%d), %@\n", d, Z80.RName(lo)));
@@ -2666,7 +2665,7 @@ import Foundation
                 case 0x36:
 
                         // LD (IX+d), n
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let n = Fetch();
                         mem[(ushort)(Ix + d)] = n;
 #if DEBUG
@@ -2768,7 +2767,7 @@ import Foundation
                 case 0x86:
 
                         // ADD A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
 
                         Add(mem[(ushort)(Ix + d)]);
 #if DEBUG
@@ -2780,7 +2779,7 @@ import Foundation
                 case 0x8E:
 
                         // ADC A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         // let a = registers[A];
                         Adc(mem[(ushort)(Ix + d)]);
 #if DEBUG
@@ -2792,7 +2791,7 @@ import Foundation
                 case 0x96:
 
                         // SUB A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Ix + d)];
 
                         Sub(b);
@@ -2805,7 +2804,7 @@ import Foundation
                 case 0x9E:
 
                         // SBC A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
 
                         Sbc(mem[(ushort)(Ix + d)]);
 #if DEBUG
@@ -2817,7 +2816,7 @@ import Foundation
                 case 0xA6:
 
                         // AND A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Ix + d)];
 
                         And(b);
@@ -2830,7 +2829,7 @@ import Foundation
                 case 0xB6:
 
                         // OR A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Ix + d)];
 
                         Or(b);
@@ -2843,7 +2842,7 @@ import Foundation
                 case 0xAE:
 
                         // OR A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Ix + d)];
 
                         Xor(b);
@@ -2856,7 +2855,7 @@ import Foundation
                 case 0xBE:
 
                         // CP A, (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Ix + d)];
 
                         Cmp(b);
@@ -2869,7 +2868,7 @@ import Foundation
                 case 0x34:
 
                         // INC (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         mem[(ushort)(Ix + d)] = Inc(mem[(ushort)(Ix + d)]);
 #if DEBUG
                         print(String(format: "INC (IX+%d)\n", d));
@@ -2880,7 +2879,7 @@ import Foundation
                 case 0x35:
 
                         // DEC (IX+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         mem[(ushort)(Ix + d)] = Dec(mem[(ushort)(Ix + d)]);
 #if DEBUG
                         print(String(format: "DEC (IX+%d)\n", d));
@@ -2999,7 +2998,7 @@ import Foundation
                 case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
 
                         // LD r, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         registers[r] = mem[(ushort)(Iy + d)];
 #if DEBUG
                         print(String(format: "LD %@, (IY+%d)\n", Z80.RName(r), d));
@@ -3010,7 +3009,7 @@ import Foundation
                 case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
 
                         // LD (IY+d), r
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         mem[(ushort)(Iy + d)] = registers[lo];
 #if DEBUG
                         print(String(format: "LD (IY+%d), %@\n", d, Z80.RName(lo)));
@@ -3021,7 +3020,7 @@ import Foundation
                 case 0x36:
 
                         // LD (IY+d), n
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let n = Fetch();
                         mem[(ushort)(Iy + d)] = n;
 #if DEBUG
@@ -3123,7 +3122,7 @@ import Foundation
                 case 0x86:
 
                         // ADD A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
 
                         Add(mem[(ushort)(Iy + d)]);
 #if DEBUG
@@ -3135,7 +3134,7 @@ import Foundation
                 case 0x8E:
 
                         // ADC A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         // let a = registers[A];
                         Adc(mem[(ushort)(Iy + d)]);
 
@@ -3148,7 +3147,7 @@ import Foundation
                 case 0x96:
 
                         // SUB A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
 
                         Sub(mem[(ushort)(Iy + d)]);
 #if DEBUG
@@ -3160,7 +3159,7 @@ import Foundation
                 case 0x9E:
 
                         // SBC A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
 
                         Sbc(mem[(ushort)(Iy + d)]);
 #if DEBUG
@@ -3172,7 +3171,7 @@ import Foundation
                 case 0xA6:
 
                         // AND A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Iy + d)];
 
                         And(b);
@@ -3185,7 +3184,7 @@ import Foundation
                 case 0xB6:
 
                         // OR A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Iy + d)];
 
                         Or(b);
@@ -3198,7 +3197,7 @@ import Foundation
                 case 0xAE:
 
                         // XOR A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         let b = mem[(ushort)(Iy + d)];
 
                         Xor(b);
@@ -3211,7 +3210,7 @@ import Foundation
                 case 0xBE:
 
                         // CP A, (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
 
                         Cmp(mem[(ushort)(Iy + d)]);
 #if DEBUG
@@ -3223,7 +3222,7 @@ import Foundation
                 case 0x34:
 
                         // INC (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         mem[(ushort)(Iy + d)] = Inc(mem[(ushort)(Iy + d)]);
 #if DEBUG
                         print(String(format: "INC (IY+%d)\n", d));
@@ -3234,7 +3233,7 @@ import Foundation
                 case 0x35:
 
                         // DEC (IY+d)
-                        let d = (sbyte)(Fetch());
+                        let d = sbyte(truncatingIfNeeded: Fetch());
                         mem[(ushort)(Iy + d)] = Dec(mem[(ushort)(Iy + d)]);
 #if DEBUG
                         print(String(format: "DEC (IY+%d)\n", d));
@@ -3324,19 +3323,19 @@ import Foundation
         private mutating func Add(_ b: byte)
         {
             let a = registers[A];
-            let sum = a + b;
-            registers[A] = (byte)(sum);
+            let sum = ushort(a) + ushort(b);
+            registers[A] = (byte)(truncatingIfNeeded: sum);
             var f = (byte)(registers[F] & 0x28);
             if ((sum & 0x80) > 0) {
                 f |= (byte)(Fl.S.rawValue);
 			}
-            if ((byte)(sum) == 0) {
+            if ((sum & 0xFF) == 0) {
                 f |= (byte)(Fl.Z.rawValue);
 			}
-            if ((a & 0xF + b & 0xF) > 0xF) {
+            if ((a & 0x0F + b & 0x0F) > 0x0F) {
                 f |= (byte)(Fl.H.rawValue);
 			}
-            if ((a >= 0x80 && b >= 0x80 && (sbyte)(sum) > 0) || (a < 0x80 && b < 0x80 && (sbyte)(sum) < 0)) {
+            if ((a >= 0x80 && b >= 0x80 && sbyte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0)) {
                 f |= (byte)(Fl.PV.rawValue);
 			}
             if (sum > 0xFF) {
@@ -3349,19 +3348,19 @@ import Foundation
         {
             let a = registers[A];
             let c = (byte)(registers[F] & (byte)(Fl.C.rawValue));
-            let sum = a + b + c;
-            registers[A] = (byte)(sum);
+            let sum = ushort(a) + ushort(b) + ushort(c);
+            registers[A] = (byte)(truncatingIfNeeded: sum);
             var f = (byte)(registers[F] & 0x28);
             if ((sum & 0x80) > 0) {
                 f |= (byte)(Fl.S.rawValue);
 			}
-            if ((byte)(sum) == 0) {
+            if ((sum & 0xFF) == 0) {
                 f |= (byte)(Fl.Z.rawValue);
 			}
-            if ((a & 0xF + b & 0xF) > 0xF) {
+            if ((a & 0x0F + b & 0x0F) > 0x0F) {
                 f |= (byte)(Fl.H.rawValue);
 			}
-            if ((a >= 0x80 && b >= 0x80 && (sbyte)(sum) > 0) || (a < 0x80 && b < 0x80 && (sbyte)(sum) < 0)) {
+            if ((a >= 0x80 && b >= 0x80 && sbyte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0)) {
                 f |= (byte)(Fl.PV.rawValue);
 			}
             f = (byte)(f & ~(byte)(Fl.N.rawValue));
@@ -3374,23 +3373,23 @@ import Foundation
         private mutating func Sub(_ b: byte)
         {
             let a = registers[A];
-            let diff = a - b;
-            registers[A] = (byte)(diff);
+            let diff = short(a) - short(b);
+            registers[A] = (byte)(truncatingIfNeeded: diff);
             var f = (byte)(registers[F] & 0x28);
             if ((diff & 0x80) > 0) {
                 f |= (byte)(Fl.S.rawValue);
 			}
-            if (diff == 0) {
+            if ((diff & 0xFF) == 0) {
                 f |= (byte)(Fl.Z.rawValue);
 			}
-            if ((a & 0xF) < (b & 0xF)) {
+            if ((a & 0x0F) < (b & 0x0F)) {
                 f |= (byte)(Fl.H.rawValue);
 			}
-            if ((a >= 0x80 && b >= 0x80 && (sbyte)(diff) > 0) || (a < 0x80 && b < 0x80 && (sbyte)(diff) < 0)) {
+            if ((a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0)) {
                 f |= (byte)(Fl.PV.rawValue);
 			}
             f |= (byte)(Fl.N.rawValue);
-            if ((sbyte)(diff) < 0) {
+            if (diff < 0) {
                 f |= (byte)(Fl.C.rawValue);
 			}
             registers[F] = f;
@@ -3400,19 +3399,19 @@ import Foundation
         {
             let a = registers[A];
             let c = (byte)(registers[F] & 0x01);
-            let diff = a - b - c;
-            registers[A] = (byte)(diff);
+            let diff = short(a) - short(b) - short(c);
+            registers[A] = (byte)(truncatingIfNeeded: diff);
             var f = (byte)(registers[F] & 0x28);
             if ((diff & 0x80) > 0) {
 				f |= (byte)(Fl.S.rawValue);
 			}
-            if (diff == 0) {
+            if ((diff & 0xFF) == 0) {
 				f |= (byte)(Fl.Z.rawValue);
 			}
-            if ((a & 0xF) < (b & 0xF) + c) {
+            if ((a & 0x0F) < (b & 0x0F) + c) {
 				f |= (byte)(Fl.H.rawValue);
 			}
-            if ((a >= 0x80 && b >= 0x80 && (sbyte)(diff) > 0) || (a < 0x80 && b < 0x80 && (sbyte)(diff) < 0)) {
+            if ((a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0)) {
                 f |= (byte)(Fl.PV.rawValue);
 			}
             f |= (byte)(Fl.N.rawValue);
@@ -3480,7 +3479,7 @@ import Foundation
         private mutating func Cmp(_ b: byte)
         {
             let a = registers[A];
-            let diff = a - b;
+            let diff = a &- b;
             var f = (byte)(registers[F] & 0x28);
             if ((diff & 0x80) > 0) {
                 f = (byte)(f | 0x80);
@@ -3488,10 +3487,10 @@ import Foundation
             if (diff == 0) {
                 f = (byte)(f | 0x40);
 			}
-            if ((a & 0xF) < (b & 0xF)) {
+            if ((a & 0x0F) < (b & 0x0F)) {
                 f = (byte)(f | 0x10);
 			}
-            if ((a > 0x80 && b > 0x80 && (sbyte)(diff) > 0) || (a < 0x80 && b < 0x80 && (sbyte)(diff) < 0)) {
+            if ((a > 0x80 && b > 0x80 && sbyte(truncatingIfNeeded: diff) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: diff) < 0)) {
                 f = (byte)(f | 0x04);
 			}
             f = (byte)(f | 0x02);
@@ -3503,7 +3502,7 @@ import Foundation
 
         private mutating func Inc(_ b: byte) -> byte
         {
-            let sum = b + 1;
+            let sum = b &+ 1;
             var f = (byte)(registers[F] & 0x28);
             if ((sum & 0x80) > 0) {
                 f = (byte)(f | 0x80);
@@ -3511,10 +3510,10 @@ import Foundation
             if (sum == 0) {
                 f = (byte)(f | 0x40);
 			}
-            if ((b & 0xF) == 0xF) {
+            if ((b & 0x0F) == 0x0F) {
                 f = (byte)(f | 0x10);
 			}
-            if ((b < 0x80 && (sbyte)(sum) < 0)) {
+            if ((b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0)) {
                 f = (byte)(f | 0x04);
 			}
             f = (byte)(f | 0x02);
@@ -3528,7 +3527,7 @@ import Foundation
 
         private mutating func Dec(_ b: byte) -> byte
         {
-            let sum = b - 1;
+            let sum = b &- 1;
             var f = (byte)(registers[F] & 0x28);
             if ((sum & 0x80) > 0) {
                 f = (byte)(f | 0x80);
@@ -3668,7 +3667,7 @@ import Foundation
                 Thread.sleep(forTimeInterval: sleep);
                 _clock = _clock + ticks;
             }
-            else
+            else if (0 > sleep)
             {
 #if DEBUG
                 print(String(format: "Clock expected %.2g but was %.2g\n", ticks / Double(realTicksPerTick), elapsed / Double(realTicksPerTick)));
