@@ -237,7 +237,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)((testCase.carry ? 1 : 0) + (testCase.rest ? 254 : 0)))
+            asm.LoadReg16Val(2, ushort((testCase.carry ? 1 : 0) + (testCase.rest ? 254 : 0)))
             asm.PushReg16(2)
             asm.PopReg16(3)
             asm.Ccf()
@@ -266,7 +266,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)((testCase.carry ? 1 : 0) + (testCase.rest ? 254 : 0)))
+            asm.LoadReg16Val(2, ushort((testCase.carry ? 1 : 0) + (testCase.rest ? 254 : 0)))
             asm.PushReg16(2)
             asm.PopReg16(3)
             asm.Scf()
