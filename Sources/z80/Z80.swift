@@ -42,13 +42,13 @@ import Foundation
             Reset()
         }
 
-        private var Hl: ushort { (ushort)(registers[L] + (registers[H] << 8)) }
-        private var Sp: ushort { (ushort)(registers[SP + 1] + (registers[SP] << 8)) }
-        private var Ix: ushort { (ushort)(registers[IX + 1] + (registers[IX] << 8)) }
-        private var Iy: ushort { (ushort)(registers[IY + 1] + (registers[IY] << 8)) }
-        private var Bc: ushort { (ushort)((registers[B] << 8) + registers[C]) }
-        private var De: ushort { (ushort)((registers[D] << 8) + registers[E]) }
-        private var Pc: ushort { (ushort)(registers[PC + 1] + (registers[PC] << 8)) }
+        private var Bc: ushort { (ushort(registers[B]) << 8) + registers[C] }
+        private var De: ushort { (ushort(registers[D]) << 8) + registers[E] }
+        private var Hl: ushort { (ushort(registers[H]) << 8) + registers[L] }
+        private var Sp: ushort { (ushort(registers[SP]) << 8) + registers[SP + 1] }
+        private var Ix: ushort { (ushort(registers[IX]) << 8) + registers[IX + 1] }
+        private var Iy: ushort { (ushort(registers[IY]) << 8) + registers[IY + 1] }
+        private var Pc: ushort { (ushort(registers[PC]) << 8) + registers[PC + 1] }
         private(set) var Halt = false
 
         public mutating func Parse()
@@ -59,9 +59,9 @@ import Foundation
 				stack -= 1
                 mem[stack] = (byte)(Pc >> 8);
 				stack -= 1
-                mem[stack] = (byte)(Pc);
+                mem[stack] = byte(truncatingIfNeeded: Pc);
                 registers[SP] = (byte)(stack >> 8);
-                registers[SP + 1] = (byte)(stack);
+                registers[SP + 1] = byte(truncatingIfNeeded: stack);
                 registers[PC] = 0x00;
                 registers[PC + 1] = 0x66;
                 IFF1 = IFF2;
@@ -88,9 +88,9 @@ import Foundation
             				stack -= 1
                             mem[stack] = (byte)(Pc >> 8);
             				stack -= 1
-                            mem[stack] = (byte)(Pc);
+                            mem[stack] = byte(truncatingIfNeeded: Pc);
                             registers[SP] = (byte)(stack >> 8);
-                            registers[SP + 1] = (byte)(stack);
+                            registers[SP + 1] = byte(truncatingIfNeeded: stack);
                             registers[PC] = 0x00;
                             registers[PC + 1] = (byte)(instruction & 0x38);
                             Wait(17);
@@ -105,9 +105,9 @@ import Foundation
             				stack -= 1
                             mem[stack] = (byte)(Pc >> 8);
             				stack -= 1
-                            mem[stack] = (byte)(Pc);
+                            mem[stack] = byte(truncatingIfNeeded: Pc);
                             registers[SP] = (byte)(stack >> 8);
-                            registers[SP + 1] = (byte)(stack);
+                            registers[SP + 1] = byte(truncatingIfNeeded: stack);
                             registers[PC] = 0x00;
                             registers[PC + 1] = 0x38;
 #if DEBUG
@@ -122,10 +122,10 @@ import Foundation
             				stack -= 1
                             mem[stack] = (byte)(Pc >> 8);
             				stack -= 1
-                            mem[stack] = (byte)(Pc);
+                            mem[stack] = byte(truncatingIfNeeded: Pc);
                             registers[SP] = (byte)(stack >> 8);
-                            registers[SP + 1] = (byte)(stack);
-                            var address = (ushort)((registers[I] << 8) + vector);
+                            registers[SP + 1] = byte(truncatingIfNeeded: stack);
+                            var address = ushort(registers[I] << 8) + vector;
                             registers[PC] = mem[address];
 							address += 1
                             registers[PC + 1] = mem[address];
@@ -542,7 +542,7 @@ import Foundation
 #if DEBUG
                         print(String(format: "ADD A, 0x%02X\n", b));
 #endif
-                        Wait(4);
+                        Wait(7);
                         return;
 
                 case 0x86:
@@ -1179,9 +1179,9 @@ import Foundation
 						stack -= 1
                         mem[stack] = (byte)(Pc >> 8);
 						stack -= 1
-                        mem[stack] = (byte)(Pc);
+                        mem[stack] = byte(truncatingIfNeeded: Pc);
                         registers[SP] = (byte)(stack >> 8);
-                        registers[SP + 1] = (byte)(stack);
+                        registers[SP + 1] = byte(truncatingIfNeeded: stack);
                         registers[PC] = (byte)(addr >> 8);
                         registers[PC + 1] = (byte)(addr);
 #if DEBUG
@@ -1199,9 +1199,9 @@ import Foundation
     						stack -= 1
                             mem[stack] = (byte)(Pc >> 8);
     						stack -= 1
-                            mem[stack] = (byte)(Pc);
+                            mem[stack] = byte(truncatingIfNeeded: Pc);
                             registers[SP] = (byte)(stack >> 8);
-                            registers[SP + 1] = (byte)(stack);
+                            registers[SP + 1] = byte(truncatingIfNeeded: stack);
                             registers[PC] = (byte)(addr >> 8);
                             registers[PC + 1] = (byte)(addr);
                             Wait(17);
@@ -1224,7 +1224,7 @@ import Foundation
                         registers[PC] = mem[stack];
 						stack += 1
                         registers[SP] = (byte)(stack >> 8);
-                        registers[SP + 1] = (byte)(stack);
+                        registers[SP + 1] = byte(truncatingIfNeeded: stack);
 #if DEBUG
                         print("RET");
 #endif
@@ -1241,7 +1241,7 @@ import Foundation
                             registers[PC] = mem[stack];
     						stack += 1
                             registers[SP] = (byte)(stack >> 8);
-                            registers[SP + 1] = (byte)(stack);
+                            registers[SP + 1] = byte(truncatingIfNeeded: stack);
                             Wait(11);
                         }
                         else
@@ -1260,9 +1260,9 @@ import Foundation
 						stack -= 1
                         mem[stack] = (byte)(Pc >> 8);
 						stack -= 1
-                        mem[stack] = (byte)(Pc);
+                        mem[stack] = byte(truncatingIfNeeded: Pc);
                         registers[SP] = (byte)(stack >> 8);
-                        registers[SP + 1] = (byte)(stack);
+                        registers[SP + 1] = byte(truncatingIfNeeded: stack);
                         registers[PC] = 0;
                         registers[PC + 1] = (byte)(mc & 0x38);
 #if DEBUG
@@ -1273,7 +1273,7 @@ import Foundation
 
                 case 0xDB:
 
-                        let port = Fetch() + (registers[A] << 8);
+                        let port = ushort(registers[A] << 8) + Fetch();
                         registers[A] = ports.ReadPort((ushort)(port));
 #if DEBUG
                         print(String(format: "IN A, (0x%02X)\n", port));
@@ -1283,7 +1283,7 @@ import Foundation
 
                 case 0xD3:
 
-                        let port = Fetch() + (registers[A] << 8);
+                        let port = ushort(registers[A] << 8) + Fetch();
                         ports.WritePort((ushort)(port), registers[A]);
 #if DEBUG
                         print(String(format: "OUT (0x%02X), A\n", port));
@@ -1346,18 +1346,6 @@ import Foundation
             let useIX = mode == 0xDD;
             let useIY = mode == 0xFD;
             var reg = useHL ? useIX ? mem[(ushort)(Ix + d)] : useIY ? mem[(ushort)(Iy + d)] : mem[Hl] : registers[lo];
-#if DEBUG
-            var debug_target: string;
-            if (useHL) {
-                if (useIX) {
-					debug_target = "(IX{d:+0;-#})";
-                } else {
-					debug_target = useIY ? "(IY{d:+0;-#})" : "(HL)";
-				}
-            } else {
-                debug_target = useIX ? "(IX{d:+0;-#}), {RName(lo)}" : useIY ? "(IY{d:+0;-#}), {RName(lo)}" : Z80.RName(lo);
-			}
-#endif
             switch (hi)
             {
                 case 0:
@@ -1379,7 +1367,7 @@ import Foundation
 
                                 reg |= c;
 #if DEBUG
-                                print(String(format: "RLC {debug_target}\n"));
+                                print(String(format: "RLC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
@@ -1387,7 +1375,7 @@ import Foundation
 
                                 reg |= (byte)(c << 7);
 #if DEBUG
-                                print(String(format: "RRC {debug_target}\n"));
+                                print(String(format: "RRC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
@@ -1395,7 +1383,7 @@ import Foundation
 
                                 reg |= (byte)(f & (byte)(Fl.C.rawValue));
 #if DEBUG
-                                print(String(format: "RL {debug_target}\n"));
+                                print(String(format: "RL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
@@ -1403,14 +1391,14 @@ import Foundation
 
                                 reg |= (byte)((f & (byte)(Fl.C.rawValue)) << 7);
 #if DEBUG
-                                print(String(format: "RR {debug_target}\n"));
+                                print(String(format: "RR \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
                         case 4:
 
 #if DEBUG
-                                print(String(format: "SLA {debug_target}\n"));
+                                print(String(format: "SLA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
@@ -1418,7 +1406,7 @@ import Foundation
 
                                 reg |= (byte)((reg & 0x40) << 1);
 #if DEBUG
-                                print(String(format: "SRA {debug_target}\n"));
+                                print(String(format: "SRA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 
 #endif
                                 break;
@@ -1427,14 +1415,14 @@ import Foundation
 
                                 reg |= 1;
 #if DEBUG
-                                print(String(format: "SLL {debug_target}\n"));
+                                print(String(format: "SLL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
                         case 7:
 
 #if DEBUG
-                                print(String(format: "SRL {debug_target}\n"));
+                                print(String(format: "SRL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n"));
 #endif
                                 break;
 
@@ -1457,22 +1445,22 @@ import Foundation
 
                         Bit(r, reg);
 #if DEBUG
-                        print(String(format: "BIT %d, {debug_target}\n", r));
+                        print(String(format: "BIT %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n", r));
 #endif
                         Wait(useHL ? 12 : 8);
                         return;
 
                 case 2:
-                    reg &= (byte)(~(0x01 << r));
+                    reg &= ~(byte)(0x01 << r);
 #if DEBUG
-                    print(String(format: "RES %d, {debug_target}\n", r));
+                    print(String(format: "RES %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n", r));
 #endif
                     Wait(useHL ? 12 : 8);
                     break;
                 case 3:
                     reg |= (byte)(0x01 << r);
 #if DEBUG
-                    print(String(format: "SET %d, {debug_target}\n", r));
+                    print(String(format: "SET %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))\n", r));
 #endif
                     Wait(useHL ? 12 : 8);
                     break;
@@ -1547,7 +1535,7 @@ import Foundation
 
         private mutating func Add(_ value1: ushort, _ value2: ushort) -> ushort
         {
-            let sum = value1 + value2;
+            let sum = int(value1) + int(value2);
             var f = (byte)(registers[F] & (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)));
             if ((value1 & 0x0FFF) + (value2 & 0x0FFF) > 0x0FFF) {
                 f |= (byte)(Fl.H.rawValue);
@@ -1556,7 +1544,7 @@ import Foundation
                 f |= (byte)(Fl.C.rawValue);
 			}
             registers[F] = f;
-            return (ushort)(sum);
+            return ushort(truncatingIfNeeded: sum);
         }
 
         private mutating func AdcHl(_ value: ushort)
@@ -1568,9 +1556,9 @@ import Foundation
 
         private mutating func Adc(_ value1: ushort, _ value2: ushort) -> ushort
         {
-            let sum = value1 + value2 + (registers[F] & (byte)(Fl.C.rawValue));
+            let sum = int(value1) + int(value2) + int((registers[F] & (byte)(Fl.C.rawValue)));
             var f = (byte)(registers[F] & (byte)(~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)));
-            if ((short)(sum) < 0) {
+            if (sum < 0) {
                 f |= (byte)(Fl.S.rawValue);
 			}
             if (sum == 0) {
@@ -1586,7 +1574,7 @@ import Foundation
                 f |= (byte)(Fl.C.rawValue);
 			}
             registers[F] = f;
-            return (ushort)(sum);
+            return ushort(truncatingIfNeeded: sum);
         }
 
         private mutating func SbcHl(_ value: ushort)
@@ -1599,9 +1587,9 @@ import Foundation
 
         private mutating func Sbc(_ value1: ushort, _ value2: ushort) -> ushort
         {
-            let diff = value1 - value2 - (registers[F] & (byte)(Fl.C.rawValue));
+            let diff = int(value1) - int(value2) - int(registers[F] & (byte)(Fl.C.rawValue));
             var f = (byte)(registers[F] & (byte)(~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)));
-            if ((short)(diff) < 0) {
+            if (diff < 0) {
                 f |= (byte)(Fl.S.rawValue);
 			}
             if (diff == 0) {
@@ -1617,7 +1605,7 @@ import Foundation
                 f |= (byte)(Fl.C.rawValue);
 			}
             registers[F] = f;
-            return (ushort)(diff);
+            return ushort(truncatingIfNeeded: diff);
         }
 
         private mutating func ParseED()
@@ -1886,7 +1874,7 @@ import Foundation
                         registers[F] = (byte)(registers[F] & 0xE9);
                         if (bc != 0)
                         {
-                            var pc = (ushort)((registers[PC] << 8) + registers[PC + 1]);
+                            var pc = ushort(registers[PC] << 8) + registers[PC + 1];
                             // jumps back to itself
                             pc -= 2;
                             registers[PC] = (byte)(pc >> 8);
@@ -1952,7 +1940,7 @@ import Foundation
                         registers[F] = (byte)(registers[F] & 0xE9);
                         if (bc != 0)
                         {
-                            var pc = (ushort)((registers[PC] << 8) + registers[PC + 1]);
+                            var pc = ushort(registers[PC] << 8) + registers[PC + 1];
                             // jumps back to itself
                             pc -= 2;
                             registers[PC] = (byte)(pc >> 8);
@@ -2043,7 +2031,7 @@ import Foundation
                             return;
                         }
 
-                        var pc = (ushort)((registers[PC] << 8) + registers[PC + 1]);
+                        var pc = ushort(registers[PC] << 8) + registers[PC + 1];
                         // jumps back to itself
                         pc -= 2;
                         registers[PC] = (byte)(pc >> 8);
@@ -2128,7 +2116,7 @@ import Foundation
                             return;
                         }
 
-                        var pc = (ushort)((registers[PC] << 8) + registers[PC + 1]);
+                        var pc = ushort(registers[PC] << 8) + registers[PC + 1];
                         // jumps back to itself
                         pc -= 2;
                         registers[PC] = (byte)(pc >> 8);
@@ -2330,7 +2318,7 @@ import Foundation
                         registers[PC] = mem[stack];
 						stack += 1
                         registers[SP] = (byte)(stack >> 8);
-                        registers[SP + 1] = (byte)(stack);
+                        registers[SP + 1] = byte(truncatingIfNeeded: stack);
                         IFF1 = IFF2;
 #if DEBUG
                         if (mc == 0x4D) {
@@ -2379,7 +2367,7 @@ import Foundation
                         mem[hl] = a;
 						hl += 1
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)));
@@ -2402,7 +2390,7 @@ import Foundation
                         mem[hl] = a;
 						hl += 1
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         if (b != 0)
@@ -2432,7 +2420,7 @@ import Foundation
                         mem[hl] = a;
 						hl -= 1
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)));
@@ -2454,7 +2442,7 @@ import Foundation
                         mem[hl] = a;
 						hl -= 1
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         if (b != 0)
@@ -2505,7 +2493,7 @@ import Foundation
 						hl += 1
                         ports.WritePort(Bc, a);
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)));
@@ -2528,7 +2516,7 @@ import Foundation
 						hl += 1
                         ports.WritePort(Bc, a);
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         if (b != 0)
@@ -2558,7 +2546,7 @@ import Foundation
 						hl -= 1
                         ports.WritePort(Bc, a);
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)));
@@ -2580,7 +2568,7 @@ import Foundation
 						hl -= 1
                         ports.WritePort(Bc, a);
                         registers[H] = (byte)(hl >> 8);
-                        registers[L] = (byte)(hl);
+                        registers[L] = byte(truncatingIfNeeded: hl);
                         let b = (byte)(registers[B] - 1);
                         registers[B] = b;
                         if (b != 0)

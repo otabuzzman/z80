@@ -1,6 +1,6 @@
 ﻿@testable import z80
 
-    public class TestSystem
+    final class TestSystem
     {
 
         private let _B: byte = 0;

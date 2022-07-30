@@ -21,7 +21,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_HALT() throws
+    func test_HALT()
     {
         asm.Halt()
 

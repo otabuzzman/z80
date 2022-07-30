@@ -1,6 +1,6 @@
 @testable import z80
 
-    public class TestPorts: IPorts
+    final class TestPorts: IPorts
     {
         private(set) var inputs = Array<byte>(repeating: 0, count: 0x10000)
         private(set) var outputs = Array<byte>(repeating: 0, count: 0x10000)

@@ -19,19 +19,19 @@
             Write(0x76);
         }
 
-        public mutating func Write(_ value: ushort)
-        {
-            Write((byte)(value));
-        }
-
         public mutating func Write(_ value: int)
         {
-            Write((byte)(value));
+            Write((byte)(truncatingIfNeeded: value));
+        }
+
+        public mutating func Write(_ value: ushort)
+        {
+            Write((byte)(truncatingIfNeeded: value));
         }
 
         public mutating func Write(_ value: sbyte)
         {
-            Write((byte)(value));
+            Write((byte)(truncatingIfNeeded: value));
         }
 
         public mutating func Write(_ value: byte)
