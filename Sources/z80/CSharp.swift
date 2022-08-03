@@ -40,12 +40,20 @@ extension short {
     }
 }
 
+func +(lhs: ushort, rhs: int) -> ushort {
+    ushort(truncatingIfNeeded: int(lhs) + rhs)
+}
+
 func +(lhs: ushort, rhs: sbyte) -> ushort {
     ushort(truncatingIfNeeded: int(lhs) + int(rhs))
 }
 
 func +(lhs: ushort, rhs: byte) -> ushort {
     ushort(truncatingIfNeeded: int(lhs) + int(rhs))
+}
+
+func -(lhs: ushort, rhs: int) -> ushort {
+    ushort(truncatingIfNeeded: int(lhs) - rhs)
 }
 
 func -(lhs: ushort, rhs: byte) -> ushort {

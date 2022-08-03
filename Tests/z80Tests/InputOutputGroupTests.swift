@@ -160,7 +160,7 @@ final class InputOutputTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             for i: byte in 0..<b {
-                XCTAssertEqual(b - i, mem[(ushort)(0x0040 + i)])
+                XCTAssertEqual(b - i, mem[0x0040 + i])
             }
             XCTAssertEqual(0, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -191,7 +191,7 @@ final class InputOutputTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             for i: byte in 0..<b {
-                XCTAssertEqual(b - i, mem[(ushort)(0x0040 - i)])
+                XCTAssertEqual(b - i, mem[0x0040 - i])
             }
             XCTAssertEqual(0, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -332,7 +332,7 @@ final class InputOutputTests: XCTestCase {
             asm.Halt()
 
             for i: byte in 0..<b {
-                mem[(ushort)(0x0040 + i)] = (byte)(b - i)
+                mem[0x0040 + i] = (byte)(b - i)
             }
             z80.Run()
 
@@ -363,7 +363,7 @@ final class InputOutputTests: XCTestCase {
             asm.Halt()
 
             for i: byte in 0..<b {
-                mem[(ushort)(0x0040 - i)] = (byte)(b - i)
+                mem[0x0040 - i] = (byte)(b - i)
             }
             z80.Run()
 

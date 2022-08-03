@@ -197,7 +197,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
         z80.Run()
 
         XCTAssertEqual(asm.Position - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.Position - ushort(1)])
+        XCTAssertEqual(0x42, mem[asm.Position - 1])
         XCTAssertEqual(0x19, mem[asm.Position])
     }
 
@@ -338,7 +338,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         XCTAssertEqual(asm.Position, z80.PC)
         XCTAssertEqual(0x000E, z80.SP)
-        XCTAssertEqual(z80.B, mem[z80.SP + ushort(1)])
+        XCTAssertEqual(z80.B, mem[z80.SP + 1])
         XCTAssertEqual(z80.C, mem[z80.SP])
     }
 
@@ -353,7 +353,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         XCTAssertEqual(asm.Position, z80.PC)
         XCTAssertEqual(0x000E, z80.SP)
-        XCTAssertEqual(z80.D, mem[z80.SP + ushort(1)])
+        XCTAssertEqual(z80.D, mem[z80.SP + 1])
         XCTAssertEqual(z80.E, mem[z80.SP])
     }
 
@@ -368,7 +368,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         XCTAssertEqual(asm.Position, z80.PC)
         XCTAssertEqual(0x000E, z80.SP)
-        XCTAssertEqual(z80.H, mem[z80.SP + ushort(1)])
+        XCTAssertEqual(z80.H, mem[z80.SP + 1])
         XCTAssertEqual(z80.L, mem[z80.SP])
     }
 
@@ -383,7 +383,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         XCTAssertEqual(asm.Position, z80.PC)
         XCTAssertEqual(0x000E, z80.SP)
-        XCTAssertEqual(z80.A, mem[z80.SP + ushort(1)])
+        XCTAssertEqual(z80.A, mem[z80.SP + 1])
         XCTAssertEqual(z80.F, mem[z80.SP])
     }
 

@@ -61,11 +61,11 @@ public struct Z80
         {
             var stack = Sp
             stack -= 1
-            mem[stack] = (byte)(Pc >> 8)
+            mem[stack] = byte(Pc >> 8)
             stack -= 1
-            mem[stack] = byte(truncatingIfNeeded: Pc)
-            registers[SP] = (byte)(stack >> 8)
-            registers[SP + 1] = byte(truncatingIfNeeded: stack)
+            mem[stack] = byte(Pc & 0xFF)
+            registers[SP] = byte(stack >> 8)
+            registers[SP + 1] = byte(stack & 0xFF)
             registers[PC] = 0x00
             registers[PC + 1] = 0x66
             IFF1 = IFF2
@@ -89,13 +89,13 @@ public struct Z80
                     let instruction = ports.Data
                     var stack = Sp
                     stack -= 1
-                    mem[stack] = (byte)(Pc >> 8)
+                    mem[stack] = byte(Pc >> 8)
                     stack -= 1
-                    mem[stack] = byte(truncatingIfNeeded: Pc)
-                    registers[SP] = (byte)(stack >> 8)
-                    registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                    mem[stack] = byte(Pc & 0xFF)
+                    registers[SP] = byte(stack >> 8)
+                    registers[SP + 1] = byte(stack & 0xFF)
                     registers[PC] = 0x00
-                    registers[PC + 1] = (byte)(instruction & 0x38)
+                    registers[PC + 1] = instruction & 0x38
                     Wait(17)
 #if DEBUG
                     print("MI 0")
@@ -105,11 +105,11 @@ public struct Z80
                 case 1:
                     var stack = Sp
                     stack -= 1
-                    mem[stack] = (byte)(Pc >> 8)
+                    mem[stack] = byte(Pc >> 8)
                     stack -= 1
-                    mem[stack] = byte(truncatingIfNeeded: Pc)
-                    registers[SP] = (byte)(stack >> 8)
-                    registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                    mem[stack] = byte(Pc & 0xFF)
+                    registers[SP] = byte(stack >> 8)
+                    registers[SP + 1] = byte(stack & 0xFF)
                     registers[PC] = 0x00
                     registers[PC + 1] = 0x38
 #if DEBUG
@@ -122,11 +122,11 @@ public struct Z80
                     let vector = ports.Data
                     var stack = Sp
                     stack -= 1
-                    mem[stack] = (byte)(Pc >> 8)
+                    mem[stack] = byte(Pc >> 8)
                     stack -= 1
-                    mem[stack] = byte(truncatingIfNeeded: Pc)
-                    registers[SP] = (byte)(stack >> 8)
-                    registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                    mem[stack] = byte(Pc & 0xFF)
+                    registers[SP] = byte(stack >> 8)
+                    registers[SP + 1] = byte(stack & 0xFF)
                     var address = (ushort(registers[I]) << 8) + vector
                     registers[PC] = mem[address]
                     address += 1
@@ -146,9 +146,9 @@ public struct Z80
             return
         }
         let mc = Fetch()
-        let hi = (byte)(mc >> 6)
-        let lo = (byte)(mc & 0x07)
-        let r = (byte)((mc >> 3) & 0x07)
+        let hi = byte(mc >> 6)
+        let lo = byte(mc & 0x07)
+        let r = byte((mc >> 3) & 0x07)
         if (hi == 1)
         {
             let useHL1 = r == 6
@@ -199,7 +199,7 @@ public struct Z80
                 registers[r + 1] = Fetch()
                 registers[r] = Fetch()
 #if DEBUG
-                print(String(format: "LD %@%@, 0x%02X%02X", Z80.RName(r), Z80.RName((byte)(r + 1)), registers[r], registers[r + 1]))
+                print(String(format: "LD %@%@, 0x%02X%02X", Z80.RName(r), Z80.RName(byte(r + 1)), registers[r], registers[r + 1]))
 #endif
                 Wait(10)
                 return
@@ -320,8 +320,8 @@ public struct Z80
                 mem[addr] = registers[B]
                 addr -= 1
                 mem[addr] = registers[C]
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("PUSH BC")
 #endif
@@ -334,8 +334,8 @@ public struct Z80
                 mem[addr] = registers[D]
                 addr -= 1
                 mem[addr] = registers[E]
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("PUSH DE")
 #endif
@@ -348,8 +348,8 @@ public struct Z80
                 mem[addr] = registers[H]
                 addr -= 1
                 mem[addr] = registers[L]
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("PUSH HL")
 #endif
@@ -362,8 +362,8 @@ public struct Z80
                 mem[addr] = registers[A]
                 addr -= 1
                 mem[addr] = registers[F]
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("PUSH AF")
 #endif
@@ -376,8 +376,8 @@ public struct Z80
                 addr += 1
                 registers[B] = mem[addr]
                 addr += 1
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("POP BC")
 #endif
@@ -390,8 +390,8 @@ public struct Z80
                 addr += 1
                 registers[D] = mem[addr]
                 addr += 1
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("POP DE")
 #endif
@@ -404,8 +404,8 @@ public struct Z80
                 addr += 1
                 registers[H] = mem[addr]
                 addr += 1
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("POP HL")
 #endif
@@ -418,8 +418,8 @@ public struct Z80
                 addr += 1
                 registers[A] = mem[addr]
                 addr += 1
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("POP AF")
 #endif
@@ -725,12 +725,12 @@ public struct Z80
                 // DAA
                 var a = registers[A]
                 let f = registers[F]
-                if ((a & 0x0F) > 0x09 || (f & (byte)(Fl.H.rawValue)) > 0)
+                if ((a & 0x0F) > 0x09 || (f & byte(Fl.H.rawValue)) > 0)
                 {
                     Add(0x06)
                     a = registers[A]
                 }
-                if ((a & 0xF0) > 0x90 || (f & (byte)(Fl.C.rawValue)) > 0)
+                if ((a & 0xF0) > 0x90 || (f & byte(Fl.C.rawValue)) > 0)
                 {
                     Add(0x60)
                 }
@@ -742,7 +742,7 @@ public struct Z80
             case 0x2F:
                 // CPL
                 registers[A] ^= 0xFF
-                registers[F] |= (byte)(Fl.H.rawValue | Fl.N.rawValue)
+                registers[F] |= byte(Fl.H.rawValue | Fl.N.rawValue)
 #if DEBUG
                 print("CPL")
 #endif
@@ -750,8 +750,8 @@ public struct Z80
                 return
             case 0x3F:
                 // CCF
-                registers[F] &= (byte)(~Fl.N.rawValue)
-                registers[F] ^= (byte)(Fl.C.rawValue)
+                registers[F] &= ~Fl.N.rawValue
+                registers[F] ^= Fl.C.rawValue
 #if DEBUG
                 print("CCF")
 #endif
@@ -759,8 +759,8 @@ public struct Z80
                 return
             case 0x37:
                 // SCF
-                registers[F] &= (byte)(~Fl.N.rawValue)
-                registers[F] |= (byte)(Fl.C.rawValue)
+                registers[F] &= ~Fl.N.rawValue
+                registers[F] |= Fl.C.rawValue
 #if DEBUG
                 print("SCF")
 #endif
@@ -796,8 +796,8 @@ public struct Z80
                 return
             case 0x03:
                 let val = Bc + 1
-                registers[B] = (byte)(val >> 8)
-                registers[C] = (byte)(val & 0xFF)
+                registers[B] = byte(val >> 8)
+                registers[C] = byte(val & 0xFF)
 #if DEBUG
                 print("INC BC")
 #endif
@@ -805,8 +805,8 @@ public struct Z80
                 return
             case 0x13:
                 let val = De + 1
-                registers[D] = (byte)(val >> 8)
-                registers[E] = (byte)(val & 0xFF)
+                registers[D] = byte(val >> 8)
+                registers[E] = byte(val & 0xFF)
 #if DEBUG
                 print("INC DE")
 #endif
@@ -814,8 +814,8 @@ public struct Z80
                 return
             case 0x23:
                 let val = Hl + 1
-                registers[H] = (byte)(val >> 8)
-                registers[L] = (byte)(val & 0xFF)
+                registers[H] = byte(val >> 8)
+                registers[L] = byte(val & 0xFF)
 #if DEBUG
                 print("INC HL")
 #endif
@@ -823,8 +823,8 @@ public struct Z80
                 return
             case 0x33:
                 let val = Sp + 1
-                registers[SP] = (byte)(val >> 8)
-                registers[SP + 1] = (byte)(val & 0xFF)
+                registers[SP] = byte(val >> 8)
+                registers[SP + 1] = byte(val & 0xFF)
 #if DEBUG
                 print("INC SP")
 #endif
@@ -832,8 +832,8 @@ public struct Z80
                 return
             case 0x0B:
                 let val = Bc - 1
-                registers[B] = (byte)(val >> 8)
-                registers[C] = (byte)(val & 0xFF)
+                registers[B] = byte(val >> 8)
+                registers[C] = byte(val & 0xFF)
 #if DEBUG
                 print("DEC BC")
 #endif
@@ -841,8 +841,8 @@ public struct Z80
                 return
             case 0x1B:
                 let val = De - 1
-                registers[D] = (byte)(val >> 8)
-                registers[E] = (byte)(val & 0xFF)
+                registers[D] = byte(val >> 8)
+                registers[E] = byte(val & 0xFF)
 #if DEBUG
                 print("DEC DE")
 #endif
@@ -850,8 +850,8 @@ public struct Z80
                 return
             case 0x2B:
                 let val = Hl - 1
-                registers[H] = (byte)(val >> 8)
-                registers[L] = (byte)(val & 0xFF)
+                registers[H] = byte(val >> 8)
+                registers[L] = byte(val & 0xFF)
 #if DEBUG
                 print("DEC HL")
 #endif
@@ -859,8 +859,8 @@ public struct Z80
                 return
             case 0x3B:
                 let val = Sp - 1
-                registers[SP] = (byte)(val >> 8)
-                registers[SP + 1] = (byte)(val & 0xFF)
+                registers[SP] = byte(val >> 8)
+                registers[SP + 1] = byte(val & 0xFF)
 #if DEBUG
                 print("DEC SP")
 #endif
@@ -868,10 +868,10 @@ public struct Z80
                 return
             case 0x07:
                 var a = registers[A]
-                let c = (byte)((a & 0x80) >> 7)
+                let c = byte((a & 0x80) >> 7)
                 a <<= 1
                 registers[A] = a
-                registers[F] &= (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue))
+                registers[F] &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
                 registers[F] |= c
 #if DEBUG
                 print("RLCA")
@@ -880,12 +880,12 @@ public struct Z80
                 return
             case 0x17:
                 var a = registers[A]
-                let c = (byte)((a & 0x80) >> 7)
+                let c = byte((a & 0x80) >> 7)
                 a <<= 1
                 var f = registers[F]
-                a |= (byte)(f & (byte)(Fl.C.rawValue))
+                a |= byte(f & byte(Fl.C.rawValue))
                 registers[A] = a
-                f &= (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue))
+                f &= byte(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue))
                 f |= c
                 registers[F] = f
 #if DEBUG
@@ -895,10 +895,10 @@ public struct Z80
                 return
             case 0x0F:
                 var a = registers[A]
-                let c = (byte)(a & 0x01)
+                let c = byte(a & 0x01)
                 a >>= 1
                 registers[A] = a
-                registers[F] &= (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue))
+                registers[F] &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
                 registers[F] |= c
 #if DEBUG
                 print("RRCA")
@@ -907,12 +907,12 @@ public struct Z80
                 return
             case 0x1F:
                 var a = registers[A]
-                let c = (byte)(a & 0x01)
+                let c = byte(a & 0x01)
                 a >>= 1
                 var f = registers[F]
-                a |= (byte)((f & (byte)(Fl.C.rawValue)) << 7)
+                a |= byte((f & byte(Fl.C.rawValue)) << 7)
                 registers[A] = a
-                f &= (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue))
+                f &= byte(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue))
                 f |= c
                 registers[F] = f
 #if DEBUG
@@ -922,8 +922,8 @@ public struct Z80
                 return
             case 0xC3:
                 let addr = Fetch16()
-                registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                registers[PC] = byte(addr >> 8)
+                registers[PC + 1] = byte(addr & 0xFF)
 #if DEBUG
                 print(String(format: "JP 0x%04X", addr))
 #endif
@@ -933,8 +933,8 @@ public struct Z80
                 let addr = Fetch16()
                 if (JumpCondition(r))
                 {
-                    registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                    registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                    registers[PC] = byte(addr >> 8)
+                    registers[PC + 1] = byte(addr & 0xFF)
                 }
 #if DEBUG
                 print(String(format: "JP %@, 0x%04X", Z80.JCName(r), addr))
@@ -945,8 +945,8 @@ public struct Z80
                 // order is important here
                 let d = sbyte(truncatingIfNeeded: Fetch())
                 let addr = Pc + d
-                registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                registers[PC] = byte(addr >> 8)
+                registers[PC + 1] = byte(addr & 0xFF)
 #if DEBUG
                 print(String(format: "JR 0x%04X", addr))
 #endif
@@ -956,10 +956,10 @@ public struct Z80
                 // order is important here
                 let d = sbyte(truncatingIfNeeded: Fetch())
                 let addr = Pc + d
-                if (JumpCondition((byte)(r & 3)))
+                if (JumpCondition(byte(r & 3)))
                 {
-                    registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                    registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                    registers[PC] = byte(addr >> 8)
+                    registers[PC + 1] = byte(addr & 0xFF)
                     Wait(12)
                 }
                 else
@@ -967,13 +967,13 @@ public struct Z80
                     Wait(7)
                 }
 #if DEBUG
-                print(String(format: "JR %@, 0x%04X", Z80.JCName((byte)(r & 3)), addr))
+                print(String(format: "JR %@, 0x%04X", Z80.JCName(byte(r & 3)), addr))
 #endif
                 return
             case 0xE9:
                 let addr = Hl
-                registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                registers[PC] = byte(addr >> 8)
+                registers[PC + 1] = byte(addr & 0xFF)
 #if DEBUG
                 print("JP HL")
 #endif
@@ -988,8 +988,8 @@ public struct Z80
                 registers[B] = b
                 if (b != 0)
                 {
-                    registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                    registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                    registers[PC] = byte(addr >> 8)
+                    registers[PC + 1] = byte(addr & 0xFF)
                     Wait(13)
                 }
                 else
@@ -1004,13 +1004,13 @@ public struct Z80
                 let addr = Fetch16()
                 var stack = Sp
                 stack -= 1
-                mem[stack] = (byte)(Pc >> 8)
+                mem[stack] = byte(Pc >> 8)
                 stack -= 1
-                mem[stack] = byte(truncatingIfNeeded: Pc)
-                registers[SP] = (byte)(stack >> 8)
-                registers[SP + 1] = byte(truncatingIfNeeded: stack)
-                registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                mem[stack] = byte(Pc & 0xFF)
+                registers[SP] = byte(stack >> 8)
+                registers[SP + 1] = byte(stack & 0xFF)
+                registers[PC] = byte(addr >> 8)
+                registers[PC + 1] = byte(addr & 0xFF)
 #if DEBUG
                 print(String(format: "CALL 0x%04X", addr))
 #endif
@@ -1022,13 +1022,13 @@ public struct Z80
                 {
                     var stack = Sp
                     stack -= 1
-                    mem[stack] = (byte)(Pc >> 8)
+                    mem[stack] = byte(Pc >> 8)
                     stack -= 1
-                    mem[stack] = byte(truncatingIfNeeded: Pc)
-                    registers[SP] = (byte)(stack >> 8)
-                    registers[SP + 1] = byte(truncatingIfNeeded: stack)
-                    registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                    registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                    mem[stack] = byte(Pc & 0xFF)
+                    registers[SP] = byte(stack >> 8)
+                    registers[SP + 1] = byte(stack & 0xFF)
+                    registers[PC] = byte(addr >> 8)
+                    registers[PC + 1] = byte(addr & 0xFF)
                     Wait(17)
                 }
                 else
@@ -1045,8 +1045,8 @@ public struct Z80
                 stack += 1
                 registers[PC] = mem[stack]
                 stack += 1
-                registers[SP] = (byte)(stack >> 8)
-                registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                registers[SP] = byte(stack >> 8)
+                registers[SP + 1] = byte(stack & 0xFF)
 #if DEBUG
                 print("RET")
 #endif
@@ -1060,8 +1060,8 @@ public struct Z80
                     stack += 1
                     registers[PC] = mem[stack]
                     stack += 1
-                    registers[SP] = (byte)(stack >> 8)
-                    registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                    registers[SP] = byte(stack >> 8)
+                    registers[SP + 1] = byte(stack & 0xFF)
                     Wait(11)
                 }
                 else
@@ -1075,13 +1075,13 @@ public struct Z80
             case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF:
                 var stack = Sp
                 stack -= 1
-                mem[stack] = (byte)(Pc >> 8)
+                mem[stack] = byte(Pc >> 8)
                 stack -= 1
-                mem[stack] = byte(truncatingIfNeeded: Pc)
-                registers[SP] = (byte)(stack >> 8)
-                registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                mem[stack] = byte(Pc & 0xFF)
+                registers[SP] = byte(stack >> 8)
+                registers[SP + 1] = byte(stack & 0xFF)
                 registers[PC] = 0
-                registers[PC + 1] = (byte)(mc & 0x38)
+                registers[PC + 1] = byte(mc & 0x38)
 #if DEBUG
                 print(String(format: "RST 0x%04X", mc & 0x38))
 #endif
@@ -1089,7 +1089,7 @@ public struct Z80
                 return
             case 0xDB:
                 let port = (ushort(registers[A]) << 8) + Fetch()
-                registers[A] = ports.ReadPort((ushort)(port))
+                registers[A] = ports.ReadPort(port)
 #if DEBUG
                 print(String(format: "IN A, (0x%02X)", port))
 #endif
@@ -1097,7 +1097,7 @@ public struct Z80
                 return
             case 0xD3:
                 let port = (ushort(registers[A]) << 8) + Fetch()
-                ports.WritePort((ushort)(port), registers[A])
+                ports.WritePort(port, registers[A])
 #if DEBUG
                 print(String(format: "OUT (0x%02X), A", port))
 #endif
@@ -1107,7 +1107,7 @@ public struct Z80
                 break
         }
 #if DEBUG
-        fatalError(String(format: "Invalid Opcode %2X: %02X %02X %02X", mc, hi, lo, r))
+        print(String(format: "Invalid Opcode %2X: %02X %02X %02X", mc, hi, lo, r))
 #endif
         Halt = true
     }
@@ -1149,25 +1149,25 @@ public struct Z80
             return
         }
         let mc = Fetch()
-        let hi = (byte)(mc >> 6)
-        let lo = (byte)(mc & 0x07)
-        let r = (byte)((mc >> 3) & 0x07)
+        let hi = byte(mc >> 6)
+        let lo = byte(mc & 0x07)
+        let r = byte((mc >> 3) & 0x07)
         let useHL = lo == 6
         let useIX = mode == 0xDD
         let useIY = mode == 0xFD
-        var reg = useHL ? useIX ? mem[(ushort)(Ix + d)] : useIY ? mem[(ushort)(Iy + d)] : mem[Hl] : registers[lo]
+        var reg = useHL ? useIX ? mem[Ix + d] : useIY ? mem[Iy + d] : mem[Hl] : registers[lo]
         switch (hi)
         {
             case 0:
                 var c: byte
                 if ((r & 1) == 1)
                 {
-                    c = (byte)(reg & 0x01)
+                    c = byte(reg & 0x01)
                     reg >>= 1
                 }
                 else
                 {
-                    c = (byte)((reg & 0x80) >> 7)
+                    c = byte((reg & 0x80) >> 7)
                     reg <<= 1
                 }
                 var f = registers[F]
@@ -1180,19 +1180,19 @@ public struct Z80
 #endif
                         break
                     case 1:
-                        reg |= (byte)(c << 7)
+                        reg |= byte(c << 7)
 #if DEBUG
                         print(String(format: "RRC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
 #endif
                         break
                     case 2:
-                        reg |= (byte)(f & (byte)(Fl.C.rawValue))
+                        reg |= byte(f & byte(Fl.C.rawValue))
 #if DEBUG
                         print(String(format: "RL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
 #endif
                         break
                     case 3:
-                        reg |= (byte)((f & (byte)(Fl.C.rawValue)) << 7)
+                        reg |= byte((f & byte(Fl.C.rawValue)) << 7)
 #if DEBUG
                         print(String(format: "RR \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
 #endif
@@ -1203,7 +1203,7 @@ public struct Z80
 #endif
                         break
                     case 5:
-                        reg |= (byte)((reg & 0x40) << 1)
+                        reg |= byte((reg & 0x40) << 1)
 #if DEBUG
                         print(String(format: "SRA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
 #endif
@@ -1222,13 +1222,13 @@ public struct Z80
                     default:
                         break
                 }
-                f &= (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue | Fl.PV.rawValue | Fl.S.rawValue | Fl.Z.rawValue))
-                f |= (byte)(reg & (byte)(Fl.S.rawValue))
+                f &= byte(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue | Fl.PV.rawValue | Fl.S.rawValue | Fl.Z.rawValue))
+                f |= byte(reg & byte(Fl.S.rawValue))
                 if (reg == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (Z80.Parity(reg)) {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 f |= c
                 registers[F] = f
@@ -1241,14 +1241,14 @@ public struct Z80
                 Wait(useHL ? 12 : 8)
                 return
             case 2:
-                reg &= ~(byte)(0x01 << r)
+                reg &= ~byte(0x01 << r)
 #if DEBUG
                 print(String(format: "RES %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))", r))
 #endif
                 Wait(useHL ? 12 : 8)
                 break
             case 3:
-                reg |= (byte)(0x01 << r)
+                reg |= byte(0x01 << r)
 #if DEBUG
                 print(String(format: "SET %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))", r))
 #endif
@@ -1261,12 +1261,12 @@ public struct Z80
         {
             if (useIX)
             {
-                mem[(ushort)(Ix + d)] = reg
+                mem[Ix + d] = reg
                 Wait(23)
             }
             else if (useIY)
             {
-                mem[(ushort)(Iy + d)] = reg
+                mem[Iy + d] = reg
                 Wait(23)
             }
             else
@@ -1279,12 +1279,12 @@ public struct Z80
         {
             if (useIX)
             {
-                mem[(ushort)(Ix + d)] = reg
+                mem[Ix + d] = reg
                 Wait(23)
             }
             else if (useIY)
             {
-                mem[(ushort)(Iy + d)] = reg
+                mem[Iy + d] = reg
                 Wait(23)
             }
             registers[lo] = reg
@@ -1294,44 +1294,44 @@ public struct Z80
 
     private mutating func Bit(_ bit: byte, _ value: byte)
     {
-        var f = (byte)(registers[F] & (byte)(~(Fl.Z.rawValue | Fl.H.rawValue | Fl.N.rawValue)))
+        var f = registers[F] & ~(Fl.Z.rawValue | Fl.H.rawValue | Fl.N.rawValue)
         if ((value & (0x01 << bit)) == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= Fl.Z.rawValue
         }
-        f |= (byte)(Fl.H.rawValue)
+        f |= Fl.H.rawValue
         registers[F] = f
     }
 
     private mutating func AddHl(_ value: ushort)
     {
         let sum = Add(Hl, value)
-        registers[H] = (byte)(sum >> 8)
-        registers[L] = (byte)(sum & 0xFF)
+        registers[H] = byte(sum >> 8)
+        registers[L] = byte(sum & 0xFF)
     }
 
     private mutating func AddIx(_ value: ushort)
     {
         let sum = Add(Ix, value)
-        registers[IX] = (byte)(sum >> 8)
-        registers[IX + 1] = (byte)(sum & 0xFF)
+        registers[IX] = byte(sum >> 8)
+        registers[IX + 1] = byte(sum & 0xFF)
     }
 
     private mutating func AddIy(_ value: ushort)
     {
         let sum = Add(Iy, value)
-        registers[IY] = (byte)(sum >> 8)
-        registers[IY + 1] = (byte)(sum & 0xFF)
+        registers[IY] = byte(sum >> 8)
+        registers[IY + 1] = byte(sum & 0xFF)
     }
 
     private mutating func Add(_ value1: ushort, _ value2: ushort) -> ushort
     {
         let sum = int(value1) + int(value2)
-        var f = (byte)(registers[F] & (byte)(~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)))
+        var f = registers[F] & ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
         if ((value1 & 0x0FFF) + (value2 & 0x0FFF) > 0x0FFF) {
-            f |= (byte)(Fl.H.rawValue)
+            f |= byte(Fl.H.rawValue)
         }
         if (sum > 0xFFFF) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
         return ushort(truncatingIfNeeded: sum)
@@ -1340,28 +1340,28 @@ public struct Z80
     private mutating func AdcHl(_ value: ushort)
     {
         let sum = Adc(Hl, value)
-        registers[H] = (byte)(sum >> 8)
-        registers[L] = (byte)(sum & 0xFF)
+        registers[H] = byte(sum >> 8)
+        registers[L] = byte(sum & 0xFF)
     }
 
     private mutating func Adc(_ value1: ushort, _ value2: ushort) -> ushort
     {
-        let sum = int(value1) + int(value2) + int((registers[F] & (byte)(Fl.C.rawValue)))
-        var f = (byte)(registers[F] & (byte)(~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)))
+        let sum = int(value1) + int(value2) + int((registers[F] & byte(Fl.C.rawValue)))
+        var f = registers[F] & ~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)
         if (sum < 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if (sum == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
-        if ((value1 & 0x0FFF) + (value2 & 0x0FFF) + (byte)(Fl.C.rawValue) > 0x0FFF) {
-            f |= (byte)(Fl.H.rawValue)
+        if ((value1 & 0x0FFF) + (value2 & 0x0FFF) + byte(Fl.C.rawValue) > 0x0FFF) {
+            f |= byte(Fl.H.rawValue)
         }
         if (sum > 0x7FFF) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
         if (sum > 0xFFFF) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
         return ushort(truncatingIfNeeded: sum)
@@ -1370,28 +1370,28 @@ public struct Z80
     private mutating func SbcHl(_ value: ushort)
     {
         let sum = Sbc(Hl, value)
-        registers[H] = (byte)(sum >> 8)
-        registers[L] = (byte)(sum & 0xFF)
+        registers[H] = byte(sum >> 8)
+        registers[L] = byte(sum & 0xFF)
     }
 
     private mutating func Sbc(_ value1: ushort, _ value2: ushort) -> ushort
     {
-        let diff = int(value1) - int(value2) - int(registers[F] & (byte)(Fl.C.rawValue))
-        var f = (byte)(registers[F] & (byte)(~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)))
+        let diff = int(value1) - int(value2) - int(registers[F] & byte(Fl.C.rawValue))
+        var f = registers[F] & ~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)
         if (diff < 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if (diff == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
-        if ((value1 & 0xFFF) < (value2 & 0xFFF) + (registers[F] & (byte)(Fl.C.rawValue))) {
-            f |= (byte)(Fl.H.rawValue)
+        if ((value1 & 0xFFF) < (value2 & 0xFFF) + (registers[F] & byte(Fl.C.rawValue))) {
+            f |= byte(Fl.H.rawValue)
         }
         if (diff > short.MaxValue || diff < short.MinValue) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
         if ((ushort)(truncatingIfNeeded: diff) > value1) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
         return ushort(truncatingIfNeeded: diff)
@@ -1403,7 +1403,7 @@ public struct Z80
             return
         }
         let mc = Fetch()
-        let r = (byte)((mc >> 3) & 0x07)
+        let r = byte((mc >> 3) & 0x07)
         switch (mc)
         {
             case 0x47:
@@ -1436,18 +1436,18 @@ public struct Z80
                  */
                 let i = registers[I]
                 registers[A] = i
-                var f = (byte)(registers[F] & (byte)(~(Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.S.rawValue | Fl.Z.rawValue)))
+                var f = registers[F] & ~(Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.S.rawValue | Fl.Z.rawValue)
                 if (i >= 0x80)
                 {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 else if (i == 0x00)
                 {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (IFF2)
                 {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1469,18 +1469,18 @@ public struct Z80
                  */
                 let reg = registers[R]
                 registers[A] = reg
-                var f = (byte)(registers[F] & (byte)(~(Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.S.rawValue | Fl.Z.rawValue)))
+                var f = registers[F] & ~(Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.S.rawValue | Fl.Z.rawValue)
                 if (reg >= 0x80)
                 {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 else if (reg == 0x00)
                 {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (IFF2)
                 {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1593,15 +1593,15 @@ public struct Z80
                 de += 1
                 hl += 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[D] = (byte)(de >> 8)
-                registers[E] = (byte)(de & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
-                var f = (byte)(registers[F] & 0xE9)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[D] = byte(de >> 8)
+                registers[E] = byte(de & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
+                var f = registers[F] & 0xE9
                 if (bc != 0) {
-                    f = (byte)(f | 0x04)
+                    f = byte(f | 0x04)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1618,20 +1618,20 @@ public struct Z80
                 de += 1
                 hl += 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[D] = (byte)(de >> 8)
-                registers[E] = (byte)(de & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
-                registers[F] = (byte)(registers[F] & 0xE9)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[D] = byte(de >> 8)
+                registers[E] = byte(de & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
+                registers[F] = registers[F] & 0xE9
                 if (bc != 0)
                 {
-                    var pc = ushort(registers[PC] << 8) + registers[PC + 1]
+                    var pc = (ushort(registers[PC]) << 8) + registers[PC + 1]
                     // jumps back to itself
                     pc -= 2
-                    registers[PC] = (byte)(pc >> 8)
-                    registers[PC + 1] = (byte)(pc & 0xFF)
+                    registers[PC] = byte(pc >> 8)
+                    registers[PC + 1] = byte(pc & 0xFF)
                     Wait(21)
                     return
                 }
@@ -1649,15 +1649,15 @@ public struct Z80
                 de -= 1
                 hl -= 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[D] = (byte)(de >> 8)
-                registers[E] = (byte)(de & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
-                var f = (byte)(registers[F] & 0xE9)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[D] = byte(de >> 8)
+                registers[E] = byte(de & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
+                var f = registers[F] & 0xE9
                 if (bc != 0) {
-                    f = (byte)(f | 0x04)
+                    f = byte(f | 0x04)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1674,20 +1674,20 @@ public struct Z80
                 de -= 1
                 hl -= 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[D] = (byte)(de >> 8)
-                registers[E] = (byte)(de & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
-                registers[F] = (byte)(registers[F] & 0xE9)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[D] = byte(de >> 8)
+                registers[E] = byte(de & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
+                registers[F] = registers[F] & 0xE9
                 if (bc != 0)
                 {
-                    var pc = ushort(registers[PC] << 8) + registers[PC + 1]
+                    var pc = (ushort(registers[PC]) << 8) + registers[PC + 1]
                     // jumps back to itself
                     pc -= 2
-                    registers[PC] = (byte)(pc >> 8)
-                    registers[PC + 1] = (byte)(pc & 0xFF)
+                    registers[PC] = byte(pc >> 8)
+                    registers[PC + 1] = byte(pc & 0xFF)
                     Wait(21)
                     return
                 }
@@ -1704,24 +1704,24 @@ public struct Z80
                 let b = mem[hl]
                 hl += 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
-                var f = (byte)(registers[F] & 0x2A)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
+                var f = registers[F] & 0x2A
                 if (a < b) {
-                    f = (byte)(f | 0x80)
+                    f = byte(f | 0x80)
                 }
                 if (a == b) {
-                    f = (byte)(f | 0x40)
+                    f = byte(f | 0x40)
                 }
                 if ((a & 8) < (b & 8)) {
-                    f = (byte)(f | 0x10)
+                    f = byte(f | 0x10)
                 }
                 if (bc != 0) {
-                    f = (byte)(f | 0x04)
+                    f = byte(f | 0x04)
                 }
-                registers[F] = (byte)(f | 0x02)
+                registers[F] = byte(f | 0x02)
 #if DEBUG
                 print("CPI")
 #endif
@@ -1735,37 +1735,37 @@ public struct Z80
                 let b = mem[hl]
                 hl += 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
                 if (a == b || bc == 0)
                 {
-                    var f = (byte)(registers[F] & 0x2A)
+                    var f = registers[F] & 0x2A
                     if (a < b) {
-                        f = (byte)(f | 0x80)
+                        f = byte(f | 0x80)
                     }
                     if (a == b) {
-                        f = (byte)(f | 0x40)
+                        f = byte(f | 0x40)
                     }
                     if ((a & 8) < (b & 8)) {
-                        f = (byte)(f | 0x10)
+                        f = byte(f | 0x10)
                     }
                     if (bc != 0) {
-                        f = (byte)(f | 0x04)
+                        f = byte(f | 0x04)
                     }
-                    registers[F] = (byte)(f | 0x02)
+                    registers[F] = byte(f | 0x02)
 #if DEBUG
                     print("CPIR")
 #endif
                     Wait(16)
                     return
                 }
-                var pc = ushort(registers[PC] << 8) + registers[PC + 1]
+                var pc = (ushort(registers[PC]) << 8) + registers[PC + 1]
                 // jumps back to itself
                 pc -= 2
-                registers[PC] = (byte)(pc >> 8)
-                registers[PC + 1] = (byte)(pc & 0xFF)
+                registers[PC] = byte(pc >> 8)
+                registers[PC + 1] = byte(pc & 0xFF)
                 Wait(21)
                 return
             case 0xA9:
@@ -1776,24 +1776,24 @@ public struct Z80
                 let b = mem[hl]
                 hl -= 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
-                var f = (byte)(registers[F] & 0x2A)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
+                var f = registers[F] & 0x2A
                 if (a < b) {
-                    f = (byte)(f | 0x80)
+                    f = byte(f | 0x80)
                 }
                 if (a == b) {
-                    f = (byte)(f | 0x40)
+                    f = byte(f | 0x40)
                 }
                 if ((a & 8) < (b & 8)) {
-                    f = (byte)(f | 0x10)
+                    f = byte(f | 0x10)
                 }
                 if (bc != 0) {
-                    f = (byte)(f | 0x04)
+                    f = byte(f | 0x04)
                 }
-                registers[F] = (byte)(f | 0x02)
+                registers[F] = byte(f | 0x02)
 #if DEBUG
                 print("CPD")
 #endif
@@ -1807,37 +1807,37 @@ public struct Z80
                 let b = mem[hl]
                 hl -= 1
                 bc -= 1
-                registers[B] = (byte)(bc >> 8)
-                registers[C] = (byte)(bc & 0xFF)
-                registers[H] = (byte)(hl >> 8)
-                registers[L] = (byte)(hl & 0xFF)
+                registers[B] = byte(bc >> 8)
+                registers[C] = byte(bc & 0xFF)
+                registers[H] = byte(hl >> 8)
+                registers[L] = byte(hl & 0xFF)
                 if (a == b || bc == 0)
                 {
-                    var f = (byte)(registers[F] & 0x2A)
+                    var f = registers[F] & 0x2A
                     if (a < b) {
-                        f = (byte)(f | 0x80)
+                        f = byte(f | 0x80)
                     }
                     if (a == b) {
-                        f = (byte)(f | 0x40)
+                        f = byte(f | 0x40)
                     }
                     if ((a & 8) < (b & 8)) {
-                        f = (byte)(f | 0x10)
+                        f = byte(f | 0x10)
                     }
                     if (bc != 0) {
-                        f = (byte)(f | 0x04)
+                        f = byte(f | 0x04)
                     }
-                    registers[F] = (byte)(f | 0x02)
+                    registers[F] = byte(f | 0x02)
 #if DEBUG
                     print("CPDR")
 #endif
                     Wait(21)
                     return
                 }
-                var pc = ushort(registers[PC] << 8) + registers[PC + 1]
+                var pc = (ushort(registers[PC]) << 8) + registers[PC + 1]
                 // jumps back to itself
                 pc -= 2
-                registers[PC] = (byte)(pc >> 8)
-                registers[PC + 1] = (byte)(pc & 0xFF)
+                registers[PC] = byte(pc >> 8)
+                registers[PC + 1] = byte(pc & 0xFF)
                 Wait(21)
                 return
             case 0x44, 0x54, 0x64, 0x74, 0x4C, 0x5C, 0x6C, 0x7C:
@@ -1845,22 +1845,22 @@ public struct Z80
                 let a = registers[A]
                 let diff = -short(truncatingIfNeeded: a)
                 registers[A] = byte(truncatingIfNeeded: diff)
-                var f = (byte)(registers[F] & 0x28)
+                var f = registers[F] & 0x28
                 if ((byte(truncatingIfNeeded: diff) & 0x80) > 0) {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 if (diff == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if ((a & 0x0F) != 0) {
-                    f |= (byte)(Fl.H.rawValue)
+                    f |= byte(Fl.H.rawValue)
                 }
                 if (a == 0x80) {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
-                f |= (byte)(Fl.N.rawValue)
+                f |= byte(Fl.N.rawValue)
                 if (diff != 0) {
-                    f |= (byte)(Fl.C.rawValue)
+                    f |= byte(Fl.C.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1951,18 +1951,18 @@ public struct Z80
             case 0x6F:
                 var a = registers[A]
                 let b = mem[Hl]
-                mem[Hl] = (byte)((b << 4) | (a & 0x0F))
-                a = (byte)((a & 0xF0) | (b >> 4))
+                mem[Hl] = (b << 4) | (a & 0x0F)
+                a = byte((a & 0xF0) | (b >> 4))
                 registers[A] = a
-                var f = (byte)(registers[F] & 0x29)
+                var f = registers[F] & 0x29
                 if ((a & 0x80) > 0) {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 if (a == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (Z80.Parity(a)) {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1973,18 +1973,18 @@ public struct Z80
             case 0x67:
                 var a = registers[A]
                 let b = mem[Hl]
-                mem[Hl] = (byte)((b >> 4) | (a << 4))
-                a = (byte)((a & 0xF0) | (b & 0x0F))
+                mem[Hl] = (b >> 4) | (a << 4)
+                a = byte((a & 0xF0) | (b & 0x0F))
                 registers[A] = a
-                var f = (byte)(registers[F] & 0x29)
+                var f = registers[F] & 0x29
                 if ((a & 0x80) > 0) {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 if (a == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (Z80.Parity(a)) {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -1998,8 +1998,8 @@ public struct Z80
                 stack += 1
                 registers[PC] = mem[stack]
                 stack += 1
-                registers[SP] = (byte)(stack >> 8)
-                registers[SP + 1] = byte(truncatingIfNeeded: stack)
+                registers[SP] = byte(stack >> 8)
+                registers[SP + 1] = byte(stack & 0xFF)
                 IFF1 = IFF2
 #if DEBUG
                 if (mc == 0x4D) {
@@ -2017,17 +2017,17 @@ public struct Z80
                 Wait(8)
                 return
             case 0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x78:
-                let a = (byte)(ports.ReadPort(Bc))
+                let a = byte(ports.ReadPort(Bc))
                 registers[r] = a
-                var f = (byte)(registers[F] & 0x29)
+                var f = registers[F] & 0x29
                 if ((a & 0x80) > 0) {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 if (a == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (Z80.Parity(a)) {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -2036,19 +2036,19 @@ public struct Z80
                 Wait(8)
                 return
             case 0xA2:
-                let a = (byte)(ports.ReadPort(Bc))
+                let a = byte(ports.ReadPort(Bc))
                 var hl = Hl
                 mem[hl] = a
                 hl += 1
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
-                var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)))
+                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
                 if (b == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
-                f |= (byte)(Fl.N.rawValue)
+                f |= byte(Fl.N.rawValue)
                 registers[F] = f
 #if DEBUG
                 print("INI")
@@ -2056,19 +2056,19 @@ public struct Z80
                 Wait(16)
                 return
             case 0xB2:
-                let a = (byte)(ports.ReadPort(Bc))
+                let a = byte(ports.ReadPort(Bc))
                 var hl = Hl
                 mem[hl] = a
                 hl += 1
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
                 if (b != 0)
                 {
                     let pc = Pc - 2
-                    registers[PC] = (byte)(pc >> 8)
-                    registers[PC + 1] = (byte)(pc & 0xFF)
+                    registers[PC] = byte(pc >> 8)
+                    registers[PC + 1] = byte(pc & 0xFF)
 #if DEBUG
                     print("(INIR)")
 #endif
@@ -2076,7 +2076,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (byte)(registers[F] | (byte)(Fl.N.rawValue | Fl.Z.rawValue))
+                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
 #if DEBUG
                     print("INIR")
 #endif
@@ -2084,19 +2084,19 @@ public struct Z80
                 }
                 return
             case 0xAA:
-                let a = (byte)(ports.ReadPort(Bc))
+                let a = byte(ports.ReadPort(Bc))
                 var hl = Hl
                 mem[hl] = a
                 hl -= 1
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
-                var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)))
+                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
                 if (b == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
-                f |= (byte)(Fl.N.rawValue)
+                f |= byte(Fl.N.rawValue)
                 registers[F] = f
 #if DEBUG
                 print("IND")
@@ -2104,19 +2104,19 @@ public struct Z80
                 Wait(16)
                 return
             case 0xBA:
-                let a = (byte)(ports.ReadPort(Bc))
+                let a = byte(ports.ReadPort(Bc))
                 var hl = Hl
                 mem[hl] = a
                 hl -= 1
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
                 if (b != 0)
                 {
                     let pc = Pc - 2
-                    registers[PC] = (byte)(pc >> 8)
-                    registers[PC + 1] = (byte)(pc & 0xFF)
+                    registers[PC] = byte(pc >> 8)
+                    registers[PC + 1] = byte(pc & 0xFF)
 #if DEBUG
                     print("(INDR)")
 #endif
@@ -2124,7 +2124,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (byte)(registers[F] | (byte)(Fl.N.rawValue | Fl.Z.rawValue))
+                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
 #if DEBUG
                     print("INDR")
 #endif
@@ -2134,15 +2134,15 @@ public struct Z80
             case 0x41, 0x49, 0x51, 0x59, 0x61, 0x69, 0x79:
                 let a = registers[r]
                 ports.WritePort(Bc, a)
-                var f = (byte)(registers[F] & 0x29)
+                var f = registers[F] & 0x29
                 if ((a & 0x80) > 0) {
-                    f |= (byte)(Fl.S.rawValue)
+                    f |= byte(Fl.S.rawValue)
                 }
                 if (a == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
                 if (Z80.Parity(a)) {
-                    f |= (byte)(Fl.PV.rawValue)
+                    f |= byte(Fl.PV.rawValue)
                 }
                 registers[F] = f
 #if DEBUG
@@ -2155,15 +2155,15 @@ public struct Z80
                 let a = mem[hl]
                 hl += 1
                 ports.WritePort(Bc, a)
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
-                var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)))
+                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
                 if (b == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
-                f |= (byte)(Fl.N.rawValue)
+                f |= byte(Fl.N.rawValue)
                 registers[F] = f
 #if DEBUG
                 print("OUTI")
@@ -2175,15 +2175,15 @@ public struct Z80
                 let a = mem[hl]
                 hl += 1
                 ports.WritePort(Bc, a)
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
                 if (b != 0)
                 {
                     let pc = Pc - 2
-                    registers[PC] = (byte)(pc >> 8)
-                    registers[PC + 1] = (byte)(pc & 0xFF)
+                    registers[PC] = byte(pc >> 8)
+                    registers[PC + 1] = byte(pc & 0xFF)
 #if DEBUG
                     print("(OUTIR)")
 #endif
@@ -2191,7 +2191,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (byte)(registers[F] | (byte)(Fl.N.rawValue | Fl.Z.rawValue))
+                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
 #if DEBUG
                     print("OUTIR")
 #endif
@@ -2203,15 +2203,15 @@ public struct Z80
                 let a = mem[hl]
                 hl -= 1
                 ports.WritePort(Bc, a)
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
-                var f = (byte)(registers[F] & (byte)(~(Fl.N.rawValue | Fl.Z.rawValue)))
+                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
                 if (b == 0) {
-                    f |= (byte)(Fl.Z.rawValue)
+                    f |= byte(Fl.Z.rawValue)
                 }
-                f |= (byte)(Fl.N.rawValue)
+                f |= byte(Fl.N.rawValue)
                 registers[F] = f
 #if DEBUG
                 print("OUTD")
@@ -2223,15 +2223,15 @@ public struct Z80
                 let a = mem[hl]
                 hl -= 1
                 ports.WritePort(Bc, a)
-                registers[H] = (byte)(hl >> 8)
+                registers[H] = byte(hl >> 8)
                 registers[L] = byte(truncatingIfNeeded: hl)
-                let b = (byte)(registers[B] - 1)
+                let b = byte(registers[B] - 1)
                 registers[B] = b
                 if (b != 0)
                 {
                     let pc = Pc - 2
-                    registers[PC] = (byte)(pc >> 8)
-                    registers[PC + 1] = (byte)(pc & 0xFF)
+                    registers[PC] = byte(pc >> 8)
+                    registers[PC + 1] = byte(pc & 0xFF)
 #if DEBUG
                     print("(OUTDR)")
 #endif
@@ -2239,7 +2239,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (byte)(registers[F] | (byte)(Fl.N.rawValue | Fl.Z.rawValue))
+                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
 #if DEBUG
                     print("OUTDR")
 #endif
@@ -2250,7 +2250,7 @@ public struct Z80
                 break
         }
 #if DEBUG
-        fatalError(String(format: "Invalid Opcode ED %02X: %02X", mc, r))
+        print(String(format: "Invalid Opcode ED %02X: %02X", mc, r))
 #endif
         Halt = true
     }
@@ -2261,9 +2261,9 @@ public struct Z80
             return
         }
         let mc = Fetch()
-        let hi = (byte)(mc >> 6)
-        let lo = (byte)(mc & 0x07)
-        let mid = (byte)((mc >> 3) & 0x07)
+        let hi = byte(mc >> 6)
+        let lo = byte(mc & 0x07)
+        let mid = byte((mc >> 3) & 0x07)
         switch (mc)
         {
             case 0xCB:
@@ -2281,7 +2281,7 @@ public struct Z80
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                registers[mid] = mem[(ushort)(Ix + d)]
+                registers[mid] = mem[Ix + d]
 #if DEBUG
                 print(String(format: "LD %@, (IX+%d)", Z80.RName(mid), d))
 #endif
@@ -2290,7 +2290,7 @@ public struct Z80
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IX+d), r
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                mem[(ushort)(Ix + d)] = registers[lo]
+                mem[Ix + d] = registers[lo]
 #if DEBUG
                 print(String(format: "LD (IX+%d), %@", d, Z80.RName(lo)))
 #endif
@@ -2300,7 +2300,7 @@ public struct Z80
                 // LD (IX+d), n
                 let d = sbyte(truncatingIfNeeded: Fetch())
                 let n = Fetch()
-                mem[(ushort)(Ix + d)] = n
+                mem[Ix + d] = n
 #if DEBUG
                 print(String(format: "LD (IX+%d), %d", d, n))
 #endif
@@ -2344,8 +2344,8 @@ public struct Z80
                 mem[addr] = registers[IX]
                 addr -= 1
                 mem[addr] = registers[IX + 1]
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("PUSH IX")
 #endif
@@ -2358,8 +2358,8 @@ public struct Z80
                 addr += 1
                 registers[IX] = mem[addr]
                 addr += 1
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("POP IX")
 #endif
@@ -2384,7 +2384,7 @@ public struct Z80
             case 0x86:
                 // ADD A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                Add(mem[(ushort)(Ix + d)])
+                Add(mem[Ix + d])
 #if DEBUG
                 print(String(format: "ADD A, (IX+%d)", d))
 #endif
@@ -2394,7 +2394,7 @@ public struct Z80
                 // ADC A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
                 // let a = registers[A]
-                Adc(mem[(ushort)(Ix + d)])
+                Adc(mem[Ix + d])
 #if DEBUG
                 print(String(format: "ADC A, (IX+%d)", d))
 #endif
@@ -2403,7 +2403,7 @@ public struct Z80
             case 0x96:
                 // SUB A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Ix + d)]
+                let b = mem[Ix + d]
                 Sub(b)
 #if DEBUG
                 print(String(format: "SUB A, (IX+%d)", d))
@@ -2413,7 +2413,7 @@ public struct Z80
             case 0x9E:
                 // SBC A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                Sbc(mem[(ushort)(Ix + d)])
+                Sbc(mem[Ix + d])
 #if DEBUG
                 print(String(format: "SBC A, (IX+%d)", d))
 #endif
@@ -2422,7 +2422,7 @@ public struct Z80
             case 0xA6:
                 // AND A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Ix + d)]
+                let b = mem[Ix + d]
                 And(b)
 #if DEBUG
                 print(String(format: "AND A, (IX+%d)", d))
@@ -2432,7 +2432,7 @@ public struct Z80
             case 0xB6:
                 // OR A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Ix + d)]
+                let b = mem[Ix + d]
                 Or(b)
 #if DEBUG
                 print(String(format: "OR A, (IX+%d)", d))
@@ -2442,7 +2442,7 @@ public struct Z80
             case 0xAE:
                 // OR A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Ix + d)]
+                let b = mem[Ix + d]
                 Xor(b)
 #if DEBUG
                 print(String(format: "XOR A, (IX+%d)", d))
@@ -2452,7 +2452,7 @@ public struct Z80
             case 0xBE:
                 // CP A, (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Ix + d)]
+                let b = mem[Ix + d]
                 Cmp(b)
 #if DEBUG
                 print(String(format: "CP A, (IX+%d)", d))
@@ -2462,7 +2462,7 @@ public struct Z80
             case 0x34:
                 // INC (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                mem[(ushort)(Ix + d)] = Inc(mem[(ushort)(Ix + d)])
+                mem[Ix + d] = Inc(mem[Ix + d])
 #if DEBUG
                 print(String(format: "INC (IX+%d)", d))
 #endif
@@ -2471,7 +2471,7 @@ public struct Z80
             case 0x35:
                 // DEC (IX+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                mem[(ushort)(Ix + d)] = Dec(mem[(ushort)(Ix + d)])
+                mem[Ix + d] = Dec(mem[Ix + d])
 #if DEBUG
                 print(String(format: "DEC (IX+%d)", d))
 #endif
@@ -2507,8 +2507,8 @@ public struct Z80
                 return
             case 0x23:
                 let val = Ix + 1
-                registers[IX] = (byte)(val >> 8)
-                registers[IX + 1] = (byte)(val & 0xFF)
+                registers[IX] = byte(val >> 8)
+                registers[IX + 1] = byte(val & 0xFF)
 #if DEBUG
                 print("INC IX")
 #endif
@@ -2516,8 +2516,8 @@ public struct Z80
                 return
             case 0x2B:
                 let val = Ix - 1
-                registers[IX] = (byte)(val >> 8)
-                registers[IX + 1] = (byte)(val & 0xFF)
+                registers[IX] = byte(val >> 8)
+                registers[IX + 1] = byte(val & 0xFF)
 #if DEBUG
                 print("DEC IX")
 #endif
@@ -2525,8 +2525,8 @@ public struct Z80
                 return
             case 0xE9:
                 let addr = Ix
-                registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                registers[PC] = byte(addr >> 8)
+                registers[PC + 1] = byte(addr & 0xFF)
 #if DEBUG
                 print("JP IX")
 #endif
@@ -2536,7 +2536,7 @@ public struct Z80
                 break
         }
 #if DEBUG
-        fatalError(String(format: "Invalid Opcode DD %02X: %02X %02X %02X", mc, hi, lo, mid))
+        print(String(format: "Invalid Opcode DD %02X: %02X %02X %02X", mc, hi, lo, mid))
 #endif
         Halt = true
     }
@@ -2547,9 +2547,9 @@ public struct Z80
             return
         }
         let mc = Fetch()
-        let hi = (byte)(mc >> 6)
-        let lo = (byte)(mc & 0x07)
-        let r = (byte)((mc >> 3) & 0x07)
+        let hi = byte(mc >> 6)
+        let lo = byte(mc & 0x07)
+        let r = byte((mc >> 3) & 0x07)
         switch (mc)
         {
             case 0xCB:
@@ -2567,7 +2567,7 @@ public struct Z80
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                registers[r] = mem[(ushort)(Iy + d)]
+                registers[r] = mem[Iy + d]
 #if DEBUG
                 print(String(format: "LD %@, (IY+%d)", Z80.RName(r), d))
 #endif
@@ -2576,7 +2576,7 @@ public struct Z80
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IY+d), r
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                mem[(ushort)(Iy + d)] = registers[lo]
+                mem[Iy + d] = registers[lo]
 #if DEBUG
                 print(String(format: "LD (IY+%d), %@", d, Z80.RName(lo)))
 #endif
@@ -2586,7 +2586,7 @@ public struct Z80
                 // LD (IY+d), n
                 let d = sbyte(truncatingIfNeeded: Fetch())
                 let n = Fetch()
-                mem[(ushort)(Iy + d)] = n
+                mem[Iy + d] = n
 #if DEBUG
                 print(String(format: "LD (IY+%d), %d", d, n))
 #endif
@@ -2632,8 +2632,8 @@ public struct Z80
                 mem[addr] = registers[IY]
                 addr -= 1
                 mem[addr] = registers[IY + 1]
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("PUSH IY")
 #endif
@@ -2646,8 +2646,8 @@ public struct Z80
                 addr += 1
                 registers[IY] = mem[addr]
                 addr += 1
-                registers[SP + 1] = (byte)(addr & 0xFF)
-                registers[SP] = (byte)(addr >> 8)
+                registers[SP + 1] = byte(addr & 0xFF)
+                registers[SP] = byte(addr >> 8)
 #if DEBUG
                 print("POP IY")
 #endif
@@ -2671,7 +2671,7 @@ public struct Z80
             case 0x86:
                 // ADD A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                Add(mem[(ushort)(Iy + d)])
+                Add(mem[Iy + d])
 #if DEBUG
                 print(String(format: "ADD A, (IY+%d)", d))
 #endif
@@ -2681,7 +2681,7 @@ public struct Z80
                 // ADC A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
                 // let a = registers[A]
-                Adc(mem[(ushort)(Iy + d)])
+                Adc(mem[Iy + d])
 #if DEBUG
                 print(String(format: "ADC A, (IY+%d)", d))
 #endif
@@ -2690,7 +2690,7 @@ public struct Z80
             case 0x96:
                 // SUB A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                Sub(mem[(ushort)(Iy + d)])
+                Sub(mem[Iy + d])
 #if DEBUG
                 print(String(format: "SUB A, (IY+%d)", d))
 #endif
@@ -2699,7 +2699,7 @@ public struct Z80
             case 0x9E:
                 // SBC A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                Sbc(mem[(ushort)(Iy + d)])
+                Sbc(mem[Iy + d])
 #if DEBUG
                 print(String(format: "SBC A, (IY+%d)", d))
 #endif
@@ -2708,7 +2708,7 @@ public struct Z80
             case 0xA6:
                 // AND A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Iy + d)]
+                let b = mem[Iy + d]
                 And(b)
 #if DEBUG
                 print(String(format: "AND A, (IY+%d)", d))
@@ -2718,7 +2718,7 @@ public struct Z80
             case 0xB6:
                 // OR A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Iy + d)]
+                let b = mem[Iy + d]
                 Or(b)
 #if DEBUG
                 print(String(format: "OR A, (IY+%d)", d))
@@ -2728,7 +2728,7 @@ public struct Z80
             case 0xAE:
                 // XOR A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                let b = mem[(ushort)(Iy + d)]
+                let b = mem[Iy + d]
                 Xor(b)
 #if DEBUG
                 print(String(format: "XOR A, (IY+%d)", d))
@@ -2738,7 +2738,7 @@ public struct Z80
             case 0xBE:
                 // CP A, (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                Cmp(mem[(ushort)(Iy + d)])
+                Cmp(mem[Iy + d])
 #if DEBUG
                 print(String(format: "CP A, (IY+%d)", d))
 #endif
@@ -2747,7 +2747,7 @@ public struct Z80
             case 0x34:
                 // INC (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                mem[(ushort)(Iy + d)] = Inc(mem[(ushort)(Iy + d)])
+                mem[Iy + d] = Inc(mem[Iy + d])
 #if DEBUG
                 print(String(format: "INC (IY+%d)", d))
 #endif
@@ -2756,7 +2756,7 @@ public struct Z80
             case 0x35:
                 // DEC (IY+d)
                 let d = sbyte(truncatingIfNeeded: Fetch())
-                mem[(ushort)(Iy + d)] = Dec(mem[(ushort)(Iy + d)])
+                mem[Iy + d] = Dec(mem[Iy + d])
 #if DEBUG
                 print(String(format: "DEC (IY+%d)", d))
 #endif
@@ -2792,8 +2792,8 @@ public struct Z80
                 return
             case 0x23:
                 let val = Iy + 1
-                registers[IY] = (byte)(val >> 8)
-                registers[IY + 1] = (byte)(val & 0xFF)
+                registers[IY] = byte(val >> 8)
+                registers[IY + 1] = byte(val & 0xFF)
 #if DEBUG
                 print("INC IY")
 #endif
@@ -2801,8 +2801,8 @@ public struct Z80
                 return
             case 0x2B:
                 let val = Iy - 1
-                registers[IY] = (byte)(val >> 8)
-                registers[IY + 1] = (byte)(val & 0xFF)
+                registers[IY] = byte(val >> 8)
+                registers[IY + 1] = byte(val & 0xFF)
 #if DEBUG
                 print("DEC IY")
 #endif
@@ -2810,8 +2810,8 @@ public struct Z80
                 return
             case 0xE9:
                 let addr = Iy
-                registers[PC] = (byte)(truncatingIfNeeded: addr >> 8)
-                registers[PC + 1] = (byte)(truncatingIfNeeded: addr)
+                registers[PC] = byte(addr >> 8)
+                registers[PC + 1] = byte(addr & 0xFF)
 #if DEBUG
                 print("JP IY")
 #endif
@@ -2821,7 +2821,7 @@ public struct Z80
                 break
         }
 #if DEBUG
-        fatalError(String(format: "Invalid Opcode FD %02X: %02X %02X %02X", mc, hi, lo, r))
+        print(String(format: "Invalid Opcode FD %02X: %02X %02X %02X", mc, hi, lo, r))
 #endif
         Halt = true
     }
@@ -2831,21 +2831,21 @@ public struct Z80
         let a = registers[A]
         let sum = ushort(a) + ushort(b)
         registers[A] = byte(truncatingIfNeeded: sum)
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((sum & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if ((sum & 0xFF) == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
         if ((a & 0x0F + b & 0x0F) > 0x0F) {
-            f |= (byte)(Fl.H.rawValue)
+            f |= byte(Fl.H.rawValue)
         }
         if ((a >= 0x80 && b >= 0x80 && sbyte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
         if (sum > 0xFF) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
     }
@@ -2853,25 +2853,25 @@ public struct Z80
     private mutating func Adc(_ b: byte)
     {
         let a = registers[A]
-        let c = (byte)(registers[F] & (byte)(Fl.C.rawValue))
+        let c = registers[F] & Fl.C.rawValue
         let sum = ushort(a) + ushort(b) + ushort(c)
         registers[A] = byte(truncatingIfNeeded: sum)
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((sum & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if ((sum & 0xFF) == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
         if ((a & 0x0F + b & 0x0F) > 0x0F) {
-            f |= (byte)(Fl.H.rawValue)
+            f |= byte(Fl.H.rawValue)
         }
         if ((a >= 0x80 && b >= 0x80 && sbyte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
-        f = (byte)(f & ~(byte)(Fl.N.rawValue))
+        f = byte(f & ~byte(Fl.N.rawValue))
         if (sum > 0xFF) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
     }
@@ -2881,22 +2881,22 @@ public struct Z80
         let a = registers[A]
         let diff = short(a) - short(b)
         registers[A] = byte(truncatingIfNeeded: diff)
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((diff & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if ((diff & 0xFF) == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
         if ((a & 0x0F) < (b & 0x0F)) {
-            f |= (byte)(Fl.H.rawValue)
+            f |= byte(Fl.H.rawValue)
         }
         if ((a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
-        f |= (byte)(Fl.N.rawValue)
+        f |= byte(Fl.N.rawValue)
         if (diff < 0) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
     }
@@ -2904,25 +2904,25 @@ public struct Z80
     private mutating func Sbc(_ b: byte)
     {
         let a = registers[A]
-        let c = (byte)(registers[F] & Fl.C.rawValue)
+        let c = registers[F] & Fl.C.rawValue
         let diff = short(a) - short(b) - short(c)
         registers[A] = byte(truncatingIfNeeded: diff)
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((diff & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if ((diff & 0xFF) == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
         if ((a & 0x0F) < (b & 0x0F) + c) {
-            f |= (byte)(Fl.H.rawValue)
+            f |= byte(Fl.H.rawValue)
         }
         if ((a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
-        f |= (byte)(Fl.N.rawValue)
+        f |= byte(Fl.N.rawValue)
         if (diff > 0xFF) {
-            f |= (byte)(Fl.C.rawValue)
+            f |= byte(Fl.C.rawValue)
         }
         registers[F] = f
     }
@@ -2930,18 +2930,18 @@ public struct Z80
     private mutating func And(_ b: byte)
     {
         let a = registers[A]
-        let res = (byte)(a & b)
+        let res = byte(a & b)
         registers[A] = res
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((res & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if (res == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
-        f |= (byte)(Fl.H.rawValue)
+        f |= byte(Fl.H.rawValue)
         if (Z80.Parity(res)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
         registers[F] = f
     }
@@ -2949,17 +2949,17 @@ public struct Z80
     private mutating func Or(_ b: byte)
     {
         let a = registers[A]
-        let res = (byte)(a | b)
+        let res = byte(a | b)
         registers[A] = res
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((res & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
         if (res == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
         if (Z80.Parity(res)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
          registers[F] = f
     }
@@ -2967,17 +2967,17 @@ public struct Z80
     private mutating func Xor(_ b: byte)
     {
         let a = registers[A]
-        let res = (byte)(a ^ b)
+        let res = byte(a ^ b)
         registers[A] = res
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((res & 0x80) > 0) {
-            f |= (byte)(Fl.S.rawValue)
+            f |= byte(Fl.S.rawValue)
         }
          if (res == 0) {
-            f |= (byte)(Fl.Z.rawValue)
+            f |= byte(Fl.Z.rawValue)
         }
          if (Z80.Parity(res)) {
-            f |= (byte)(Fl.PV.rawValue)
+            f |= byte(Fl.PV.rawValue)
         }
          registers[F] = f
     }
@@ -2986,22 +2986,22 @@ public struct Z80
     {
         let a = registers[A]
         let diff = a &- b
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((diff & 0x80) > 0) {
-            f = (byte)(f | Fl.S.rawValue)
+            f = byte(f | Fl.S.rawValue)
         }
         if (diff == 0) {
-            f = (byte)(f | Fl.Z.rawValue)
+            f = byte(f | Fl.Z.rawValue)
         }
         if ((a & 0x0F) < (b & 0x0F)) {
-            f = (byte)(f | Fl.H.rawValue)
+            f = byte(f | Fl.H.rawValue)
         }
         if ((a > 0x80 && b > 0x80 && sbyte(truncatingIfNeeded: diff) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: diff) < 0)) {
-            f = (byte)(f | Fl.PV.rawValue)
+            f = byte(f | Fl.PV.rawValue)
         }
-        f = (byte)(f | Fl.N.rawValue)
+        f = byte(f | Fl.N.rawValue)
         if (diff > 0xFF) {
-            f = (byte)(f | Fl.C.rawValue)
+            f = byte(f | Fl.C.rawValue)
         }
         registers[F] = f
     }
@@ -3009,46 +3009,46 @@ public struct Z80
     private mutating func Inc(_ b: byte) -> byte
     {
         let sum = ushort(b) + ushort(1)
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((sum & 0x80) > 0) {
-            f = (byte)(f | Fl.S.rawValue)
+            f = byte(f | Fl.S.rawValue)
         }
         if (sum == 0) {
-            f = (byte)(f | Fl.Z.rawValue)
+            f = byte(f | Fl.Z.rawValue)
         }
         if ((b & 0x0F) == 0x0F) {
-            f = (byte)(f | Fl.H.rawValue)
+            f = byte(f | Fl.H.rawValue)
         }
         if ((b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0)) {
-            f = (byte)(f | Fl.PV.rawValue)
+            f = byte(f | Fl.PV.rawValue)
         }
-        f = (byte)(f | Fl.N.rawValue)
+        f = byte(f | Fl.N.rawValue)
         if (sum > 0xFF) {
-            f = (byte)(f | Fl.C.rawValue)
+            f = byte(f | Fl.C.rawValue)
         }
         registers[F] = f
-        return (byte)(truncatingIfNeeded: sum)
+        return byte(truncatingIfNeeded: sum)
     }
 
     private mutating func Dec(_ b: byte) -> byte
     {
         let sum = ushort(b) - ushort(1)
-        var f = (byte)(registers[F] & 0x28)
+        var f = registers[F] & 0x28
         if ((sum & 0x80) > 0) {
-            f = (byte)(f | Fl.S.rawValue)
+            f = byte(f | Fl.S.rawValue)
         }
         if (sum == 0) {
-            f = (byte)(f | Fl.Z.rawValue)
+            f = byte(f | Fl.Z.rawValue)
         }
         if ((b & 0x0F) == 0) {
-            f = (byte)(f | Fl.H.rawValue)
+            f = byte(f | Fl.H.rawValue)
         }
         if (b == 0x80) {
-            f = (byte)(f | Fl.PV.rawValue)
+            f = byte(f | Fl.PV.rawValue)
         }
-        f = (byte)(f | Fl.N.rawValue)
+        f = byte(f | Fl.N.rawValue)
         registers[F] = f
-        return (byte)(truncatingIfNeeded: sum)
+        return byte(truncatingIfNeeded: sum)
     }
 
     private static func Parity(_ value: byte) -> bool
@@ -3090,7 +3090,7 @@ public struct Z80
             default:
                 return false
         }
-        return ((registers[F] & (byte)(mask.rawValue)) > 0) == ((condition & 1) == 1)
+        return ((registers[F] & mask.rawValue) > 0) == ((condition & 1) == 1)
     }
 
     private mutating func Fetch() -> byte
@@ -3101,8 +3101,8 @@ public struct Z80
         print(String(format: "  %04X %02X ", pc, ret))
 #endif
         pc += 1
-        registers[PC] = (byte)(pc >> 8)
-        registers[PC + 1] = (byte)(pc & 0xFF)
+        registers[PC] = byte(pc >> 8)
+        registers[PC + 1] = byte(pc & 0xFF)
         return ret
     }
 
