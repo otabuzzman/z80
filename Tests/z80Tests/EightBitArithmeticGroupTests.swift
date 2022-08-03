@@ -2,2342 +2,2456 @@
 @testable import z80
 
 final class EightBitArithmeticGroupTests: XCTestCase {
-/*
-        private int Countbits(int value)
+    var mem: Memory!
+    var asm: Z80Asm!
+    var z80: TestSystem!
+
+    override func setUp() {
+        super.setUp()
+
+        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        mem = Memory(ram, 0)
+        z80 = TestSystem(mem)
+        asm = Z80Asm(mem)
+
+        z80.Reset()
+        asm.Reset()
+    }
+
+    override func tearDown() {
+        super.tearDown()
+    }
+
+    private func Countbits(_ value: int) -> int
+    {
+        var count = 0
+        var v = value
+        while (v != 0)
         {
-            int count = 0;
-            while (value != 0)
-            {
-                count++;
-                value &= value - 1;
-            }
-            return count;
+            count += 1
+            v &= v - 1
         }
-
-        // Useful ref: http://stackoverflow.com/questions/8034566/overflow-and-carry-flags-on-z80
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11)]
-        [TestCase(0, 0x44, 0x0F)]
-        [TestCase(0, 0x44, 0xFF)]
-        [TestCase(0, 0x44, 0x01)]
-        [TestCase(0, 0xF4, 0x11)]
-        [TestCase(0, 0xF4, 0x0F)]
-        [TestCase(0, 0xF4, 0xFF)]
-        [TestCase(0, 0xF4, 0x01)]
-        [TestCase(1, 0x44, 0x11)]
-        [TestCase(1, 0x44, 0x0F)]
-        [TestCase(1, 0x44, 0xFF)]
-        [TestCase(1, 0x44, 0x01)]
-        [TestCase(2, 0x44, 0x11)]
-        [TestCase(2, 0x44, 0x0F)]
-        [TestCase(2, 0x44, 0xFF)]
-        [TestCase(2, 0x44, 0x01)]
-        [TestCase(3, 0x44, 0x11)]
-        [TestCase(3, 0x44, 0x0F)]
-        [TestCase(3, 0x44, 0xFF)]
-        [TestCase(3, 0x44, 0x01)]
-        [TestCase(4, 0x44, 0x11)]
-        [TestCase(4, 0x44, 0x0F)]
-        [TestCase(4, 0x44, 0xFF)]
-        [TestCase(4, 0x44, 0x01)]
-        [TestCase(5, 0x44, 0x11)]
-        [TestCase(5, 0x44, 0x0F)]
-        [TestCase(5, 0x44, 0xFF)]
-        [TestCase(5, 0x44, 0x01)]
-        [TestCase(7, 0x44, 0x44)]
-        #endregion
-        public void Test_ADD_A_r(byte reg, byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.AddAReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Console.WriteLine("{0:X4}", trueSum);
-            Console.WriteLine("{0:X4}", byteSum);
-            Console.WriteLine("{0}", sbyteSum);
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_ADD_A_n(byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.AddAVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_ADD_A_at_HL(byte val, byte val2)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.AddAAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_ADD_A_at_IX(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.AddAAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_ADD_A_at_IY(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.AddAAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11, false)]
-        [TestCase(0, 0x44, 0x0F, false)]
-        [TestCase(0, 0x44, 0xFF, false)]
-        [TestCase(0, 0x44, 0x01, false)]
-        [TestCase(0, 0xF4, 0x11, false)]
-        [TestCase(0, 0xF4, 0x0F, false)]
-        [TestCase(0, 0xF4, 0xFF, false)]
-        [TestCase(0, 0xF4, 0x01, false)]
-        [TestCase(1, 0x44, 0x11, false)]
-        [TestCase(1, 0x44, 0x0F, false)]
-        [TestCase(1, 0x44, 0xFF, false)]
-        [TestCase(1, 0x44, 0x01, false)]
-        [TestCase(2, 0x44, 0x11, false)]
-        [TestCase(2, 0x44, 0x0F, false)]
-        [TestCase(2, 0x44, 0xFF, false)]
-        [TestCase(2, 0x44, 0x01, false)]
-        [TestCase(3, 0x44, 0x11, false)]
-        [TestCase(3, 0x44, 0x0F, false)]
-        [TestCase(3, 0x44, 0xFF, false)]
-        [TestCase(3, 0x44, 0x01, false)]
-        [TestCase(4, 0x44, 0x11, false)]
-        [TestCase(4, 0x44, 0x0F, false)]
-        [TestCase(4, 0x44, 0xFF, false)]
-        [TestCase(4, 0x44, 0x01, false)]
-        [TestCase(5, 0x44, 0x11, false)]
-        [TestCase(5, 0x44, 0x0F, false)]
-        [TestCase(5, 0x44, 0xFF, false)]
-        [TestCase(5, 0x44, 0x01, false)]
-        [TestCase(7, 0x44, 0x44, false)]
-        [TestCase(0, 0x44, 0x11, true)]
-        [TestCase(0, 0x44, 0x0F, true)]
-        [TestCase(0, 0x44, 0xFF, true)]
-        [TestCase(0, 0x44, 0x01, true)]
-        [TestCase(0, 0xF4, 0x11, true)]
-        [TestCase(0, 0xF4, 0x0F, true)]
-        [TestCase(0, 0xF4, 0xFF, true)]
-        [TestCase(0, 0xF4, 0x01, true)]
-        [TestCase(1, 0x44, 0x11, true)]
-        [TestCase(1, 0x44, 0x0F, true)]
-        [TestCase(1, 0x44, 0xFF, true)]
-        [TestCase(1, 0x44, 0x01, true)]
-        [TestCase(2, 0x44, 0x11, true)]
-        [TestCase(2, 0x44, 0x0F, true)]
-        [TestCase(2, 0x44, 0xFF, true)]
-        [TestCase(2, 0x44, 0x01, true)]
-        [TestCase(3, 0x44, 0x11, true)]
-        [TestCase(3, 0x44, 0x0F, true)]
-        [TestCase(3, 0x44, 0xFF, true)]
-        [TestCase(3, 0x44, 0x01, true)]
-        [TestCase(4, 0x44, 0x11, true)]
-        [TestCase(4, 0x44, 0x0F, true)]
-        [TestCase(4, 0x44, 0xFF, true)]
-        [TestCase(4, 0x44, 0x01, true)]
-        [TestCase(5, 0x44, 0x11, true)]
-        [TestCase(5, 0x44, 0x0F, true)]
-        [TestCase(5, 0x44, 0xFF, true)]
-        [TestCase(5, 0x44, 0x01, true)]
-        [TestCase(7, 0x44, 0x44, true)]
-        #endregion
-        public void Test_ADC_A_r(byte reg, byte val, byte val2, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.AdcAReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            if (carry) trueSum++;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, true)]
-        [TestCase(0x44, 0x0F, true)]
-        [TestCase(0x44, 0xFF, true)]
-        [TestCase(0x44, 0x01, true)]
-        [TestCase(0xF4, 0x11, true)]
-        [TestCase(0xF4, 0x0F, true)]
-        [TestCase(0xF4, 0xFF, true)]
-        [TestCase(0xF4, 0x01, true)]
-        [TestCase(0x44, 0x11, false)]
-        [TestCase(0x44, 0x0F, false)]
-        [TestCase(0x44, 0xFF, false)]
-        [TestCase(0x44, 0x01, false)]
-        [TestCase(0xF4, 0x11, false)]
-        [TestCase(0xF4, 0x0F, false)]
-        [TestCase(0xF4, 0xFF, false)]
-        [TestCase(0xF4, 0x01, false)]
-        #endregion
-        public void Test_ADC_A_n(byte val, byte val2, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadRegVal(7, val);
-            asm.AdcAVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            if (carry) trueSum++;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, true)]
-        [TestCase(0x44, 0x0F, true)]
-        [TestCase(0x44, 0xFF, true)]
-        [TestCase(0x44, 0x01, true)]
-        [TestCase(0xF4, 0x11, true)]
-        [TestCase(0xF4, 0x0F, true)]
-        [TestCase(0xF4, 0xFF, true)]
-        [TestCase(0xF4, 0x01, true)]
-        [TestCase(0x44, 0x11, false)]
-        [TestCase(0x44, 0x0F, false)]
-        [TestCase(0x44, 0xFF, false)]
-        [TestCase(0x44, 0x01, false)]
-        [TestCase(0xF4, 0x11, false)]
-        [TestCase(0xF4, 0x0F, false)]
-        [TestCase(0xF4, 0xFF, false)]
-        [TestCase(0xF4, 0x01, false)]
-        #endregion
-        public void Test_ADC_A_at_HL(byte val, byte val2, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.AdcAAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            if (carry) trueSum++;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0, true)]
-        [TestCase(0x44, 0x0F, 0, true)]
-        [TestCase(0x44, 0xFF, 0, true)]
-        [TestCase(0x44, 0x01, 0, true)]
-        [TestCase(0xF4, 0x11, 0, true)]
-        [TestCase(0xF4, 0x0F, 0, true)]
-        [TestCase(0xF4, 0xFF, 0, true)]
-        [TestCase(0xF4, 0x01, 0, true)]
-        [TestCase(0x44, 0x11, 1, true)]
-        [TestCase(0x44, 0x0F, 1, true)]
-        [TestCase(0x44, 0xFF, 1, true)]
-        [TestCase(0x44, 0x01, 1, true)]
-        [TestCase(0xF4, 0x11, 1, true)]
-        [TestCase(0xF4, 0x0F, 1, true)]
-        [TestCase(0xF4, 0xFF, 1, true)]
-        [TestCase(0xF4, 0x01, 1, true)]
-        [TestCase(0x44, 0x11, -1, true)]
-        [TestCase(0x44, 0x0F, -1, true)]
-        [TestCase(0x44, 0xFF, -1, true)]
-        [TestCase(0x44, 0x01, -1, true)]
-        [TestCase(0xF4, 0x11, -1, true)]
-        [TestCase(0xF4, 0x0F, -1, true)]
-        [TestCase(0xF4, 0xFF, -1, true)]
-        [TestCase(0xF4, 0x01, -1, true)]
-        [TestCase(0x44, 0x11, 0, false)]
-        [TestCase(0x44, 0x0F, 0, false)]
-        [TestCase(0x44, 0xFF, 0, false)]
-        [TestCase(0x44, 0x01, 0, false)]
-        [TestCase(0xF4, 0x11, 0, false)]
-        [TestCase(0xF4, 0x0F, 0, false)]
-        [TestCase(0xF4, 0xFF, 0, false)]
-        [TestCase(0xF4, 0x01, 0, false)]
-        [TestCase(0x44, 0x11, 1, false)]
-        [TestCase(0x44, 0x0F, 1, false)]
-        [TestCase(0x44, 0xFF, 1, false)]
-        [TestCase(0x44, 0x01, 1, false)]
-        [TestCase(0xF4, 0x11, 1, false)]
-        [TestCase(0xF4, 0x0F, 1, false)]
-        [TestCase(0xF4, 0xFF, 1, false)]
-        [TestCase(0xF4, 0x01, 1, false)]
-        [TestCase(0x44, 0x11, -1, false)]
-        [TestCase(0x44, 0x0F, -1, false)]
-        [TestCase(0x44, 0xFF, -1, false)]
-        [TestCase(0x44, 0x01, -1, false)]
-        [TestCase(0xF4, 0x11, -1, false)]
-        [TestCase(0xF4, 0x0F, -1, false)]
-        [TestCase(0xF4, 0xFF, -1, false)]
-        [TestCase(0xF4, 0x01, -1, false)]
-        #endregion
-        public void Test_ADC_A_at_IX(byte val, byte val2, sbyte disp, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.AdcAAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            if (carry) trueSum++;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0, true)]
-        [TestCase(0x44, 0x0F, 0, true)]
-        [TestCase(0x44, 0xFF, 0, true)]
-        [TestCase(0x44, 0x01, 0, true)]
-        [TestCase(0xF4, 0x11, 0, true)]
-        [TestCase(0xF4, 0x0F, 0, true)]
-        [TestCase(0xF4, 0xFF, 0, true)]
-        [TestCase(0xF4, 0x01, 0, true)]
-        [TestCase(0x44, 0x11, 1, true)]
-        [TestCase(0x44, 0x0F, 1, true)]
-        [TestCase(0x44, 0xFF, 1, true)]
-        [TestCase(0x44, 0x01, 1, true)]
-        [TestCase(0xF4, 0x11, 1, true)]
-        [TestCase(0xF4, 0x0F, 1, true)]
-        [TestCase(0xF4, 0xFF, 1, true)]
-        [TestCase(0xF4, 0x01, 1, true)]
-        [TestCase(0x44, 0x11, -1, true)]
-        [TestCase(0x44, 0x0F, -1, true)]
-        [TestCase(0x44, 0xFF, -1, true)]
-        [TestCase(0x44, 0x01, -1, true)]
-        [TestCase(0xF4, 0x11, -1, true)]
-        [TestCase(0xF4, 0x0F, -1, true)]
-        [TestCase(0xF4, 0xFF, -1, true)]
-        [TestCase(0xF4, 0x01, -1, true)]
-        [TestCase(0x44, 0x11, 0, false)]
-        [TestCase(0x44, 0x0F, 0, false)]
-        [TestCase(0x44, 0xFF, 0, false)]
-        [TestCase(0x44, 0x01, 0, false)]
-        [TestCase(0xF4, 0x11, 0, false)]
-        [TestCase(0xF4, 0x0F, 0, false)]
-        [TestCase(0xF4, 0xFF, 0, false)]
-        [TestCase(0xF4, 0x01, 0, false)]
-        [TestCase(0x44, 0x11, 1, false)]
-        [TestCase(0x44, 0x0F, 1, false)]
-        [TestCase(0x44, 0xFF, 1, false)]
-        [TestCase(0x44, 0x01, 1, false)]
-        [TestCase(0xF4, 0x11, 1, false)]
-        [TestCase(0xF4, 0x0F, 1, false)]
-        [TestCase(0xF4, 0xFF, 1, false)]
-        [TestCase(0xF4, 0x01, 1, false)]
-        [TestCase(0x44, 0x11, -1, false)]
-        [TestCase(0x44, 0x0F, -1, false)]
-        [TestCase(0x44, 0xFF, -1, false)]
-        [TestCase(0x44, 0x01, -1, false)]
-        [TestCase(0xF4, 0x11, -1, false)]
-        [TestCase(0xF4, 0x0F, -1, false)]
-        [TestCase(0xF4, 0xFF, -1, false)]
-        [TestCase(0xF4, 0x01, -1, false)]
-        #endregion
-        public void Test_ADC_A_at_IY(byte val, byte val2, sbyte disp, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.AdcAAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (val + val2);
-            if (carry) trueSum++;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.A);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11)]
-        [TestCase(0, 0x44, 0x0F)]
-        [TestCase(0, 0x44, 0xFF)]
-        [TestCase(0, 0x44, 0x01)]
-        [TestCase(0, 0xF4, 0x11)]
-        [TestCase(0, 0xF4, 0x0F)]
-        [TestCase(0, 0xF4, 0xFF)]
-        [TestCase(0, 0xF4, 0x01)]
-        [TestCase(1, 0x44, 0x11)]
-        [TestCase(1, 0x44, 0x0F)]
-        [TestCase(1, 0x44, 0xFF)]
-        [TestCase(1, 0x44, 0x01)]
-        [TestCase(2, 0x44, 0x11)]
-        [TestCase(2, 0x44, 0x0F)]
-        [TestCase(2, 0x44, 0xFF)]
-        [TestCase(2, 0x44, 0x01)]
-        [TestCase(3, 0x44, 0x11)]
-        [TestCase(3, 0x44, 0x0F)]
-        [TestCase(3, 0x44, 0xFF)]
-        [TestCase(3, 0x44, 0x01)]
-        [TestCase(4, 0x44, 0x11)]
-        [TestCase(4, 0x44, 0x0F)]
-        [TestCase(4, 0x44, 0xFF)]
-        [TestCase(4, 0x44, 0x01)]
-        [TestCase(5, 0x44, 0x11)]
-        [TestCase(5, 0x44, 0x0F)]
-        [TestCase(5, 0x44, 0xFF)]
-        [TestCase(5, 0x44, 0x01)]
-        [TestCase(7, 0x44, 0x44)]
-        #endregion
-        public void Test_SUB_A_r(byte reg, byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.SubReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_SUB_A_n(byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.SubVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_SUB_A_at_HL(byte val, byte val2)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.SubAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_SUB_A_at_IX(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.SubAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_SUB_A_at_IY(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.SubAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11, false)]
-        [TestCase(0, 0x44, 0x0F, false)]
-        [TestCase(0, 0x44, 0xFF, false)]
-        [TestCase(0, 0x44, 0x01, false)]
-        [TestCase(0, 0xF4, 0x11, false)]
-        [TestCase(0, 0xF4, 0x0F, false)]
-        [TestCase(0, 0xF4, 0xFF, false)]
-        [TestCase(0, 0xF4, 0x01, false)]
-        [TestCase(1, 0x44, 0x11, false)]
-        [TestCase(1, 0x44, 0x0F, false)]
-        [TestCase(1, 0x44, 0xFF, false)]
-        [TestCase(1, 0x44, 0x01, false)]
-        [TestCase(2, 0x44, 0x11, false)]
-        [TestCase(2, 0x44, 0x0F, false)]
-        [TestCase(2, 0x44, 0xFF, false)]
-        [TestCase(2, 0x44, 0x01, false)]
-        [TestCase(3, 0x44, 0x11, false)]
-        [TestCase(3, 0x44, 0x0F, false)]
-        [TestCase(3, 0x44, 0xFF, false)]
-        [TestCase(3, 0x44, 0x01, false)]
-        [TestCase(4, 0x44, 0x11, false)]
-        [TestCase(4, 0x44, 0x0F, false)]
-        [TestCase(4, 0x44, 0xFF, false)]
-        [TestCase(4, 0x44, 0x01, false)]
-        [TestCase(5, 0x44, 0x11, false)]
-        [TestCase(5, 0x44, 0x0F, false)]
-        [TestCase(5, 0x44, 0xFF, false)]
-        [TestCase(5, 0x44, 0x01, false)]
-        [TestCase(7, 0x44, 0x44, false)]
-        [TestCase(0, 0x44, 0x11, true)]
-        [TestCase(0, 0x44, 0x0F, true)]
-        [TestCase(0, 0x44, 0xFF, true)]
-        [TestCase(0, 0x44, 0x01, true)]
-        [TestCase(0, 0xF4, 0x11, true)]
-        [TestCase(0, 0xF4, 0x0F, true)]
-        [TestCase(0, 0xF4, 0xFF, true)]
-        [TestCase(0, 0xF4, 0x01, true)]
-        [TestCase(1, 0x44, 0x11, true)]
-        [TestCase(1, 0x44, 0x0F, true)]
-        [TestCase(1, 0x44, 0xFF, true)]
-        [TestCase(1, 0x44, 0x01, true)]
-        [TestCase(2, 0x44, 0x11, true)]
-        [TestCase(2, 0x44, 0x0F, true)]
-        [TestCase(2, 0x44, 0xFF, true)]
-        [TestCase(2, 0x44, 0x01, true)]
-        [TestCase(3, 0x44, 0x11, true)]
-        [TestCase(3, 0x44, 0x0F, true)]
-        [TestCase(3, 0x44, 0xFF, true)]
-        [TestCase(3, 0x44, 0x01, true)]
-        [TestCase(4, 0x44, 0x11, true)]
-        [TestCase(4, 0x44, 0x0F, true)]
-        [TestCase(4, 0x44, 0xFF, true)]
-        [TestCase(4, 0x44, 0x01, true)]
-        [TestCase(5, 0x44, 0x11, true)]
-        [TestCase(5, 0x44, 0x0F, true)]
-        [TestCase(5, 0x44, 0xFF, true)]
-        [TestCase(5, 0x44, 0x01, true)]
-        [TestCase(7, 0x44, 0x44, true)]
-        #endregion
-        public void Test_SBC_A_r(byte reg, byte val, byte val2, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.SbcAReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            if (carry) trueDiff--;
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) + (carry ? 1 : 0) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, true)]
-        [TestCase(0x44, 0x0F, true)]
-        [TestCase(0x44, 0xFF, true)]
-        [TestCase(0x44, 0x01, true)]
-        [TestCase(0xF4, 0x11, true)]
-        [TestCase(0xF4, 0x0F, true)]
-        [TestCase(0xF4, 0xFF, true)]
-        [TestCase(0xF4, 0x01, true)]
-        [TestCase(0x44, 0x11, false)]
-        [TestCase(0x44, 0x0F, false)]
-        [TestCase(0x44, 0xFF, false)]
-        [TestCase(0x44, 0x01, false)]
-        [TestCase(0xF4, 0x11, false)]
-        [TestCase(0xF4, 0x0F, false)]
-        [TestCase(0xF4, 0xFF, false)]
-        [TestCase(0xF4, 0x01, false)]
-        #endregion
-        public void Test_SBC_A_n(byte val, byte val2, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadRegVal(7, val);
-            asm.SbcAVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            if (carry) trueDiff--;
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) + (carry ? 1 : 0) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, true)]
-        [TestCase(0x44, 0x0F, true)]
-        [TestCase(0x44, 0xFF, true)]
-        [TestCase(0x44, 0x01, true)]
-        [TestCase(0xF4, 0x11, true)]
-        [TestCase(0xF4, 0x0F, true)]
-        [TestCase(0xF4, 0xFF, true)]
-        [TestCase(0xF4, 0x01, true)]
-        [TestCase(0x44, 0x11, false)]
-        [TestCase(0x44, 0x0F, false)]
-        [TestCase(0x44, 0xFF, false)]
-        [TestCase(0x44, 0x01, false)]
-        [TestCase(0xF4, 0x11, false)]
-        [TestCase(0xF4, 0x0F, false)]
-        [TestCase(0xF4, 0xFF, false)]
-        [TestCase(0xF4, 0x01, false)]
-        #endregion
-        public void Test_SBC_A_at_HL(byte val, byte val2, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.SbcAAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            if (carry) trueDiff--;
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) + (carry ? 1 : 0) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0, true)]
-        [TestCase(0x44, 0x0F, 0, true)]
-        [TestCase(0x44, 0xFF, 0, true)]
-        [TestCase(0x44, 0x01, 0, true)]
-        [TestCase(0xF4, 0x11, 0, true)]
-        [TestCase(0xF4, 0x0F, 0, true)]
-        [TestCase(0xF4, 0xFF, 0, true)]
-        [TestCase(0xF4, 0x01, 0, true)]
-        [TestCase(0x44, 0x11, 1, true)]
-        [TestCase(0x44, 0x0F, 1, true)]
-        [TestCase(0x44, 0xFF, 1, true)]
-        [TestCase(0x44, 0x01, 1, true)]
-        [TestCase(0xF4, 0x11, 1, true)]
-        [TestCase(0xF4, 0x0F, 1, true)]
-        [TestCase(0xF4, 0xFF, 1, true)]
-        [TestCase(0xF4, 0x01, 1, true)]
-        [TestCase(0x44, 0x11, -1, true)]
-        [TestCase(0x44, 0x0F, -1, true)]
-        [TestCase(0x44, 0xFF, -1, true)]
-        [TestCase(0x44, 0x01, -1, true)]
-        [TestCase(0xF4, 0x11, -1, true)]
-        [TestCase(0xF4, 0x0F, -1, true)]
-        [TestCase(0xF4, 0xFF, -1, true)]
-        [TestCase(0xF4, 0x01, -1, true)]
-        [TestCase(0x44, 0x11, 0, false)]
-        [TestCase(0x44, 0x0F, 0, false)]
-        [TestCase(0x44, 0xFF, 0, false)]
-        [TestCase(0x44, 0x01, 0, false)]
-        [TestCase(0xF4, 0x11, 0, false)]
-        [TestCase(0xF4, 0x0F, 0, false)]
-        [TestCase(0xF4, 0xFF, 0, false)]
-        [TestCase(0xF4, 0x01, 0, false)]
-        [TestCase(0x44, 0x11, 1, false)]
-        [TestCase(0x44, 0x0F, 1, false)]
-        [TestCase(0x44, 0xFF, 1, false)]
-        [TestCase(0x44, 0x01, 1, false)]
-        [TestCase(0xF4, 0x11, 1, false)]
-        [TestCase(0xF4, 0x0F, 1, false)]
-        [TestCase(0xF4, 0xFF, 1, false)]
-        [TestCase(0xF4, 0x01, 1, false)]
-        [TestCase(0x44, 0x11, -1, false)]
-        [TestCase(0x44, 0x0F, -1, false)]
-        [TestCase(0x44, 0xFF, -1, false)]
-        [TestCase(0x44, 0x01, -1, false)]
-        [TestCase(0xF4, 0x11, -1, false)]
-        [TestCase(0xF4, 0x0F, -1, false)]
-        [TestCase(0xF4, 0xFF, -1, false)]
-        [TestCase(0xF4, 0x01, -1, false)]
-        #endregion
-        public void Test_SBC_A_at_IX(byte val, byte val2, sbyte disp, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.SbcAAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            if (carry) trueDiff--;
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) + (carry ? 1 : 0) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0, true)]
-        [TestCase(0x44, 0x0F, 0, true)]
-        [TestCase(0x44, 0xFF, 0, true)]
-        [TestCase(0x44, 0x01, 0, true)]
-        [TestCase(0xF4, 0x11, 0, true)]
-        [TestCase(0xF4, 0x0F, 0, true)]
-        [TestCase(0xF4, 0xFF, 0, true)]
-        [TestCase(0xF4, 0x01, 0, true)]
-        [TestCase(0x44, 0x11, 1, true)]
-        [TestCase(0x44, 0x0F, 1, true)]
-        [TestCase(0x44, 0xFF, 1, true)]
-        [TestCase(0x44, 0x01, 1, true)]
-        [TestCase(0xF4, 0x11, 1, true)]
-        [TestCase(0xF4, 0x0F, 1, true)]
-        [TestCase(0xF4, 0xFF, 1, true)]
-        [TestCase(0xF4, 0x01, 1, true)]
-        [TestCase(0x44, 0x11, -1, true)]
-        [TestCase(0x44, 0x0F, -1, true)]
-        [TestCase(0x44, 0xFF, -1, true)]
-        [TestCase(0x44, 0x01, -1, true)]
-        [TestCase(0xF4, 0x11, -1, true)]
-        [TestCase(0xF4, 0x0F, -1, true)]
-        [TestCase(0xF4, 0xFF, -1, true)]
-        [TestCase(0xF4, 0x01, -1, true)]
-        [TestCase(0x44, 0x11, 0, false)]
-        [TestCase(0x44, 0x0F, 0, false)]
-        [TestCase(0x44, 0xFF, 0, false)]
-        [TestCase(0x44, 0x01, 0, false)]
-        [TestCase(0xF4, 0x11, 0, false)]
-        [TestCase(0xF4, 0x0F, 0, false)]
-        [TestCase(0xF4, 0xFF, 0, false)]
-        [TestCase(0xF4, 0x01, 0, false)]
-        [TestCase(0x44, 0x11, 1, false)]
-        [TestCase(0x44, 0x0F, 1, false)]
-        [TestCase(0x44, 0xFF, 1, false)]
-        [TestCase(0x44, 0x01, 1, false)]
-        [TestCase(0xF4, 0x11, 1, false)]
-        [TestCase(0xF4, 0x0F, 1, false)]
-        [TestCase(0xF4, 0xFF, 1, false)]
-        [TestCase(0xF4, 0x01, 1, false)]
-        [TestCase(0x44, 0x11, -1, false)]
-        [TestCase(0x44, 0x0F, -1, false)]
-        [TestCase(0x44, 0xFF, -1, false)]
-        [TestCase(0x44, 0x01, -1, false)]
-        [TestCase(0xF4, 0x11, -1, false)]
-        [TestCase(0xF4, 0x0F, -1, false)]
-        [TestCase(0xF4, 0xFF, -1, false)]
-        [TestCase(0xF4, 0x01, -1, false)]
-        #endregion
-        public void Test_SBC_A_at_IY(byte val, byte val2, sbyte disp, bool carry)
-        {
-            asm.LoadReg16Val(3, 0x0060);
-            asm.LoadReg16Val(0, (ushort)(carry ? 1 : 0));
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.SbcAAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            if (carry) trueDiff--;
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(byteDiff, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) + (carry ? 1 : 0) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11)]
-        [TestCase(0, 0x44, 0x0F)]
-        [TestCase(0, 0x44, 0xFF)]
-        [TestCase(0, 0x44, 0x01)]
-        [TestCase(0, 0xF4, 0x11)]
-        [TestCase(0, 0xF4, 0x0F)]
-        [TestCase(0, 0xF4, 0xFF)]
-        [TestCase(0, 0xF4, 0x01)]
-        [TestCase(1, 0x44, 0x11)]
-        [TestCase(1, 0x44, 0x0F)]
-        [TestCase(1, 0x44, 0xFF)]
-        [TestCase(1, 0x44, 0x01)]
-        [TestCase(2, 0x44, 0x11)]
-        [TestCase(2, 0x44, 0x0F)]
-        [TestCase(2, 0x44, 0xFF)]
-        [TestCase(2, 0x44, 0x01)]
-        [TestCase(3, 0x44, 0x11)]
-        [TestCase(3, 0x44, 0x0F)]
-        [TestCase(3, 0x44, 0xFF)]
-        [TestCase(3, 0x44, 0x01)]
-        [TestCase(4, 0x44, 0x11)]
-        [TestCase(4, 0x44, 0x0F)]
-        [TestCase(4, 0x44, 0xFF)]
-        [TestCase(4, 0x44, 0x01)]
-        [TestCase(5, 0x44, 0x11)]
-        [TestCase(5, 0x44, 0x0F)]
-        [TestCase(5, 0x44, 0xFF)]
-        [TestCase(5, 0x44, 0x01)]
-        [TestCase(7, 0x44, 0x44)]
-        #endregion
-        public void Test_AND_A_r(byte reg, byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.AndReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val & val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_AND_A_n(byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.AndVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val & val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_AND_A_at_HL(byte val, byte val2)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.AndAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val & val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_AND_A_at_IX(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.AndAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val & val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_AND_A_at_IY(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.AndAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val & val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11)]
-        [TestCase(0, 0x44, 0x0F)]
-        [TestCase(0, 0x44, 0xFF)]
-        [TestCase(0, 0x44, 0x01)]
-        [TestCase(0, 0xF4, 0x11)]
-        [TestCase(0, 0xF4, 0x0F)]
-        [TestCase(0, 0xF4, 0xFF)]
-        [TestCase(0, 0xF4, 0x01)]
-        [TestCase(1, 0x44, 0x11)]
-        [TestCase(1, 0x44, 0x0F)]
-        [TestCase(1, 0x44, 0xFF)]
-        [TestCase(1, 0x44, 0x01)]
-        [TestCase(2, 0x44, 0x11)]
-        [TestCase(2, 0x44, 0x0F)]
-        [TestCase(2, 0x44, 0xFF)]
-        [TestCase(2, 0x44, 0x01)]
-        [TestCase(3, 0x44, 0x11)]
-        [TestCase(3, 0x44, 0x0F)]
-        [TestCase(3, 0x44, 0xFF)]
-        [TestCase(3, 0x44, 0x01)]
-        [TestCase(4, 0x44, 0x11)]
-        [TestCase(4, 0x44, 0x0F)]
-        [TestCase(4, 0x44, 0xFF)]
-        [TestCase(4, 0x44, 0x01)]
-        [TestCase(5, 0x44, 0x11)]
-        [TestCase(5, 0x44, 0x0F)]
-        [TestCase(5, 0x44, 0xFF)]
-        [TestCase(5, 0x44, 0x01)]
-        [TestCase(7, 0x44, 0x44)]
-        #endregion
-        public void Test_OR_A_r(byte reg, byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.OrReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val | val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_OR_A_n(byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OrVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val | val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_OR_A_at_HL(byte val, byte val2)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.OrAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val | val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_OR_A_at_IX(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.OrAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val | val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_OR_A_at_IY(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.OrAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val | val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11)]
-        [TestCase(0, 0x44, 0x0F)]
-        [TestCase(0, 0x44, 0xFF)]
-        [TestCase(0, 0x44, 0x01)]
-        [TestCase(0, 0xF4, 0x11)]
-        [TestCase(0, 0xF4, 0x0F)]
-        [TestCase(0, 0xF4, 0xFF)]
-        [TestCase(0, 0xF4, 0x01)]
-        [TestCase(1, 0x44, 0x11)]
-        [TestCase(1, 0x44, 0x0F)]
-        [TestCase(1, 0x44, 0xFF)]
-        [TestCase(1, 0x44, 0x01)]
-        [TestCase(2, 0x44, 0x11)]
-        [TestCase(2, 0x44, 0x0F)]
-        [TestCase(2, 0x44, 0xFF)]
-        [TestCase(2, 0x44, 0x01)]
-        [TestCase(3, 0x44, 0x11)]
-        [TestCase(3, 0x44, 0x0F)]
-        [TestCase(3, 0x44, 0xFF)]
-        [TestCase(3, 0x44, 0x01)]
-        [TestCase(4, 0x44, 0x11)]
-        [TestCase(4, 0x44, 0x0F)]
-        [TestCase(4, 0x44, 0xFF)]
-        [TestCase(4, 0x44, 0x01)]
-        [TestCase(5, 0x44, 0x11)]
-        [TestCase(5, 0x44, 0x0F)]
-        [TestCase(5, 0x44, 0xFF)]
-        [TestCase(5, 0x44, 0x01)]
-        [TestCase(7, 0x44, 0x44)]
-        #endregion
-        public void Test_XOR_A_r(byte reg, byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.XorReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val ^ val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_XOR_A_n(byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.XorVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val ^ val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_XOR_A_at_HL(byte val, byte val2)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.XorAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val ^ val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_XOR_A_at_IX(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.XorAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val ^ val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_XOR_A_at_IY(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.XorAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-
-            var res = (byte)(val ^ val2);
-            var sres = (sbyte)res;
-            Assert.AreEqual(res, en.A);
-            Assert.AreEqual(sres < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            var parity = Countbits(res) % 2 == 0;
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x44, 0x11)]
-        [TestCase(0, 0x44, 0x0F)]
-        [TestCase(0, 0x44, 0xFF)]
-        [TestCase(0, 0x44, 0x01)]
-        [TestCase(0, 0xF4, 0x11)]
-        [TestCase(0, 0xF4, 0x0F)]
-        [TestCase(0, 0xF4, 0xFF)]
-        [TestCase(0, 0xF4, 0x01)]
-        [TestCase(1, 0x44, 0x11)]
-        [TestCase(1, 0x44, 0x0F)]
-        [TestCase(1, 0x44, 0xFF)]
-        [TestCase(1, 0x44, 0x01)]
-        [TestCase(2, 0x44, 0x11)]
-        [TestCase(2, 0x44, 0x0F)]
-        [TestCase(2, 0x44, 0xFF)]
-        [TestCase(2, 0x44, 0x01)]
-        [TestCase(3, 0x44, 0x11)]
-        [TestCase(3, 0x44, 0x0F)]
-        [TestCase(3, 0x44, 0xFF)]
-        [TestCase(3, 0x44, 0x01)]
-        [TestCase(4, 0x44, 0x11)]
-        [TestCase(4, 0x44, 0x0F)]
-        [TestCase(4, 0x44, 0xFF)]
-        [TestCase(4, 0x44, 0x01)]
-        [TestCase(5, 0x44, 0x11)]
-        [TestCase(5, 0x44, 0x0F)]
-        [TestCase(5, 0x44, 0xFF)]
-        [TestCase(5, 0x44, 0x01)]
-        [TestCase(7, 0x44, 0x44)]
-        #endregion
-        public void Test_CP_A_r(byte reg, byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.LoadRegVal(reg, val2);
-            asm.CpReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(val, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(val == val2, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_CP_A_n(byte val, byte val2)
-        {
-            asm.LoadRegVal(7, val);
-            asm.CpVal(val2);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(val, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(val == val2, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11)]
-        [TestCase(0x44, 0x0F)]
-        [TestCase(0x44, 0xFF)]
-        [TestCase(0x44, 0x01)]
-        [TestCase(0xF4, 0x11)]
-        [TestCase(0xF4, 0x0F)]
-        [TestCase(0xF4, 0xFF)]
-        [TestCase(0xF4, 0x01)]
-        #endregion
-        public void Test_CP_A_at_HL(byte val, byte val2)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.CpAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(val, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(val == val2, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_CP_A_at_IX(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIxVal(0x0040);
-            asm.CpAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(val, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(val == val2, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x44, 0x11, 0)]
-        [TestCase(0x44, 0x0F, 0)]
-        [TestCase(0x44, 0xFF, 0)]
-        [TestCase(0x44, 0x01, 0)]
-        [TestCase(0xF4, 0x11, 0)]
-        [TestCase(0xF4, 0x0F, 0)]
-        [TestCase(0xF4, 0xFF, 0)]
-        [TestCase(0xF4, 0x01, 0)]
-        [TestCase(0x44, 0x11, 1)]
-        [TestCase(0x44, 0x0F, 1)]
-        [TestCase(0x44, 0xFF, 1)]
-        [TestCase(0x44, 0x01, 1)]
-        [TestCase(0xF4, 0x11, 1)]
-        [TestCase(0xF4, 0x0F, 1)]
-        [TestCase(0xF4, 0xFF, 1)]
-        [TestCase(0xF4, 0x01, 1)]
-        [TestCase(0x44, 0x11, -1)]
-        [TestCase(0x44, 0x0F, -1)]
-        [TestCase(0x44, 0xFF, -1)]
-        [TestCase(0x44, 0x01, -1)]
-        [TestCase(0xF4, 0x11, -1)]
-        [TestCase(0xF4, 0x0F, -1)]
-        [TestCase(0xF4, 0xFF, -1)]
-        [TestCase(0xF4, 0x01, -1)]
-        #endregion
-        public void Test_CP_A_at_IY(byte val, byte val2, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val2);
-            asm.LoadRegVal(7, val);
-            asm.LoadIyVal(0x0040);
-            asm.CpAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
-            var byteDiff = (byte)trueDiff % 256;
-            var sbyteDiff = (sbyte)byteDiff;
-            Assert.AreEqual(val, en.A);
-            Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
-            var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x28)]
-        [TestCase(0, 0x7F)]
-        [TestCase(1, 0x28)]
-        [TestCase(1, 0x7F)]
-        [TestCase(2, 0x28)]
-        [TestCase(2, 0x7F)]
-        [TestCase(3, 0x28)]
-        [TestCase(3, 0x7F)]
-        [TestCase(4, 0x28)]
-        [TestCase(4, 0x7F)]
-        [TestCase(5, 0x28)]
-        [TestCase(5, 0x7F)]
-        [TestCase(7, 0x28)]
-        [TestCase(7, 0x7F)]
-        #endregion
-        public void Test_INC_r(byte reg, byte val)
-        {
-            asm.LoadRegVal(reg, val);
-            asm.IncReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = val + 1;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.Reg8(reg));
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.Reg8(reg) == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x7F;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x28)]
-        [TestCase(0x7F)]
-        #endregion
-        public void Test_INC_at_HL(byte val)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val);
-            asm.IncAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (1 + val);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, _ram[0x0040]);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(_ram[0x0040] == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x7F;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x28, 0)]
-        [TestCase(0x7F, 0)]
-        [TestCase(0x28, 1)]
-        [TestCase(0x7F, 1)]
-        [TestCase(0x28, -1)]
-        [TestCase(0x7F, -1)]
-        #endregion
-        public void Test_INC_at_IX(byte val, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val);
-            asm.LoadIxVal(0x0040);
-            asm.IncAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (1 + val);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, _ram[0x0040 + disp]);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(byteSum == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x7F;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-        [Test]
-        #region testcases
-        [TestCase(0x28, 0)]
-        [TestCase(0x7F, 0)]
-        [TestCase(0x28, 1)]
-        [TestCase(0x7F, 1)]
-        [TestCase(0x28, -1)]
-        [TestCase(0x7F, -1)]
-        #endregion
-        public void Test_INC_at_IY(byte val, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val);
-            asm.LoadIyVal(0x0040);
-            asm.IncAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = (1 + val);
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, _ram[0x0040 + disp]);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(byteSum == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x7F;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0, 0x28)]
-        [TestCase(0, 0x80)]
-        [TestCase(1, 0x28)]
-        [TestCase(1, 0x80)]
-        [TestCase(2, 0x28)]
-        [TestCase(2, 0x80)]
-        [TestCase(3, 0x28)]
-        [TestCase(3, 0x80)]
-        [TestCase(4, 0x28)]
-        [TestCase(4, 0x80)]
-        [TestCase(5, 0x28)]
-        [TestCase(5, 0x80)]
-        [TestCase(7, 0x28)]
-        [TestCase(7, 0x80)]
-        #endregion
-        public void Test_DEC_r(byte reg, byte val)
-        {
-            asm.LoadRegVal(reg, val);
-            asm.DecReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = val - 1;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, en.Reg8(reg));
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(en.Reg8(reg) == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val) == 0, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x80;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x28)]
-        [TestCase(0x80)]
-        #endregion
-        public void Test_DEC_at_HL(byte val)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(val);
-            asm.DecAddrHl();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = val - 1;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, _ram[0x0040]);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(_ram[0x0040] == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val) == 0, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x80;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-
-        [Test]
-        #region testcases
-        [TestCase(0x28, 0)]
-        [TestCase(0x80, 0)]
-        [TestCase(0x28, 1)]
-        [TestCase(0x80, 1)]
-        [TestCase(0x28, -1)]
-        [TestCase(0x80, -1)]
-        #endregion
-        public void Test_DEC_at_IX(byte val, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val);
-            asm.LoadIxVal(0x0040);
-            asm.DecAddrIx(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = val - 1;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, _ram[0x0040 + disp]);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(byteSum == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val) == 0, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x80;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
-        }
-        [Test]
-        #region testcases
-        [TestCase(0x28, 0)]
-        [TestCase(0x80, 0)]
-        [TestCase(0x28, 1)]
-        [TestCase(0x80, 1)]
-        [TestCase(0x28, -1)]
-        [TestCase(0x80, -1)]
-        #endregion
-        public void Test_DEC_at_IY(byte val, sbyte disp)
-        {
-            asm.LoadReg16Val(2, (ushort)(0x0040 + disp));
-            asm.LoadAtHLVal(val);
-            asm.LoadIyVal(0x0040);
-            asm.DecAddrIy(disp);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            var trueSum = val - 1;
-            var byteSum = trueSum % 256;
-            var sbyteSum = (sbyte)byteSum;
-            Assert.AreEqual(byteSum, _ram[0x0040 + disp]);
-            Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(byteSum == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val) == 0, en.FlagH, "Flag H contained the wrong value");
-            var overflow = val == 0x80;
-            Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
-
+        return count
+    }
+
+    // Useful ref: http://stackoverflow.com/questions/8034566/overflow-and-testCase.carry-flags-on-z80
+
+    func test_ADD_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.AddAReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
-*/
+
+    func test_ADD_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.AddAVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADD_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.AddAAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADD_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.AddAAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADD_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.AddAAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADC_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: true),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.AdcAReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            if (testCase.carry) {
+                trueSum += 1
+            }
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADC_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), carry: true),
+            (val: byte(0x44), val2: byte(0x01), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), carry: true),
+            (val: byte(0x44), val2: byte(0x11), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), carry: false),
+            (val: byte(0x44), val2: byte(0x01), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadRegVal(7, testCase.val)
+            asm.AdcAVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            if (testCase.carry) {
+                trueSum += 1
+            }
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADC_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), carry: true),
+            (val: byte(0x44), val2: byte(0x01), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), carry: true),
+            (val: byte(0x44), val2: byte(0x11), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), carry: false),
+            (val: byte(0x44), val2: byte(0x01), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.AdcAAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            if (testCase.carry) {
+                trueSum += 1
+            }
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADC_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.AdcAAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            if (testCase.carry) {
+                trueSum += 1
+            }
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_ADC_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.AdcAAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            if (testCase.carry) {
+                trueSum += 1
+            }
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.A)
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteSum < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SUB_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.SubReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SUB_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.SubVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SUB_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.SubAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SUB_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.SubAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SUB_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.SubAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SBC_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: false),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: false),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: false),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: false),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: true),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: true),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: true),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: true),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.SbcAReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueDiff = short(testCase.val) - short(testCase.val2)
+            if (testCase.carry) {
+                trueDiff -= 1
+            }
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SBC_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), carry: true),
+            (val: byte(0x44), val2: byte(0x01), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), carry: true),
+            (val: byte(0x44), val2: byte(0x11), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), carry: false),
+            (val: byte(0x44), val2: byte(0x01), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadRegVal(7, testCase.val)
+            asm.SbcAVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueDiff = short(testCase.val) - short(testCase.val2)
+            if (testCase.carry) {
+                trueDiff -= 1
+            }
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SBC_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), carry: true),
+            (val: byte(0x44), val2: byte(0x01), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), carry: true),
+            (val: byte(0x44), val2: byte(0x11), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), carry: false),
+            (val: byte(0x44), val2: byte(0x01), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.SbcAAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueDiff = short(testCase.val) - short(testCase.val2)
+            if (testCase.carry) {
+                trueDiff -= 1
+            }
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SBC_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.SbcAAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueDiff = short(testCase.val) - short(testCase.val2)
+            if (testCase.carry) {
+                trueDiff -= 1
+            }
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_SBC_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x0060)
+            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.SbcAAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            var trueDiff = short(testCase.val) - short(testCase.val2)
+            if (testCase.carry) {
+                trueDiff -= 1
+            }
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(byteDiff, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_AND_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.AndReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val & testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_AND_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.AndVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val & testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_AND_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.AndAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val & testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_AND_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.AndAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val & testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_AND_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.AndAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val & testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_OR_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.OrReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val | testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_OR_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val | testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_OR_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val | testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_OR_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.OrAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val | testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_OR_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.OrAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val | testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_XOR_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.XorReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val ^ testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_XOR_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.XorVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val ^ testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_XOR_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.XorAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val ^ testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_XOR_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.XorAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val ^ testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_XOR_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.XorAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let res = (byte)(testCase.val ^ testCase.val2)
+            let sres = (sbyte)(truncatingIfNeeded: res)
+            XCTAssertEqual(res, z80.A)
+            XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            let parity = Countbits(int(res)) % 2 == 0
+            XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_CP_A_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
+            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
+            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
+            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadRegVal(testCase.reg, testCase.val2)
+            asm.CpReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(testCase.val, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_CP_A_n()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.CpVal(testCase.val2)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(testCase.val, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_CP_A_at_HL()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11)),
+            (val: byte(0x44), val2: byte(0x0F)),
+            (val: byte(0x44), val2: byte(0xFF)),
+            (val: byte(0x44), val2: byte(0x01)),
+            (val: byte(0xF4), val2: byte(0x11)),
+            (val: byte(0xF4), val2: byte(0x0F)),
+            (val: byte(0xF4), val2: byte(0xFF)),
+            (val: byte(0xF4), val2: byte(0x01)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.CpAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(testCase.val, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_CP_A_at_IX()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.CpAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(testCase.val, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_CP_A_at_IY()
+    {
+        [
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
+            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
+            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.CpAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueDiff = short(testCase.val) - short(testCase.val2)
+            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            XCTAssertEqual(testCase.val, z80.A)
+            XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
+            let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_INC_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x28)),
+            (reg: byte(0), val: byte(0x7F)),
+            (reg: byte(1), val: byte(0x28)),
+            (reg: byte(1), val: byte(0x7F)),
+            (reg: byte(2), val: byte(0x28)),
+            (reg: byte(2), val: byte(0x7F)),
+            (reg: byte(3), val: byte(0x28)),
+            (reg: byte(3), val: byte(0x7F)),
+            (reg: byte(4), val: byte(0x28)),
+            (reg: byte(4), val: byte(0x7F)),
+            (reg: byte(5), val: byte(0x28)),
+            (reg: byte(5), val: byte(0x7F)),
+            (reg: byte(7), val: byte(0x28)),
+            (reg: byte(7), val: byte(0x7F)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(testCase.reg, testCase.val)
+            asm.IncReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(testCase.val) + short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((1 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = testCase.val == 0x7F
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_INC_at_HL()
+    {
+        [
+            byte(0x28),
+            byte(0x7F),
+        ].forEach { val in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(val)
+            asm.IncAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(val) + short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, mem[0x0040])
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((1 + 0x0F & val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = val == 0x7F
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_INC_at_IX()
+    {
+        [
+            (val: byte(0x28), disp: sbyte(0)),
+            (val: byte(0x7F), disp: sbyte(0)),
+            (val: byte(0x28), disp: sbyte(1)),
+            (val: byte(0x7F), disp: sbyte(1)),
+            (val: byte(0x28), disp: sbyte(-1)),
+            (val: byte(0x7F), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.IncAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(testCase.val) + short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((1 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = testCase.val == 0x7F
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_INC_at_IY()
+    {
+        [
+            (val: byte(0x28), disp: sbyte(0)),
+            (val: byte(0x7F), disp: sbyte(0)),
+            (val: byte(0x28), disp: sbyte(1)),
+            (val: byte(0x7F), disp: sbyte(1)),
+            (val: byte(0x28), disp: sbyte(-1)),
+            (val: byte(0x7F), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.IncAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(testCase.val) + short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((1 + 0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = testCase.val == 0x7F
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_DEC_r()
+    {
+        [
+            (reg: byte(0), val: byte(0x28)),
+            (reg: byte(0), val: byte(0x80)),
+            (reg: byte(1), val: byte(0x28)),
+            (reg: byte(1), val: byte(0x80)),
+            (reg: byte(2), val: byte(0x28)),
+            (reg: byte(2), val: byte(0x80)),
+            (reg: byte(3), val: byte(0x28)),
+            (reg: byte(3), val: byte(0x80)),
+            (reg: byte(4), val: byte(0x28)),
+            (reg: byte(4), val: byte(0x80)),
+            (reg: byte(5), val: byte(0x28)),
+            (reg: byte(5), val: byte(0x80)),
+            (reg: byte(7), val: byte(0x28)),
+            (reg: byte(7), val: byte(0x80)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(testCase.reg, testCase.val)
+            asm.DecReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(testCase.val) - short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = testCase.val == 0x80
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_DEC_at_HL()
+    {
+        [
+            byte(0x28),
+            byte(0x80),
+        ].forEach { val in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(val)
+            asm.DecAddrHl()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(val) - short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, mem[0x0040])
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & val) == 0, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = val == 0x80
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_DEC_at_IX()
+    {
+        [
+            (val: byte(0x28), disp: sbyte(0)),
+            (val: byte(0x80), disp: sbyte(0)),
+            (val: byte(0x28), disp: sbyte(1)),
+            (val: byte(0x80), disp: sbyte(1)),
+            (val: byte(0x28), disp: sbyte(-1)),
+            (val: byte(0x80), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val)
+            asm.LoadIxVal(0x0040)
+            asm.DecAddrIx(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(testCase.val) - short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = testCase.val == 0x80
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
+
+    func test_DEC_at_IY()
+    {
+        [
+            (val: byte(0x28), disp: sbyte(0)),
+            (val: byte(0x80), disp: sbyte(0)),
+            (val: byte(0x28), disp: sbyte(1)),
+            (val: byte(0x80), disp: sbyte(1)),
+            (val: byte(0x28), disp: sbyte(-1)),
+            (val: byte(0x80), disp: sbyte(-1)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadAtHLVal(testCase.val)
+            asm.LoadIyVal(0x0040)
+            asm.DecAddrIy(testCase.disp)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            let trueSum = short(testCase.val) - short(1)
+            let byteSum = byte(trueSum % 256)
+            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
+            let overflow = testCase.val == 0x80
+            XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+        }
+    }
 }

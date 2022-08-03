@@ -2,280 +2,374 @@
 @testable import z80
 
 final class JumpGroupTests: XCTestCase {
-/*
-        [Test]
-        public void Test_JP_nn()
-        {
-            asm.Jp(0x0005);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
+    var mem: Memory!
+    var asm: Z80Asm!
+    var z80: TestSystem!
 
-            en.Run();
+    override func setUp() {
+        super.setUp()
 
-            Assert.AreEqual(0x06, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x09)]
-        [TestCase(0x00, 0x07)]
-        public void Test_JP_NZ_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7,val);
-            asm.OrReg(7);
-            asm.JpNz(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
+        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        mem = Memory(ram, 0)
+        z80 = TestSystem(mem)
+        asm = Z80Asm(mem)
 
-            en.Run();
+        z80.Reset()
+        asm.Reset()
+    }
 
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x07)]
-        [TestCase(0x00, 0x09)]
-        public void Test_JP_Z_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OrReg(7);
-            asm.JpZ(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
+    override func tearDown() {
+        super.tearDown()
+    }
 
-            en.Run();
+    func test_JP_nn()
+    {
+        asm.Jp(0x0005)
+        asm.Halt()
+        asm.Halt()
+        asm.Halt()
 
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x07)]
-        [TestCase(0x00, 0x09)]
-        public void Test_JP_NC_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.IncReg(7);
-            asm.JpNc(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
+        z80.Run()
 
-            en.Run();
+        XCTAssertEqual(0x06, z80.PC)
+    }
 
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x09)]
-        [TestCase(0x00, 0x07)]
-        public void Test_JP_C_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.IncReg(7);
-            asm.JpC(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
+    func test_JP_NZ_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x09)),
+            (val: byte(0x00), addr: short(0x07)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
 
-            en.Run();
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrReg(7)
+            asm.JpNz(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
 
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0x7F, 0x07)]
-        [TestCase(0x00, 0x09)]
-        public void Test_JP_PO_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.IncReg(7);
-            asm.JpPo(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
+            z80.Run()
 
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0x7F, 0x09)]
-        [TestCase(0x00, 0x07)]
-        public void Test_JP_PE_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.IncReg(7);
-            asm.JpPe(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0x01, 0x09)]
-        [TestCase(0x80, 0x07)]
-        public void Test_JP_P_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OrReg(7);
-            asm.JpP(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0x01, 0x07)]
-        [TestCase(0x80, 0x09)]
-        public void Test_JP_M_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OrReg(7);
-            asm.JpM(0x0008);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-
-        [Test]
-        public void Test_JR_nn()
-        {
-            asm.Jr(0x04);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(0x05, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x08)]
-        [TestCase(0x00, 0x06)]
-        public void Test_JR_NZ_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OrReg(7);
-            asm.JrNz(0x04);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x06)]
-        [TestCase(0x00, 0x08)]
-        public void Test_JR_Z_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OrReg(7);
-            asm.JrZ(0x04);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x06)]
-        [TestCase(0x00, 0x08)]
-        public void Test_JR_NC_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.IncReg(7);
-            asm.JrNc(0x04);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        [TestCase(0xFF, 0x08)]
-        [TestCase(0x00, 0x06)]
-        public void Test_JR_C_nn(byte val, short addr)
-        {
-            asm.LoadRegVal(7, val);
-            asm.IncReg(7);
-            asm.JrC(0x04);
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(addr, en.PC);
-        }
-        [Test]
-        public void Test_JP_HL()
-        {
-            asm.LoadReg16Val(2,0x0006);
-            asm.JpHl();
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(0x07, en.PC);
-        }
-        [Test]
-        public void Test_JP_IX()
-        {
-            asm.LoadIxVal(0x0008);
-            asm.JpIx();
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(0x09, en.PC);
-        }
-        [Test]
-        public void Test_JP_IY()
-        {
-            asm.LoadIyVal(0x0008);
-            asm.JpIy();
-            asm.Halt();
-            asm.Halt();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(0x09, en.PC);
-        }
-        [Test]
-        [TestCase(0x01)]
-        [TestCase(0x42)]
-        public void Test_DJNZ_e(byte loops)
-        {
-            asm.LoadRegVal(0,loops);
-            asm.XorReg(7);
-            asm.IncReg(7);
-            asm.Djnz(-1);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(loops, en.A);
-            Assert.AreEqual(0, en.B);
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
-*/
+
+
+    func test_JP_Z_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x07)),
+            (val: byte(0x00), addr: short(0x09)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrReg(7)
+            asm.JpZ(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_NC_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x07)),
+            (val: byte(0x00), addr: short(0x09)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.IncReg(7)
+            asm.JpNc(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_C_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x09)),
+            (val: byte(0x00), addr: short(0x07)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.IncReg(7)
+            asm.JpC(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_PO_nn()
+    {
+        [
+            (val: byte(0x7F), addr: short(0x07)),
+            (val: byte(0x00), addr: short(0x09)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.IncReg(7)
+            asm.JpPo(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_PE_nn()
+    {
+        [
+            (val: byte(0x7F), addr: short(0x09)),
+            (val: byte(0x00), addr: short(0x07)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.IncReg(7)
+            asm.JpPe(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_P_nn()
+    {
+        [
+            (val: byte(0x01), addr: short(0x09)),
+            (val: byte(0x80), addr: short(0x07)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrReg(7)
+            asm.JpP(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_M_nn()
+    {
+        [
+            (val: byte(0x01), addr: short(0x07)),
+            (val: byte(0x80), addr: short(0x09)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrReg(7)
+            asm.JpM(0x0008)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JR_nn()
+    {
+        asm.Jr(0x04)
+        asm.Halt()
+        asm.Halt()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(0x05, z80.PC)
+    }
+
+    func test_JR_NZ_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x08)),
+            (val: byte(0x00), addr: short(0x06)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrReg(7)
+            asm.JrNz(0x04)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JR_Z_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x06)),
+            (val: byte(0x00), addr: short(0x08)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.OrReg(7)
+            asm.JrZ(0x04)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JR_NC_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x06)),
+            (val: byte(0x00), addr: short(0x08)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.IncReg(7)
+            asm.JrNc(0x04)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JR_C_nn()
+    {
+        [
+            (val: byte(0xFF), addr: short(0x08)),
+            (val: byte(0x00), addr: short(0x06)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.IncReg(7)
+            asm.JrC(0x04)
+            asm.Halt()
+            asm.Halt()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+        }
+    }
+
+    func test_JP_HL()
+    {
+        asm.LoadReg16Val(2, 0x0006)
+        asm.JpHl()
+        asm.Halt()
+        asm.Halt()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(0x07, z80.PC)
+    }
+
+    func test_JP_IX()
+    {
+        asm.LoadIxVal(0x0008)
+        asm.JpIx()
+        asm.Halt()
+        asm.Halt()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(0x09, z80.PC)
+    }
+
+    func test_JP_IY()
+    {
+        asm.LoadIyVal(0x0008)
+        asm.JpIy()
+        asm.Halt()
+        asm.Halt()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(0x09, z80.PC)
+    }
+
+    func test_DJNZ_e()
+    {
+        [
+            byte(0x01),
+            byte(0x42),
+        ].forEach { loops in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(0, loops)
+            asm.XorReg(7)
+            asm.IncReg(7)
+            asm.Djnz(-1)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(loops, z80.A)
+            XCTAssertEqual(0, z80.B)
+        }
+    }
 }

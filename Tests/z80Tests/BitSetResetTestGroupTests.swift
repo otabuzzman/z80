@@ -2,16 +2,17 @@
 @testable import z80
 
 final class BitSetResetTestGroupTests: XCTestCase {
-    var ram: Memory!
+    var mem: Memory!
     var asm: Z80Asm!
     var z80: TestSystem!
 
     override func setUp() {
         super.setUp()
 
-        ram = Memory(0x10000, 0)
-        z80 = TestSystem(ram)
-        asm = Z80Asm(ram)
+        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        mem = Memory(ram, 0)
+        z80 = TestSystem(mem)
+        asm = Z80Asm(mem)
 
         z80.Reset()
         asm.Reset()
@@ -283,7 +284,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(testCase.res, ram[z80.HL], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, ram[z80.HL]))
+            XCTAssertEqual(testCase.res, mem[z80.HL], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.HL]))
         }
     }
 
@@ -311,7 +312,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(testCase.res, ram[z80.IX + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, ram[z80.IX + testCase.d]))
+            XCTAssertEqual(testCase.res, mem[z80.IX + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IX + testCase.d]))
         }
     }
 
@@ -339,7 +340,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(testCase.res, ram[z80.IY + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, ram[z80.IY + testCase.d]))
+            XCTAssertEqual(testCase.res, mem[z80.IY + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IY + testCase.d]))
         }
     }
 
@@ -440,7 +441,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(testCase.res, ram[z80.HL], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, ram[z80.HL]))
+            XCTAssertEqual(testCase.res, mem[z80.HL], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.HL]))
         }
     }
 
@@ -468,7 +469,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             z80.Run()
 
            XCTAssertEqual(asm.Position, z80.PC)
-           XCTAssertEqual(testCase.res, ram[z80.IX + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, ram[z80.IX + testCase.d]))
+           XCTAssertEqual(testCase.res, mem[z80.IX + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IX + testCase.d]))
         }
     }
 
@@ -496,7 +497,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(testCase.res, ram[z80.IY + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, ram[z80.IY + testCase.d]))
+            XCTAssertEqual(testCase.res, mem[z80.IY + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IY + testCase.d]))
         }
     }
 }

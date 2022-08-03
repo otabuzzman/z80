@@ -2,16 +2,17 @@ import XCTest
 @testable import z80
 
 final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
-    var ram: Memory!
+    var mem: Memory!
     var asm: Z80Asm!
     var z80: TestSystem!
 
     override func setUp() {
         super.setUp()
 
-        ram = Memory(0x10000, 0)
-        z80 = TestSystem(ram)
-        asm = Z80Asm(ram)
+        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        mem = Memory(ram, 0)
+        z80 = TestSystem(mem)
+        asm = Z80Asm(mem)
 
         z80.Reset()
         asm.Reset()

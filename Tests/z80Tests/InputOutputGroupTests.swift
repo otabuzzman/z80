@@ -2,324 +2,380 @@
 @testable import z80
 
 final class InputOutputTests: XCTestCase {
-/*
-        [Test]
-        [TestCase(0x00)]
-        [TestCase(0x42)]
-        public void Test_IN_A_n(byte val)
-        {
-            asm.LoadRegVal(7, val);
-            asm.InAPort(0x34);
-            asm.Halt();
+    var mem: Memory!
+    var asm: Z80Asm!
+    var z80: TestSystem!
 
-            en.TestPorts.SetInput((ushort)(val * 256 + 0x34), 0x56);
-            en.Run();
+    override func setUp() {
+        super.setUp()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x56, en.A);
-        }
+        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        mem = Memory(ram, 0)
+        z80 = TestSystem(mem)
+        asm = Z80Asm(mem)
 
-        [Test]
-        [TestCase(2, 0x3C, false, false, true)]
-        [TestCase(3, 0xBB, true, false, true)]
-        [TestCase(2, 0xEB, true, false, true)]
-        [TestCase(0, 0x38, false, false, false)]
-        [TestCase(7, 0x9A, true, false, true)]
-        [TestCase(2, 0x47, false, false, true)]
-        [TestCase(3, 0x8D, true, false, true)]
-        [TestCase(5, 0x71, false, false, true)]
-        [TestCase(2, 0x58, false, false, false)]
-        [TestCase(7, 0x45, false, false, false)]
-        [TestCase(3, 0x56, false, false, true)]
-        [TestCase(1, 0x91, true, false, false)]
-        [TestCase(1, 0x00, false, true, true)]
-        [TestCase(2, 0xC0, true, false, true)]
-        [TestCase(1, 0x79, false, false, false)]
-        [TestCase(7, 0x5A, false, false, true)]
-        [TestCase(4, 0x9A, true, false, true)]
-        [TestCase(0, 0x07, false, false, false)]
-        public void Test_IN_r_BC(byte reg, byte val, bool sign, bool zero, bool parity)
-        {
-            asm.LoadReg16Val(0, 0x1234);
-            asm.InRegBc(reg);
-            asm.Halt();
+        z80.Reset()
+        asm.Reset()
+    }
 
-            en.TestPorts.SetInput(0x1234, val);
-            en.Run();
+    override func tearDown() {
+        super.tearDown()
+    }
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(val, en.Reg8(reg));
-            Assert.AreEqual(sign, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(zero, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagN, "Flag N contained the wrong value");
-        }
+    func test_IN_A_n()
+    {
+        [
+            byte(0x00),
+            byte(0x42),
+        ].forEach { val in
+            tearDown()
+            setUp()
 
-        [Test]
-        [TestCase(0x03, false)]
-        [TestCase(0x01, true)]
-        public void Test_INI(byte b, bool zero)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Ini();
-            asm.Halt();
+            asm.LoadRegVal(7, val)
+            asm.InAPort(0x34)
+            asm.Halt()
 
-            en.TestPorts.SetInput((ushort)(b * 256 + 0x34), 0x01);
-            en.Run();
+            z80.testPorts.SetInput((ushort)(val) * 256 + 0x34, 0x56)
+            z80.Run()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x01, _ram[0x0040]);
-            Assert.AreEqual(b - 1, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x0041, en.HL);
-            Assert.AreEqual(zero, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03, false)]
-        [TestCase(0x01, true)]
-        public void Test_IND(byte b, bool zero)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Ind();
-            asm.Halt();
-
-            en.TestPorts.SetInput((ushort)(b * 256 + 0x34), 0x01);
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x01, _ram[0x0040]);
-            Assert.AreEqual(b - 1, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x003F, en.HL);
-            Assert.AreEqual(zero, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03)]
-        [TestCase(0x01)]
-        public void Test_INIR(byte b)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Inir();
-            asm.Halt();
-
-            for (byte i = b; i > 0; i--)
-                en.TestPorts.SetInput((ushort)(i * 256 + 0x34), i);
-            en.Run();
-            en.DumpRam();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            for (byte i = 0; i < b; i++)
-                Assert.AreEqual(b - i, _ram[(ushort)(0x0040 + i)]);
-            Assert.AreEqual(0, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x0040 + b, en.HL);
-            Assert.AreEqual(true, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03)]
-        [TestCase(0x01)]
-        public void Test_INDR(byte b)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Indr();
-            asm.Halt();
-
-            for (byte i = b; i > 0; i--)
-                en.TestPorts.SetInput((ushort)(i * 256 + 0x34), i);
-            en.Run();
-
-            en.DumpRam();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            for (byte i = 0; i < b; i++)
-                Assert.AreEqual(b - i, _ram[(ushort)(0x0040 - i)]);
-            Assert.AreEqual(0, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x0040 - b, en.HL);
-            Assert.AreEqual(true, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x00)]
-        [TestCase(0x42)]
-        public void Test_OUT_n_A(byte val)
-        {
-            asm.LoadRegVal(7, val);
-            asm.OutPortA(0x34);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(val, en.TestPorts.GetOutput((ushort)(val * 256 + 0x34)));
-        }
-
-        [Test]
-        [TestCase(2, 0x3C, false, false, true)]
-        [TestCase(3, 0xBB, true, false, true)]
-        [TestCase(2, 0xEB, true, false, true)]
-        [TestCase(4, 0x38, false, false, false)]
-        [TestCase(7, 0x9A, true, false, true)]
-        [TestCase(2, 0x47, false, false, true)]
-        [TestCase(3, 0x8D, true, false, true)]
-        [TestCase(5, 0x71, false, false, true)]
-        [TestCase(2, 0x58, false, false, false)]
-        [TestCase(7, 0x45, false, false, false)]
-        [TestCase(3, 0x56, false, false, true)]
-        [TestCase(7, 0x91, true, false, false)]
-        [TestCase(5, 0x00, false, true, true)]
-        [TestCase(2, 0xC0, true, false, true)]
-        [TestCase(2, 0x79, false, false, false)]
-        [TestCase(7, 0x5A, false, false, true)]
-        [TestCase(4, 0x9A, true, false, true)]
-        [TestCase(3, 0x07, false, false, false)]
-        public void Test_OUT_BC_r(byte reg, byte val, bool sign, bool zero, bool parity)
-        {
-            asm.LoadReg16Val(0, 0x1234);
-            asm.LoadRegVal(reg, val);
-            asm.OutBcReg(reg);
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(val, en.TestPorts.GetOutput(0x1234));
-            Assert.AreEqual(sign, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(zero, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
-            Assert.AreEqual(parity, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(false, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03, false)]
-        [TestCase(0x01, true)]
-        public void Test_OUTI(byte b, bool zero)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(0x01);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Outi();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x01, en.TestPorts.GetOutput((ushort)(b * 256 + 0x34)));
-            Assert.AreEqual(b - 1, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x0041, en.HL);
-            Assert.AreEqual(zero, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03, false)]
-        [TestCase(0x01, true)]
-        public void Test_OUTD(byte b, bool zero)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadAtHLVal(0x01);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Outd();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x01, en.TestPorts.GetOutput((ushort)(b * 256 + 0x34)));
-            Assert.AreEqual(b - 1, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x003F, en.HL);
-            Assert.AreEqual(zero, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03)]
-        [TestCase(0x01)]
-        public void Test_OUTIR(byte b)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Outir();
-            asm.Halt();
-
-            for (byte i = 0; i < b; i++)
-                _ram[(ushort)(0x0040 + i)] = (byte)(b - i);
-
-            en.Run();
-            en.DumpRam();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            for (byte i = b; i > 0; i--)
-                Assert.AreEqual(i, en.TestPorts.GetOutput((ushort)(i * 256 + 0x34)));
-            Assert.AreEqual(0, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x0040 + b, en.HL);
-            Assert.AreEqual(true, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-
-        [Test]
-        [TestCase(0x03)]
-        [TestCase(0x01)]
-        public void Test_OUTDR(byte b)
-        {
-            asm.LoadReg16Val(2, 0x0040);
-            asm.LoadReg16Val(0, (ushort)(b * 256 + 0x34));
-            asm.Outdr();
-            asm.Halt();
-
-            for (byte i = 0; i < b; i++)
-                _ram[(ushort)(0x0040 - i)] = (byte)(b - i);
-            en.Run();
-
-            en.DumpRam();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            for (byte i = b; i > 0; i--)
-                Assert.AreEqual(i, en.TestPorts.GetOutput((ushort)(i * 256 + 0x34)));
-            Assert.AreEqual(0, en.B);
-            Assert.AreEqual(0x34, en.C);
-            Assert.AreEqual(0x0040 - b, en.HL);
-            Assert.AreEqual(true, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(true, en.FlagN, "Flag N contained the wrong value");
-        }
-        private void generator()
-        {
-            Func<bool, string> l = b => b.ToString().ToLower();
-            var r = new Random();
-            for (int i = 0; i < 20; i++)
-            {
-                var reg = r.Next(7);
-                var val = r.Next(256);
-                if (reg == 6) reg++;
-                var p =
-                    ((val & 0x80) >> 7) +
-                    ((val & 0x40) >> 6) +
-                    ((val & 0x20) >> 5) +
-                    ((val & 0x10) >> 4) +
-                    ((val & 0x08) >> 3) +
-                    ((val & 0x04) >> 2) +
-                    ((val & 0x02) >> 1) +
-                    (val & 0x01);
-                Console.WriteLine($"[TestCase({reg}, 0x{val:X2}, {l(val > 127)}, {l(val == 0)}, {l(p % 2 == 0)})]");
-            }
-            Assert.Fail();
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(0x56, z80.A)
         }
     }
-*/
+
+    func test_IN_r_BC()
+    {
+        [
+            (reg: byte(2), val: byte(0x3C), sign: false, zero: false, parity: true),
+            (reg: byte(3), val: byte(0xBB), sign: true, zero: false, parity: true),
+            (reg: byte(2), val: byte(0xEB), sign: true, zero: false, parity: true),
+            (reg: byte(0), val: byte(0x38), sign: false, zero: false, parity: false),
+            (reg: byte(7), val: byte(0x9A), sign: true, zero: false, parity: true),
+            (reg: byte(2), val: byte(0x47), sign: false, zero: false, parity: true),
+            (reg: byte(3), val: byte(0x8D), sign: true, zero: false, parity: true),
+            (reg: byte(5), val: byte(0x71), sign: false, zero: false, parity: true),
+            (reg: byte(2), val: byte(0x58), sign: false, zero: false, parity: false),
+            (reg: byte(7), val: byte(0x45), sign: false, zero: false, parity: false),
+            (reg: byte(3), val: byte(0x56), sign: false, zero: false, parity: true),
+            (reg: byte(1), val: byte(0x91), sign: true, zero: false, parity: false),
+            (reg: byte(1), val: byte(0x00), sign: false, zero: true, parity: true),
+            (reg: byte(2), val: byte(0xC0), sign: true, zero: false, parity: true),
+            (reg: byte(1), val: byte(0x79), sign: false, zero: false, parity: false),
+            (reg: byte(7), val: byte(0x5A), sign: false, zero: false, parity: true),
+            (reg: byte(4), val: byte(0x9A), sign: true, zero: false, parity: true),
+            (reg: byte(0), val: byte(0x07), sign: false, zero: false, parity: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(0, 0x1234)
+            asm.InRegBc(testCase.reg)
+            asm.Halt()
+
+            z80.testPorts.SetInput(0x1234, testCase.val)
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(testCase.val, z80.Reg8(testCase.reg))
+            XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(testCase.parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_INI()
+    {
+        [
+            (b: byte(0x03), zero: false),
+            (b: byte(0x01), zero: true),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.Ini()
+            asm.Halt()
+
+            z80.testPorts.SetInput((ushort)(testCase.b) * 256 + 0x34, 0x01)
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(0x01, mem[0x0040])
+            XCTAssertEqual(testCase.b - 1, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x0041, z80.HL)
+            XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_IND()
+    {
+        [
+            (b: byte(0x03), zero: false),
+            (b: byte(0x01), zero: true),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.Ind()
+            asm.Halt()
+
+            z80.testPorts.SetInput((ushort)(testCase.b)	 * 256 + 0x34, 0x01)
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(0x01, mem[0x0040])
+            XCTAssertEqual(testCase.b - 1, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x003F, z80.HL)
+            XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_INIR()
+    {
+        [
+            byte(0x03),
+            byte(0x01),
+        ].forEach { b in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.Inir()
+            asm.Halt()
+
+            for i: byte in (1...b).reversed() {
+                z80.testPorts.SetInput((ushort)(i) * 256 + 0x34, i)
+            }
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            for i: byte in 0..<b {
+                XCTAssertEqual(b - i, mem[(ushort)(0x0040 + i)])
+            }
+            XCTAssertEqual(0, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x0040 + b, z80.HL)
+            XCTAssertEqual(true, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_INDR()
+    {
+        [
+            byte(0x03),
+            byte(0x01),
+        ].forEach { b in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.Indr()
+            asm.Halt()
+
+            for i: byte in (1...b).reversed() {
+                z80.testPorts.SetInput((ushort)(i) * 256 + 0x34, i)
+            }
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            for i: byte in 0..<b {
+                XCTAssertEqual(b - i, mem[(ushort)(0x0040 - i)])
+            }
+            XCTAssertEqual(0, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x0040 - b, z80.HL)
+            XCTAssertEqual(true, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_OUT_n_A()
+    {
+        [
+            byte(0x00),
+            byte(0x42),
+        ].forEach { val in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, val)
+            asm.OutPortA(0x34)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(val, z80.testPorts.GetOutput((ushort)(val) * 256 + 0x34))
+        }
+    }
+
+    func test_OUT_BC_r()
+    {
+        [
+            (reg: byte(2), val: byte(0x3C), sign: false, zero: false, parity: true),
+            (reg: byte(3), val: byte(0xBB), sign: true, zero: false, parity: true),
+            (reg: byte(2), val: byte(0xEB), sign: true, zero: false, parity: true),
+            (reg: byte(4), val: byte(0x38), sign: false, zero: false, parity: false),
+            (reg: byte(7), val: byte(0x9A), sign: true, zero: false, parity: true),
+            (reg: byte(2), val: byte(0x47), sign: false, zero: false, parity: true),
+            (reg: byte(3), val: byte(0x8D), sign: true, zero: false, parity: true),
+            (reg: byte(5), val: byte(0x71), sign: false, zero: false, parity: true),
+            (reg: byte(2), val: byte(0x58), sign: false, zero: false, parity: false),
+            (reg: byte(7), val: byte(0x45), sign: false, zero: false, parity: false),
+            (reg: byte(3), val: byte(0x56), sign: false, zero: false, parity: true),
+            (reg: byte(7), val: byte(0x91), sign: true, zero: false, parity: false),
+            (reg: byte(5), val: byte(0x00), sign: false, zero: true, parity: true),
+            (reg: byte(2), val: byte(0xC0), sign: true, zero: false, parity: true),
+            (reg: byte(2), val: byte(0x79), sign: false, zero: false, parity: false),
+            (reg: byte(7), val: byte(0x5A), sign: false, zero: false, parity: true),
+            (reg: byte(4), val: byte(0x9A), sign: true, zero: false, parity: true),
+            (reg: byte(3), val: byte(0x07), sign: false, zero: false, parity: false),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(0, 0x1234)
+            asm.LoadRegVal(testCase.reg, testCase.val)
+            asm.OutBcReg(testCase.reg)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(testCase.val, z80.testPorts.GetOutput(0x1234))
+            XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(testCase.parity, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_OUTI()
+    {
+        [
+            (b: byte(0x03), zero: false),
+            (b: byte(0x01), zero: true),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(0x01)
+            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.Outi()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(0x01, z80.testPorts.GetOutput((ushort)(testCase.b) * 256 + 0x34))
+            XCTAssertEqual(testCase.b - 1, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x0041, z80.HL)
+            XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_OUTD()
+    {
+        [
+            (b: byte(0x03), zero: false),
+            (b: byte(0x01), zero: true),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadAtHLVal(0x01)
+            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.Outd()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(0x01, z80.testPorts.GetOutput((ushort)(testCase.b) * 256 + 0x34))
+            XCTAssertEqual(testCase.b - 1, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x003F, z80.HL)
+            XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_OUTIR()
+    {
+        [
+            byte(0x03),
+            byte(0x01),
+        ].forEach { b in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.Outir()
+            asm.Halt()
+
+            for i: byte in 0..<b {
+                mem[(ushort)(0x0040 + i)] = (byte)(b - i)
+            }
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            for i: byte in (1...b).reversed() {
+                XCTAssertEqual(i, z80.testPorts.GetOutput((ushort)(i) * 256 + 0x34))
+            }
+            XCTAssertEqual(0, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x0040 + b, z80.HL)
+            XCTAssertEqual(true, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
+
+    func test_OUTDR()
+    {
+        [
+            byte(0x03),
+            byte(0x01),
+        ].forEach { b in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(2, 0x0040)
+            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.Outdr()
+            asm.Halt()
+
+            for i: byte in 0..<b {
+                mem[(ushort)(0x0040 - i)] = (byte)(b - i)
+            }
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            for i: byte in (1...b).reversed() {
+                XCTAssertEqual(i, z80.testPorts.GetOutput((ushort)(i) * 256 + 0x34))
+            }
+            XCTAssertEqual(0, z80.B)
+            XCTAssertEqual(0x34, z80.C)
+            XCTAssertEqual(0x0040 - b, z80.HL)
+            XCTAssertEqual(true, z80.FlagZ, "Flag Z contained the wrong value")
+            XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
+        }
+    }
 }

@@ -2,404 +2,462 @@
 @testable import z80
 
 final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
-/*
-        [Test]
-        public void Test_EX_DE_HL()
-        {
-            asm.LoadReg16Val(1, 0x1122);
-            asm.LoadReg16Val(2, 0x1942);
-            asm.ExDeHl();
-            asm.Halt();
+    var mem: Memory!
+    var asm: Z80Asm!
+    var z80: TestSystem!
 
-            en.Run();
+    override func setUp() {
+        super.setUp()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x1122, en.HL);
-            Assert.AreEqual(0x1942, en.DE);
+        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        mem = Memory(ram, 0)
+        z80 = TestSystem(mem)
+        asm = Z80Asm(mem)
+
+        z80.Reset()
+        asm.Reset()
+    }
+
+    override func tearDown() {
+        super.tearDown()
+    }
+
+    func test_EX_DE_HL()
+    {
+        asm.LoadReg16Val(1, 0x1122)
+        asm.LoadReg16Val(2, 0x1942)
+        asm.ExDeHl()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x1122, z80.HL)
+        XCTAssertEqual(0x1942, z80.DE)
+    }
+
+    func test_EX_AF_AFp()
+    {
+        asm.LoadReg16Val(0, 0x1942)
+        asm.PushReg16(0)
+        asm.PopReg16(3)
+        asm.ExAfAfp()
+        asm.LoadReg16Val(0, 0x1122)
+        asm.PushReg16(0)
+        asm.PopReg16(3)
+        asm.ExAfAfp()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x4219, z80.AF)
+        XCTAssertEqual(0x2211, z80.AFp)
+    }
+
+    func test_EXX()
+    {
+        asm.LoadReg16Val(0, 0x1942)
+        asm.LoadReg16Val(1, 0x2041)
+        asm.LoadReg16Val(2, 0x2140)
+        asm.Exx()
+        asm.LoadReg16Val(0, 0x1122)
+        asm.LoadReg16Val(1, 0x1223)
+        asm.LoadReg16Val(2, 0x1324)
+        asm.Exx()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x1942, z80.BC)
+        XCTAssertEqual(0x2041, z80.DE)
+        XCTAssertEqual(0x2140, z80.HL)
+        XCTAssertEqual(0x1122, z80.BCp)
+        XCTAssertEqual(0x1223, z80.DEp)
+        XCTAssertEqual(0x1324, z80.HLp)
+    }
+
+    func test_EX_at_SP_HL()
+    {
+        asm.LoadReg16Val(2, 0x1942)
+        asm.LoadReg16Val(3, 0x0040)
+        asm.LoadRegVal(7, 0x22)
+        asm.LoadAddrA(0x0040)
+        asm.LoadRegVal(7, 0x11)
+        asm.LoadAddrA(0x0041)
+        asm.ExAddrSpHl()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x1122, z80.HL)
+        XCTAssertEqual(0x42, mem[0x40])
+        XCTAssertEqual(0x19, mem[0x41])
+    }
+
+    func test_EX_at_SP_IX()
+    {
+        asm.LoadIxVal(0x1942)
+        asm.LoadReg16Val(3, 0x0040)
+        asm.LoadRegVal(7, 0x22)
+        asm.LoadAddrA(0x0040)
+        asm.LoadRegVal(7, 0x11)
+        asm.LoadAddrA(0x0041)
+        asm.ExAddrSpIx()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x1122, z80.IX)
+        XCTAssertEqual(0x42, mem[0x40])
+        XCTAssertEqual(0x19, mem[0x41])
+    }
+
+    func test_EX_at_SP_IY()
+    {
+        asm.LoadIyVal(0x1942)
+        asm.LoadReg16Val(3, 0x0040)
+        asm.LoadRegVal(7, 0x22)
+        asm.LoadAddrA(0x0040)
+        asm.LoadRegVal(7, 0x11)
+        asm.LoadAddrA(0x0041)
+        asm.ExAddrSpIy()
+        asm.Halt()
+
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x1122, z80.IY)
+        XCTAssertEqual(0x42, mem[0x40])
+        XCTAssertEqual(0x19, mem[0x41])
+    }
+
+    func test_LDI()
+    {
+        [
+            byte(7),
+            byte(1),
+        ].forEach { bc in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x3333)
+            asm.LoadReg16Val(0, 0xFFFF)
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(0, ushort(bc))
+            asm.LoadReg16Val(1, 0x2222)
+            asm.LoadReg16Val(2, 0x1111)
+            asm.LoadRegVal(7, 0x88)
+            asm.LoadAddrA(0x1111)
+            asm.LoadRegVal(7, 0x66)
+            asm.LoadAddrA(0x2222)
+            asm.Ldi()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(ushort(bc - 1), z80.BC)
+            XCTAssertEqual(0x2223, z80.DE)
+            XCTAssertEqual(0x1112, z80.HL)
+            XCTAssertEqual(0x88, mem[0x1111])
+            XCTAssertEqual(0x88, mem[0x2222])
+            XCTAssertFalse(z80.FlagH)
+            XCTAssertFalse(z80.FlagN)
+            XCTAssertEqual(bc != 1, z80.FlagP, "Flag P contained the wrong value")
         }
+    }
 
-        [Test]
-        public void Test_EX_AF_AFp()
-        {
-            asm.LoadReg16Val(0, 0x1942);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.ExAfAfp();
-            asm.LoadReg16Val(0, 0x1122);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.ExAfAfp();
-            asm.Halt();
+    func test_LDIR()
+    {
+        mem[0x1111] = 0x88
+        mem[0x1112] = 0x36
+        mem[0x1113] = 0xA5
+        mem[0x1114] = 0x42
+        mem[0x2222] = 0x66
+        mem[0x2223] = 0x59
+        mem[0x2224] = 0xC5
+        mem[0x2225] = 0x24
 
-            en.Run();
+        asm.LoadReg16Val(3, 0x3333)
+        asm.LoadReg16Val(0, 0xFFFF)
+        asm.PushReg16(0)
+        asm.PopReg16(3)
+        asm.LoadReg16Val(0, 0x0003)
+        asm.LoadReg16Val(1, 0x2222)
+        asm.LoadReg16Val(2, 0x1111)
+        asm.Ldir()
+        asm.Halt()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x4219, en.AF);
-            Assert.AreEqual(0x2211, en.AFp);
+        z80.Run()
+
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x0000, z80.BC)
+        XCTAssertEqual(0x2225, z80.DE)
+        XCTAssertEqual(0x1114, z80.HL)
+        XCTAssertEqual(0x88, mem[0x1111])
+        XCTAssertEqual(0x36, mem[0x1112])
+        XCTAssertEqual(0xA5, mem[0x1113])
+        XCTAssertEqual(0x42, mem[0x1114])
+        XCTAssertEqual(0x88, mem[0x2222])
+        XCTAssertEqual(0x36, mem[0x2223])
+        XCTAssertEqual(0xA5, mem[0x2224])
+        XCTAssertEqual(0x24, mem[0x2225])
+        XCTAssertFalse(z80.FlagH)
+        XCTAssertFalse(z80.FlagN)
+        XCTAssertFalse(z80.FlagP)
+    }
+
+    func test_LDD()
+    {
+        [
+            byte(7),
+            byte(1),
+        ].forEach { bc in
+            tearDown()
+            setUp()
+
+            asm.LoadReg16Val(3, 0x3333)
+            asm.LoadReg16Val(0, 0xFFFF)
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(0, ushort(bc))
+            asm.LoadReg16Val(1, 0x2222)
+            asm.LoadReg16Val(2, 0x1111)
+            asm.LoadRegVal(7, 0x88)
+            asm.LoadAddrA(0x1111)
+            asm.LoadRegVal(7, 0x66)
+            asm.LoadAddrA(0x2222)
+            asm.Ldd()
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(ushort(bc - 1), z80.BC)
+            XCTAssertEqual(0x2221, z80.DE)
+            XCTAssertEqual(0x1110, z80.HL)
+            XCTAssertEqual(0x88, mem[0x1111])
+            XCTAssertEqual(0x88, mem[0x2222])
+            XCTAssertFalse(z80.FlagH)
+            XCTAssertFalse(z80.FlagN)
+            XCTAssertEqual(bc != 1, z80.FlagP, "Flag P contained the wrong value")
         }
+    }
 
-        [Test]
-        public void Test_EXX()
-        {
-            asm.LoadReg16Val(0, 0x1942);
-            asm.LoadReg16Val(1, 0x2041);
-            asm.LoadReg16Val(2, 0x2140);
-            asm.Exx();
-            asm.LoadReg16Val(0, 0x1122);
-            asm.LoadReg16Val(1, 0x1223);
-            asm.LoadReg16Val(2, 0x1324);
-            asm.Exx();
-            asm.Halt();
+    func test_LDDR()
+    {
+        mem[0x1111] = 0x42
+        mem[0x1112] = 0x88
+        mem[0x1113] = 0x36
+        mem[0x1114] = 0xA5
+        mem[0x2222] = 0x24
+        mem[0x2223] = 0x66
+        mem[0x2224] = 0x59
+        mem[0x2225] = 0xC5
 
-            en.Run();
+        asm.LoadReg16Val(3, 0x3333)
+        asm.LoadReg16Val(0, 0xFFFF)
+        asm.PushReg16(0)
+        asm.PopReg16(3)
+        asm.LoadReg16Val(0, 0x0003)
+        asm.LoadReg16Val(1, 0x2225)
+        asm.LoadReg16Val(2, 0x1114)
+        asm.Lddr()
+        asm.Halt()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x1942, en.BC);
-            Assert.AreEqual(0x2041, en.DE);
-            Assert.AreEqual(0x2140, en.HL);
-            Assert.AreEqual(0x1122, en.BCp);
-            Assert.AreEqual(0x1223, en.DEp);
-            Assert.AreEqual(0x1324, en.HLp);
-        }
+        z80.Run()
 
-        [Test]
-        public void Test_EX_at_SP_HL()
-        {
-            asm.LoadReg16Val(2, 0x1942);
-            asm.LoadReg16Val(3, 0x0040);
-            asm.LoadRegVal(7, 0x22);
-            asm.LoadAddrA(0x0040);
-            asm.LoadRegVal(7, 0x11);
-            asm.LoadAddrA(0x0041);
-            asm.ExAddrSpHl();
-            asm.Halt();
+        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(0x0000, z80.BC)
+        XCTAssertEqual(0x2222, z80.DE)
+        XCTAssertEqual(0x1111, z80.HL)
+        XCTAssertEqual(0x88, mem[0x1112])
+        XCTAssertEqual(0x36, mem[0x1113])
+        XCTAssertEqual(0xA5, mem[0x1114])
+        XCTAssertEqual(0x42, mem[0x1111])
+        XCTAssertEqual(0x88, mem[0x2223])
+        XCTAssertEqual(0x36, mem[0x2224])
+        XCTAssertEqual(0xA5, mem[0x2225])
+        XCTAssertEqual(0x24, mem[0x2222])
+        XCTAssertFalse(z80.FlagH)
+        XCTAssertFalse(z80.FlagN)
+        XCTAssertFalse(z80.FlagP)
+    }
 
-            en.Run();
+    func test_CPI()
+    {
+        [
+            (bc: byte(7), a: byte(0x3F)),
+            (bc: byte(1), a: byte(0x3F)),
+            (bc: byte(7), a: byte(0x42)),
+            (bc: byte(1), a: byte(0x42)),
+            (bc: byte(7), a: byte(0x21)),
+            (bc: byte(1), a: byte(0x21)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x1122, en.HL);
-            Assert.AreEqual(0x42, _ram[0x40]);
-            Assert.AreEqual(0x19, _ram[0x41]);
-        }
+            asm.LoadReg16Val(3, 0x3333)
+            asm.LoadReg16Val(0, 0xFFFF)
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(2, 0x1111)
+            asm.LoadRegVal(7, 0x3F)
+            asm.LoadAddrA(0x1111)
+            asm.LoadRegVal(7, testCase.a)
+            asm.Cpi()
+            asm.Halt()
 
-        [Test]
-        public void Test_EX_at_SP_IX()
-        {
-            asm.LoadIxVal(0x1942);
-            asm.LoadReg16Val(3, 0x0040);
-            asm.LoadRegVal(7, 0x22);
-            asm.LoadAddrA(0x0040);
-            asm.LoadRegVal(7, 0x11);
-            asm.LoadAddrA(0x0041);
-            asm.ExAddrSpIx();
-            asm.Halt();
+            z80.Run()
 
-            en.Run();
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(ushort(testCase.bc - 1), z80.BC)
+            XCTAssertEqual(0x1112, z80.HL)
+            XCTAssertEqual(testCase.a, z80.A)
+            XCTAssertEqual(0x3F, mem[0x1111])
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x1122, en.IX);
-            Assert.AreEqual(0x42, _ram[0x40]);
-            Assert.AreEqual(0x19, _ram[0x41]);
-        }
-
-        [Test]
-        public void Test_EX_at_SP_IY()
-        {
-            asm.LoadIyVal(0x1942);
-            asm.LoadReg16Val(3, 0x0040);
-            asm.LoadRegVal(7, 0x22);
-            asm.LoadAddrA(0x0040);
-            asm.LoadRegVal(7, 0x11);
-            asm.LoadAddrA(0x0041);
-            asm.ExAddrSpIy();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x1122, en.IY);
-            Assert.AreEqual(0x42, _ram[0x40]);
-            Assert.AreEqual(0x19, _ram[0x41]);
-        }
-
-        [Test]
-        [TestCase(7)]
-        [TestCase(1)]
-        public void Test_LDI(byte bc)
-        {
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, bc);
-            asm.LoadReg16Val(1, 0x2222);
-            asm.LoadReg16Val(2, 0x1111);
-            asm.LoadRegVal(7, 0x88);
-            asm.LoadAddrA(0x1111);
-            asm.LoadRegVal(7, 0x66);
-            asm.LoadAddrA(0x2222);
-            asm.Ldi();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(bc - 1, en.BC);
-            Assert.AreEqual(0x2223, en.DE);
-            Assert.AreEqual(0x1112, en.HL);
-            Assert.AreEqual(0x88, _ram[0x1111]);
-            Assert.AreEqual(0x88, _ram[0x2222]);
-            Assert.IsFalse(en.FlagH);
-            Assert.IsFalse(en.FlagN);
-            Assert.AreEqual(bc != 1, en.FlagP, "Flag P contained the wrong value");
-        }
-
-        [Test]
-        public void Test_LDIR()
-        {
-            Array.Copy(new byte[] { 0x88, 0x36, 0xA5, 0x42 }, 0, _ram, 0x1111, 4);
-            Array.Copy(new byte[] { 0x66, 0x59, 0xC5, 0x24 }, 0, _ram, 0x2222, 4);
-
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, 0x0003);
-            asm.LoadReg16Val(1, 0x2222);
-            asm.LoadReg16Val(2, 0x1111);
-            asm.Ldir();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x0000, en.BC);
-            Assert.AreEqual(0x2225, en.DE);
-            Assert.AreEqual(0x1114, en.HL);
-            Assert.AreEqual(0x88, _ram[0x1111]);
-            Assert.AreEqual(0x36, _ram[0x1112]);
-            Assert.AreEqual(0xA5, _ram[0x1113]);
-            Assert.AreEqual(0x42, _ram[0x1114]);
-            Assert.AreEqual(0x88, _ram[0x2222]);
-            Assert.AreEqual(0x36, _ram[0x2223]);
-            Assert.AreEqual(0xA5, _ram[0x2224]);
-            Assert.AreEqual(0x24, _ram[0x2225]);
-            Assert.IsFalse(en.FlagH);
-            Assert.IsFalse(en.FlagN);
-            Assert.IsFalse(en.FlagP);
-        }
-        [Test]
-        [TestCase(7)]
-        [TestCase(1)]
-        public void Test_LDD(byte bc)
-        {
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, bc);
-            asm.LoadReg16Val(1, 0x2222);
-            asm.LoadReg16Val(2, 0x1111);
-            asm.LoadRegVal(7, 0x88);
-            asm.LoadAddrA(0x1111);
-            asm.LoadRegVal(7, 0x66);
-            asm.LoadAddrA(0x2222);
-            asm.Ldd();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(bc - 1, en.BC);
-            Assert.AreEqual(0x2221, en.DE);
-            Assert.AreEqual(0x1110, en.HL);
-            Assert.AreEqual(0x88, _ram[0x1111]);
-            Assert.AreEqual(0x88, _ram[0x2222]);
-            Assert.IsFalse(en.FlagH);
-            Assert.IsFalse(en.FlagN);
-            Assert.AreEqual(bc != 1, en.FlagP, "Flag P contained the wrong value");
-        }
-
-        [Test]
-        public void Test_LDDR()
-        {
-            Array.Copy(new byte[] { 0x42, 0x88, 0x36, 0xA5 }, 0, _ram, 0x1111, 4);
-            Array.Copy(new byte[] { 0x24, 0x66, 0x59, 0xC5 }, 0, _ram, 0x2222, 4);
-
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, 0x0003);
-            asm.LoadReg16Val(1, 0x2225);
-            asm.LoadReg16Val(2, 0x1114);
-            asm.Lddr();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(0x0000, en.BC);
-            Assert.AreEqual(0x2222, en.DE);
-            Assert.AreEqual(0x1111, en.HL);
-            Assert.AreEqual(0x88, _ram[0x1112]);
-            Assert.AreEqual(0x36, _ram[0x1113]);
-            Assert.AreEqual(0xA5, _ram[0x1114]);
-            Assert.AreEqual(0x42, _ram[0x1111]);
-            Assert.AreEqual(0x88, _ram[0x2223]);
-            Assert.AreEqual(0x36, _ram[0x2224]);
-            Assert.AreEqual(0xA5, _ram[0x2225]);
-            Assert.AreEqual(0x24, _ram[0x2222]);
-            Assert.IsFalse(en.FlagH);
-            Assert.IsFalse(en.FlagN);
-            Assert.IsFalse(en.FlagP);
-        }
-
-        [Test]
-        [TestCase(7, 0x3F)]
-        [TestCase(1, 0x3F)]
-        [TestCase(7, 0x42)]
-        [TestCase(1, 0x42)]
-        [TestCase(7, 0x21)]
-        [TestCase(1, 0x21)]
-        public void Test_CPI(byte bc, byte a)
-        {
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, bc);
-            asm.LoadReg16Val(2, 0x1111);
-            asm.LoadRegVal(7, 0x3F);
-            asm.LoadAddrA(0x1111);
-            asm.LoadRegVal(7, a);
-            asm.Cpi();
-            asm.Halt();
-
-            en.Run();
-
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(bc - 1, en.BC);
-            Assert.AreEqual(0x1112, en.HL);
-            Assert.AreEqual(a, en.A);
-            Assert.AreEqual(0x3F, _ram[0x1111]);
-
-            Assert.AreEqual(a < 0x3f, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(a == 0x3F, en.FlagZ, "Flag Z contained the wrong value");
+            XCTAssertEqual(testCase.a < 0x3f, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.a == 0x3F, z80.FlagZ, "Flag Z contained the wrong value")
             // (hl) has bit 3 set, if a doesn't a borrow occurs from bit 4 (half carry flag)
-            Assert.AreEqual((a & 8) == 0, en.FlagH, "Flag H contained the wrong value");
-            Assert.AreEqual(bc != 1, en.FlagP, "Flag P contained the wrong value");
-            Assert.IsTrue(en.FlagN);
+            XCTAssertEqual((testCase.a & 8) == 0, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(testCase.bc != 1, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertTrue(z80.FlagN)
         }
+    }
 
-        [Test]
-        [TestCase(7, 0xF3, 4)]
-        [TestCase(1, 0xF3, 0)]
-        [TestCase(7, 0x42, 0)]
-        [TestCase(1, 0x42, 0)]
-        [TestCase(7, 0x21, 0)]
-        [TestCase(1, 0x21, 0)]
-        public void Test_CPIR(byte bc, byte a, byte bc_res)
-        {
-            Array.Copy(new byte[] { 0x52, 0x00, 0xF3 }, 0, _ram, 0x1111, 3);
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, bc);
-            asm.LoadReg16Val(2, 0x1111);
-            asm.LoadRegVal(7, a);
-            asm.Cpir();
-            asm.Halt();
+    func test_CPIR()
+    {
+        [
+            (bc: byte(7), a: byte(0xF3), bc_res: byte(4)),
+            (bc: byte(1), a: byte(0xF3), bc_res: byte(0)),
+            (bc: byte(7), a: byte(0x42), bc_res: byte(0)),
+            (bc: byte(1), a: byte(0x42), bc_res: byte(0)),
+            (bc: byte(7), a: byte(0x21), bc_res: byte(0)),
+            (bc: byte(1), a: byte(0x21), bc_res: byte(0)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
 
-            en.Run();
+            mem[0x1111] = 0x52
+            mem[0x1112] = 0x00
+            mem[0x1113] = 0xF3
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(bc_res, en.BC);
-            Assert.AreEqual(0x1111 + bc - bc_res, en.HL);
-            Assert.AreEqual(a, en.A);
+            asm.LoadReg16Val(3, 0x3333)
+            asm.LoadReg16Val(0, 0xFFFF)
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(2, 0x1111)
+            asm.LoadRegVal(7, testCase.a)
+            asm.Cpir()
+            asm.Halt()
 
-            var last = _ram[en.HL - 1];
-            Assert.AreEqual(a < last, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(a == last, en.FlagZ, "Flag Z contained the wrong value");
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(ushort(testCase.bc_res), z80.BC)
+            XCTAssertEqual(0x1111 + ushort(testCase.bc) - ushort(testCase.bc_res), z80.HL)
+            XCTAssertEqual(testCase.a, z80.A)
+
+            let last = mem[z80.HL - ushort(1)]
+            XCTAssertEqual(testCase.a < last, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.a == last, z80.FlagZ, "Flag Z contained the wrong value")
             // (hl) has bit 3 set, if a doesn't a borrow occurs from bit 4 (half carry flag)
-            Assert.AreEqual((a & 8) < (last & 8), en.FlagH, "Flag H contained the wrong value");
-            Assert.AreEqual(en.BC != 0, en.FlagP, "Flag P contained the wrong value");
-            Assert.IsTrue(en.FlagN);
+            XCTAssertEqual((testCase.a & 8) < (last & 8), z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(z80.BC != 0, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertTrue(z80.FlagN)
         }
+    }
 
+    func test_CPD()
+    {
+        [
+            (bc: byte(7), a: byte(0x3F)),
+            (bc: byte(1), a: byte(0x3F)),
+            (bc: byte(7), a: byte(0x42)),
+            (bc: byte(1), a: byte(0x42)),
+            (bc: byte(7), a: byte(0x21)),
+            (bc: byte(1), a: byte(0x21)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
 
-        [Test]
-        [TestCase(7, 0x3F)]
-        [TestCase(1, 0x3F)]
-        [TestCase(7, 0x42)]
-        [TestCase(1, 0x42)]
-        [TestCase(7, 0x21)]
-        [TestCase(1, 0x21)]
-        public void Test_CPD(byte bc, byte a)
-        {
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, bc);
-            asm.LoadReg16Val(2, 0x1111);
-            asm.LoadRegVal(7, 0x3F);
-            asm.LoadAddrA(0x1111);
-            asm.LoadRegVal(7, a);
-            asm.Cpd();
-            asm.Halt();
+            asm.LoadReg16Val(3, 0x3333)
+            asm.LoadReg16Val(0, 0xFFFF)
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(2, 0x1111)
+            asm.LoadRegVal(7, 0x3F)
+            asm.LoadAddrA(0x1111)
+            asm.LoadRegVal(7, testCase.a)
+            asm.Cpd()
+            asm.Halt()
 
-            en.Run();
+            z80.Run()
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(bc - 1, en.BC);
-            Assert.AreEqual(0x1110, en.HL);
-            Assert.AreEqual(a, en.A);
-            Assert.AreEqual(0x3F, _ram[0x1111]);
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(ushort(testCase.bc - 1), z80.BC)
+            XCTAssertEqual(0x1110, z80.HL)
+            XCTAssertEqual(testCase.a, z80.A)
+            XCTAssertEqual(0x3F, mem[0x1111])
 
-            Assert.AreEqual(a < 0x3f, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(a == 0x3F, en.FlagZ, "Flag Z contained the wrong value");
+            XCTAssertEqual(testCase.a < 0x3f, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.a == 0x3F, z80.FlagZ, "Flag Z contained the wrong value")
             // (hl) has bit 3 set, if a doesn't a borrow occurs from bit 4 (half carry flag)
-            Assert.AreEqual((a & 8) == 0, en.FlagH, "Flag H contained the wrong value");
-            Assert.AreEqual(bc != 1, en.FlagP, "Flag P contained the wrong value");
-            Assert.IsTrue(en.FlagN);
+            XCTAssertEqual((testCase.a & 8) == 0, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(testCase.bc != 1, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertTrue(z80.FlagN)
         }
+    }
 
-        [Test]
-        [TestCase(7, 0xF3, 4)]
-        [TestCase(1, 0xF3, 0)]
-        [TestCase(7, 0x42, 0)]
-        [TestCase(1, 0x42, 0)]
-        [TestCase(7, 0x21, 0)]
-        [TestCase(1, 0x21, 0)]
-        public void Test_CPDR(byte bc, byte a, byte bc_res)
-        {
-            Array.Copy(new byte[] { 0xF3, 0x00, 0x52 }, 0, _ram, 0x1116, 3);
-            asm.LoadReg16Val(3, 0x3333);
-            asm.LoadReg16Val(0, 0xFFFF);
-            asm.PushReg16(0);
-            asm.PopReg16(3);
-            asm.LoadReg16Val(0, bc);
-            asm.LoadReg16Val(2, 0x1118);
-            asm.LoadRegVal(7, a);
-            asm.Cpdr();
-            asm.Halt();
+    func test_CPDR()
+    {
+        [
+            (bc: byte(7), a: byte(0xF3), bc_res: byte(4)),
+            (bc: byte(1), a: byte(0xF3), bc_res: byte(0)),
+            (bc: byte(7), a: byte(0x42), bc_res: byte(0)),
+            (bc: byte(1), a: byte(0x42), bc_res: byte(0)),
+            (bc: byte(7), a: byte(0x21), bc_res: byte(0)),
+            (bc: byte(1), a: byte(0x21), bc_res: byte(0)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
 
-            en.Run();
+            mem[0x1116] = 0xF3
+            mem[0x1117] = 0x00
+            mem[0x1118] = 0x52
 
-            Assert.AreEqual(asm.Position, en.PC);
-            Assert.AreEqual(bc_res, en.BC);
-            Assert.AreEqual(0x1118 - bc + bc_res, en.HL);
-            Assert.AreEqual(a, en.A);
+            asm.LoadReg16Val(3, 0x3333)
+            asm.LoadReg16Val(0, 0xFFFF)
+            asm.PushReg16(0)
+            asm.PopReg16(3)
+            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(2, 0x1118)
+            asm.LoadRegVal(7, testCase.a)
+            asm.Cpdr()
+            asm.Halt()
 
-            var last = _ram[en.HL + 1];
-            Assert.AreEqual(a < last, en.FlagS, "Flag S contained the wrong value");
-            Assert.AreEqual(a == last, en.FlagZ, "Flag Z contained the wrong value");
+            z80.Run()
+
+            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(ushort(testCase.bc_res), z80.BC)
+            XCTAssertEqual(0x1118 - ushort(testCase.bc) + ushort(testCase.bc_res), z80.HL)
+            XCTAssertEqual(testCase.a, z80.A)
+
+            let last = mem[z80.HL + ushort(1)]
+            XCTAssertEqual(testCase.a < last, z80.FlagS, "Flag S contained the wrong value")
+            XCTAssertEqual(testCase.a == last, z80.FlagZ, "Flag Z contained the wrong value")
             // (hl) has bit 3 set, if a doesn't a borrow occurs from bit 4 (half carry flag)
-            Assert.AreEqual((a & 8) < (last & 8), en.FlagH, "Flag H contained the wrong value");
-            Assert.AreEqual(en.BC != 0, en.FlagP, "Flag P contained the wrong value");
-            Assert.IsTrue(en.FlagN);
+            XCTAssertEqual((testCase.a & 8) < (last & 8), z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(z80.BC != 0, z80.FlagP, "Flag P contained the wrong value")
+            XCTAssertTrue(z80.FlagN)
         }
-*/
+    }
 }

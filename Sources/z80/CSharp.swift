@@ -31,13 +31,13 @@ extension Array {
 }
 
 extension short {
-	static var MaxValue: Self {
-		Self.max
-	}
+    static var MaxValue: Self {
+        Self.max
+    }
 
-	static var MinValue: Self {
-		Self.min
-	}
+    static var MinValue: Self {
+        Self.min
+    }
 }
 
 func +(lhs: ushort, rhs: sbyte) -> ushort {

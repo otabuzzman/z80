@@ -532,8 +532,7 @@ namespace z80
 #if (DEBUG)
                         Log($"ADD A, 0x{b:X2}");
 #endif
-                        Wait(4);
-                        Wait(4);
+                        Wait(7);
                         return;
                     }
                 case 0x86:
@@ -1697,7 +1696,7 @@ namespace z80
                                      */
                         var i = registers[I];
                         registers[A] = i;
-                        var f = (byte)(registers[F] & (~(byte)(Fl.H | Fl.PV | Fl.N | Fl.S | Fl.Z | Fl.PV)));
+                        var f = (byte)(registers[F] & (~(byte)(Fl.H | Fl.PV | Fl.N | Fl.S | Fl.Z)));
                         if (i >= 0x80)
                         {
                             f |= (byte)Fl.S;
@@ -1733,7 +1732,7 @@ namespace z80
                                      */
                         var reg = registers[R];
                         registers[A] = reg;
-                        var f = (byte)(registers[F] & (~(byte)(Fl.H | Fl.PV | Fl.N | Fl.S | Fl.Z | Fl.PV)));
+                        var f = (byte)(registers[F] & (~(byte)(Fl.H | Fl.PV | Fl.N | Fl.S | Fl.Z)));
                         if (reg >= 0x80)
                         {
                             f |= (byte)Fl.S;

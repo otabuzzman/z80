@@ -9,7 +9,7 @@ These are contained:
 
 * Z80 Emulator (`Z80`)
 * Z80 Assembler backend (`Z80Asm`)
-* Zilog-based Z80 tests (`z80.Tests`)
+* Zilog-based Z80 tests (`z80.Tests` for C#, `Tests/z80Tests` for Swift)
 
 The tests are a translation of the documentation, the assembler backend is needed to write tests and stay sane and the emulator is the whole point. 
 
@@ -42,10 +42,16 @@ Console.WriteLine(myZ80.DumpState());
 
 ## Usage example Swift
 
-Add this repository as a package into Xcode or Swift Playgrounds 4 app project.
+Add repository as a package to a Swift project.
 
 ```swift
 ```
+
+### Run Swift test suite
+
+- Open terminal window on MacOS, Linos or Winos
+- Clone repository and CWD into TL folder
+- Exec `swift test` command
 
 ## Status
 
