@@ -19,10 +19,10 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .executableTarget(
-            name: "zx48",
+            name: "z80sample",
             dependencies: ["z80"],
             sources: [
-                "ZX48.swift",
+                "Program.swift",
                 ],
             swiftSettings: [
                 .define("DEBUG", .when(configuration: .debug)),
