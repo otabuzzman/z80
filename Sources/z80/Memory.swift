@@ -3,7 +3,7 @@ public class Memory
     private(set) var memory: [byte]
     private(set) var start: ushort
 
-    init(_ ram: [byte], _ start: ushort)
+    public init(_ ram: [byte], _ start: ushort)
     {
         memory = ram
         self.start = start

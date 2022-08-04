@@ -162,7 +162,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(0, (ushort)(testCase.useCarry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.useCarry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, ushort(truncatingIfNeeded: testCase.val))
@@ -205,7 +205,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(0, (ushort)(testCase.useCarry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.useCarry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, ushort(truncatingIfNeeded: testCase.val))
@@ -244,7 +244,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            switch (reg)
+            switch reg
             {
                 case 0:
                     XCTAssertEqual(0x1943, z80.BC)
@@ -306,7 +306,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            switch (reg)
+            switch reg
             {
                 case 0:
                     XCTAssertEqual(0x1941, z80.BC)

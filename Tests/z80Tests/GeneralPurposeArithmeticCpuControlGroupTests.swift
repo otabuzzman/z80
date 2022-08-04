@@ -31,7 +31,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertEqual(asm.Position, z80.PC)
     }
 
-    public func test_NOOP()
+    func test_NOOP()
     {
         asm.Noop()
         asm.Halt()
@@ -41,7 +41,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertEqual(asm.Position, z80.PC)
     }
 
-    public func test_EI()
+    func test_EI()
     {
         asm.Di()
         asm.Ei()
@@ -54,7 +54,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertEqual(true, z80.Iff2)
     }
 
-    public func test_DI()
+    func test_DI()
     {
         asm.Ei()
         asm.Di()
@@ -67,7 +67,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertEqual(false, z80.Iff2)
     }
 
-    public func test_DAA_Add()
+    func test_DAA_Add()
     {
         [
             (a: byte(0x01), val: byte(0x99), correct: 0x100),
@@ -100,7 +100,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_DAA_ByteToHex()
+    func test_DAA_ByteToHex()
     {
         [
             (a: byte(0x00), val: "0"),
@@ -138,7 +138,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_DAA_Sub()
+    func test_DAA_Sub()
     {
         [
             (a: byte(1), val: byte(1), correct: 0x00),
@@ -174,7 +174,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_CPL()
+    func test_CPL()
     {
         [
             byte(0x00),
@@ -198,7 +198,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_NEG()
+    func test_NEG()
     {
         [
             byte(0x00),
@@ -227,7 +227,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_CCF()
+    func test_CCF()
     {
         [
             (carry: true, rest: true),
@@ -256,7 +256,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_SCF()
+    func test_SCF()
     {
         [
             (carry: true, rest: true),
@@ -285,7 +285,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         }
     }
 
-    public func test_IM_0()
+    func test_IM_0()
     {
         asm.Im0()
         asm.Halt()
@@ -296,7 +296,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertTrue(false, "IM 0 not implemented")
     }
 
-    public func test_IM_1()
+    func test_IM_1()
     {
         asm.Im1()
         asm.Halt()
@@ -307,7 +307,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
         XCTAssertTrue(false, "IM 1 not implemented")
     }
 
-    public func test_IM_2()
+    func test_IM_2()
     {
         asm.Im2()
         asm.Halt()

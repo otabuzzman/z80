@@ -1,15 +1,15 @@
 ﻿public struct Z80Asm
 {
-    private(set) var _ram: Memory
+    private(set) var _mem: Memory
     var Position: ushort = 0
 
-    init(_ ram: Memory) {
-        _ram = ram
+    init(_ mem: Memory) {
+        _mem = mem
     }
 
     public mutating func Reset()
     {
-        _ram.clear()
+        _mem.clear()
         Position = 0
     }
 
@@ -20,22 +20,22 @@
 
     public mutating func Write(_ value: int)
     {
-        Write((byte)(truncatingIfNeeded: value))
+        Write(byte(truncatingIfNeeded: value))
     }
 
     public mutating func Write(_ value: ushort)
     {
-        Write((byte)(truncatingIfNeeded: value))
+        Write(byte(truncatingIfNeeded: value))
     }
 
     public mutating func Write(_ value: sbyte)
     {
-        Write((byte)(truncatingIfNeeded: value))
+        Write(byte(truncatingIfNeeded: value))
     }
 
     public mutating func Write(_ value: byte)
     {
-        _ram[Position] = value
+        _mem[Position] = value
         Position += 1
     }
 
@@ -1423,6 +1423,5 @@
         Write(0xED)
         Write(0xBB)
     }
-
 }
 

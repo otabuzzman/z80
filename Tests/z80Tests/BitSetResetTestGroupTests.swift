@@ -142,7 +142,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
             asm.LoadAtHLVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.BitNAtIxd(testCase.bit, testCase.d)
@@ -172,7 +172,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
             asm.LoadAtHLVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.BitNAtIyd(testCase.bit, testCase.d)
@@ -303,7 +303,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
             asm.LoadAtHLVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.SetNAtIxd(testCase.bit, testCase.d)
@@ -331,7 +331,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
             asm.LoadAtHLVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.SetNAtIyd(testCase.bit, testCase.d)
@@ -460,7 +460,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
             asm.LoadAtHLVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.ResNAtIxd(testCase.bit, testCase.d)
@@ -488,7 +488,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
             asm.LoadAtHLVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.ResNAtIyd(testCase.bit, testCase.d)

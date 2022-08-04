@@ -26,7 +26,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     {
         var count = 0
         var v = value
-        while (v != 0)
+        while v != 0
         {
             count += 1
             v &= v - 1
@@ -82,7 +82,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -117,7 +117,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -154,7 +154,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -196,7 +196,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -208,7 +208,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -250,7 +250,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -262,7 +262,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -339,7 +339,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -351,11 +351,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueSum += 1
             }
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -390,7 +390,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -401,11 +401,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueSum += 1
             }
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -440,7 +440,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, 0x0040)
@@ -453,11 +453,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueSum += 1
             }
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -524,10 +524,10 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -538,11 +538,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueSum += 1
             }
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -609,10 +609,10 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -623,11 +623,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueSum += 1
             }
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -798,7 +798,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -852,7 +852,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -941,7 +941,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -953,7 +953,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueDiff -= 1
             }
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
@@ -992,7 +992,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -1003,7 +1003,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueDiff -= 1
             }
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
@@ -1042,7 +1042,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, 0x0040)
@@ -1055,7 +1055,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueDiff -= 1
             }
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
@@ -1126,10 +1126,10 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1140,7 +1140,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueDiff -= 1
             }
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
@@ -1211,10 +1211,10 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, (ushort)(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1225,7 +1225,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.Position, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
-            if (testCase.carry) {
+            if testCase.carry {
                 trueDiff -= 1
             }
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
@@ -1284,8 +1284,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val & testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val & testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1318,8 +1318,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val & testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val & testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1354,8 +1354,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val & testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val & testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1397,7 +1397,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1407,8 +1407,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val & testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val & testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1450,7 +1450,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1460,8 +1460,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val & testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val & testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1516,8 +1516,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val | testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val | testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1550,8 +1550,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val | testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val | testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1586,8 +1586,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val | testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val | testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1629,7 +1629,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1639,8 +1639,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val | testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val | testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1682,7 +1682,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1692,8 +1692,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val | testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val | testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1748,8 +1748,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val ^ testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val ^ testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1782,8 +1782,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val ^ testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val ^ testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1818,8 +1818,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val ^ testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val ^ testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1861,7 +1861,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1871,8 +1871,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val ^ testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val ^ testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1914,7 +1914,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1924,8 +1924,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            let res = (byte)(testCase.val ^ testCase.val2)
-            let sres = (sbyte)(truncatingIfNeeded: res)
+            let res = byte(testCase.val ^ testCase.val2)
+            let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2096,7 +2096,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -2150,7 +2150,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -2203,7 +2203,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(testCase.val) + short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2233,7 +2233,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(val) + short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2257,7 +2257,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val)
             asm.LoadIxVal(0x0040)
             asm.IncAddrIx(testCase.disp)
@@ -2268,7 +2268,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(testCase.val) + short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2292,7 +2292,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val)
             asm.LoadIyVal(0x0040)
             asm.IncAddrIy(testCase.disp)
@@ -2303,7 +2303,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(testCase.val) + short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2344,7 +2344,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(testCase.val) - short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2374,7 +2374,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(val) - short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2398,7 +2398,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val)
             asm.LoadIxVal(0x0040)
             asm.DecAddrIx(testCase.disp)
@@ -2409,7 +2409,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(testCase.val) - short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2433,7 +2433,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, (ushort)(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
             asm.LoadAtHLVal(testCase.val)
             asm.LoadIyVal(0x0040)
             asm.DecAddrIy(testCase.disp)
@@ -2444,7 +2444,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(asm.Position, z80.PC)
             let trueSum = short(testCase.val) - short(1)
             let byteSum = byte(trueSum % 256)
-            let sbyteSum = (sbyte)(truncatingIfNeeded: byteSum)
+            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")

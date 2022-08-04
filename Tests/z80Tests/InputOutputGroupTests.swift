@@ -35,7 +35,7 @@ final class InputOutputTests: XCTestCase {
             asm.InAPort(0x34)
             asm.Halt()
 
-            z80.testPorts.SetInput((ushort)(val) * 256 + 0x34, 0x56)
+            z80.testPorts.SetInput(ushort(val) * 256 + 0x34, 0x56)
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
@@ -95,11 +95,11 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(testCase.b) * 256 + 0x34)
             asm.Ini()
             asm.Halt()
 
-            z80.testPorts.SetInput((ushort)(testCase.b) * 256 + 0x34, 0x01)
+            z80.testPorts.SetInput(ushort(testCase.b) * 256 + 0x34, 0x01)
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
@@ -122,11 +122,11 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(testCase.b) * 256 + 0x34)
             asm.Ind()
             asm.Halt()
 
-            z80.testPorts.SetInput((ushort)(testCase.b)	 * 256 + 0x34, 0x01)
+            z80.testPorts.SetInput(ushort(testCase.b)	 * 256 + 0x34, 0x01)
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
@@ -149,12 +149,12 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(b) * 256 + 0x34)
             asm.Inir()
             asm.Halt()
 
             for i: byte in (1...b).reversed() {
-                z80.testPorts.SetInput((ushort)(i) * 256 + 0x34, i)
+                z80.testPorts.SetInput(ushort(i) * 256 + 0x34, i)
             }
             z80.Run()
 
@@ -180,12 +180,12 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(b) * 256 + 0x34)
             asm.Indr()
             asm.Halt()
 
             for i: byte in (1...b).reversed() {
-                z80.testPorts.SetInput((ushort)(i) * 256 + 0x34, i)
+                z80.testPorts.SetInput(ushort(i) * 256 + 0x34, i)
             }
             z80.Run()
 
@@ -217,7 +217,7 @@ final class InputOutputTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(val, z80.testPorts.GetOutput((ushort)(val) * 256 + 0x34))
+            XCTAssertEqual(val, z80.testPorts.GetOutput(ushort(val) * 256 + 0x34))
         }
     }
 
@@ -274,14 +274,14 @@ final class InputOutputTests: XCTestCase {
 
             asm.LoadReg16Val(2, 0x0040)
             asm.LoadAtHLVal(0x01)
-            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(testCase.b) * 256 + 0x34)
             asm.Outi()
             asm.Halt()
 
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(0x01, z80.testPorts.GetOutput((ushort)(testCase.b) * 256 + 0x34))
+            XCTAssertEqual(0x01, z80.testPorts.GetOutput(ushort(testCase.b) * 256 + 0x34))
             XCTAssertEqual(testCase.b - 1, z80.B)
             XCTAssertEqual(0x34, z80.C)
             XCTAssertEqual(0x0041, z80.HL)
@@ -301,14 +301,14 @@ final class InputOutputTests: XCTestCase {
 
             asm.LoadReg16Val(2, 0x0040)
             asm.LoadAtHLVal(0x01)
-            asm.LoadReg16Val(0, (ushort)(testCase.b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(testCase.b) * 256 + 0x34)
             asm.Outd()
             asm.Halt()
 
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
-            XCTAssertEqual(0x01, z80.testPorts.GetOutput((ushort)(testCase.b) * 256 + 0x34))
+            XCTAssertEqual(0x01, z80.testPorts.GetOutput(ushort(testCase.b) * 256 + 0x34))
             XCTAssertEqual(testCase.b - 1, z80.B)
             XCTAssertEqual(0x34, z80.C)
             XCTAssertEqual(0x003F, z80.HL)
@@ -327,18 +327,18 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(b) * 256 + 0x34)
             asm.Outir()
             asm.Halt()
 
             for i: byte in 0..<b {
-                mem[0x0040 + i] = (byte)(b - i)
+                mem[0x0040 + i] = b - i
             }
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
             for i: byte in (1...b).reversed() {
-                XCTAssertEqual(i, z80.testPorts.GetOutput((ushort)(i) * 256 + 0x34))
+                XCTAssertEqual(i, z80.testPorts.GetOutput(ushort(i) * 256 + 0x34))
             }
             XCTAssertEqual(0, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -358,18 +358,18 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadReg16Val(0, (ushort)(b) * 256 + 0x34)
+            asm.LoadReg16Val(0, ushort(b) * 256 + 0x34)
             asm.Outdr()
             asm.Halt()
 
             for i: byte in 0..<b {
-                mem[0x0040 - i] = (byte)(b - i)
+                mem[0x0040 - i] = b - i
             }
             z80.Run()
 
             XCTAssertEqual(asm.Position, z80.PC)
             for i: byte in (1...b).reversed() {
-                XCTAssertEqual(i, z80.testPorts.GetOutput((ushort)(i) * 256 + 0x34))
+                XCTAssertEqual(i, z80.testPorts.GetOutput(ushort(i) * 256 + 0x34))
             }
             XCTAssertEqual(0, z80.B)
             XCTAssertEqual(0x34, z80.C)

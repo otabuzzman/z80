@@ -56,7 +56,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -88,7 +88,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -120,7 +120,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -152,7 +152,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -184,7 +184,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -238,7 +238,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -270,7 +270,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
                 XCTAssertEqual(0x06, mem[0xFFFD])
@@ -315,7 +315,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -347,7 +347,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -379,7 +379,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -411,7 +411,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -443,7 +443,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -475,7 +475,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -507,7 +507,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
@@ -539,7 +539,7 @@ final class CallReturnGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
-            if (testCase.branch)
+            if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
             }
