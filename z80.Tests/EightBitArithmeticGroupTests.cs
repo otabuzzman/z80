@@ -637,7 +637,7 @@ namespace z80.Tests
             en.Run();
 
             Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
+            var trueDiff = (short)val - (short)val2;
             var byteDiff = (byte)trueDiff % 256;
             var sbyteDiff = (sbyte)byteDiff;
             Assert.AreEqual(byteDiff, en.A);
@@ -646,7 +646,7 @@ namespace z80.Tests
             Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
+            Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
 
         }
 
@@ -670,7 +670,7 @@ namespace z80.Tests
             en.Run();
 
             Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
+            var trueDiff = (short)val - (short)val2;
             var byteDiff = (byte)trueDiff % 256;
             var sbyteDiff = (sbyte)byteDiff;
             Assert.AreEqual(byteDiff, en.A);
@@ -679,7 +679,7 @@ namespace z80.Tests
             Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
+            Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
 
         }
 
@@ -705,7 +705,7 @@ namespace z80.Tests
             en.Run();
 
             Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
+            var trueDiff = (short)val - (short)val2;
             var byteDiff = (byte)trueDiff % 256;
             var sbyteDiff = (sbyte)byteDiff;
             Assert.AreEqual(byteDiff, en.A);
@@ -714,7 +714,7 @@ namespace z80.Tests
             Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
+            Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
 
         }
 
@@ -757,7 +757,7 @@ namespace z80.Tests
             en.Run();
 
             Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
+            var trueDiff = (short)val - (short)val2;
             var byteDiff = (byte)trueDiff % 256;
             var sbyteDiff = (sbyte)byteDiff;
             Assert.AreEqual(byteDiff, en.A);
@@ -766,7 +766,7 @@ namespace z80.Tests
             Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
+            Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
 
         }
 
@@ -809,7 +809,7 @@ namespace z80.Tests
             en.Run();
 
             Assert.AreEqual(asm.Position, en.PC);
-            var trueDiff = (val - val2);
+            var trueDiff = (short)val - (short)val2;
             var byteDiff = (byte)trueDiff % 256;
             var sbyteDiff = (sbyte)byteDiff;
             Assert.AreEqual(byteDiff, en.A);
@@ -818,7 +818,7 @@ namespace z80.Tests
             Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
-            Assert.AreEqual(trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
+            Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
 
         }
 
