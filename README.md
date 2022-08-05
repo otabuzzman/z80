@@ -50,11 +50,15 @@ import Foundation
 @main
 extension Z80 {
     static func main() {
+        // define max 64k RAM
         var ram = Array<byte>(repeating: 0, count: 0x10000)
-        let rom = NSData(contentsOfFile: "z80Sample/48.rom")
+        // load ROM image
+        let rom = NSData(contentsOfFile: "z80sample/48.rom")
+        // copy ROM to RAM
         ram.replaceSubrange(0..<rom!.count, with: rom!)
 
-        let ports = SamplePorts() // Sources/z80sample/Program.swift
+        // I/O ports emulation (Sources/z80sample/Program.swift)
+        let ports = SamplePorts()
 
         let mem = Memory(ram, 16384)
         var z80 = Z80(mem, ports)
@@ -63,6 +67,9 @@ extension Z80 {
         {
             z80.Parse()
         }
+
+        // dump CPU state
+        print(z80.DumpState())
     }
 }
 ```
