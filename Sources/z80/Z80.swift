@@ -169,7 +169,7 @@ public struct Z80
             }
             Wait(useHL1 || useHL2 ? 7 : 4)
 #if DEBUG
-            print(String(format: "LD %@ %@", useHL1 ? "(HL)" : Z80.RName(r), useHL2 ? "(HL)" : Z80.RName(lo)))
+            print(String(format: "LD %@, %@", useHL1 ? "(HL)" : Z80.RName(r), useHL2 ? "(HL)" : Z80.RName(lo)))
 #endif
             return
         }
@@ -1099,7 +1099,7 @@ public struct Z80
                 let port = (ushort(registers[A]) << 8) + Fetch()
                 ports.WritePort(port, registers[A])
 #if DEBUG
-                print(String(format: "OUT (0x%02X), A", port))
+                print(String(format: "OUT (0x%04X), A", port))
 #endif
                 Wait(11)
                 return
@@ -1407,7 +1407,7 @@ public struct Z80
         switch mc
         {
             case 0x47:
-                    // LD I, A
+                // LD I, A
                 registers[I] = registers[A]
 #if DEBUG
                 print("LD I, A")

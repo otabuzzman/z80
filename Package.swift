@@ -7,6 +7,9 @@ let package = Package(
     name: "z80",
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
+        .executable(
+            name: "z80sample",
+            targets: ["z80sample"]),
         .library(
             name: "z80",
             targets: ["z80"]),

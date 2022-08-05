@@ -42,9 +42,29 @@ Console.WriteLine(myZ80.DumpState());
 
 ## Usage example Swift
 
-Add repository as a package to a Swift project.
+Copy files from `Sources/z80` to Swift project.
 
 ```swift
+import Foundation
+
+@main
+extension Z80 {
+    static func main() {
+        var ram = Array<byte>(repeating: 0, count: 0x10000)
+        let rom = NSData(contentsOfFile: "z80Sample/48.rom")
+        ram.replaceSubrange(0..<rom!.count, with: rom!)
+
+        let ports = SamplePorts() // Sources/z80sample/Program.swift
+
+        let mem = Memory(ram, 16384)
+        var z80 = Z80(mem, ports)
+
+        while (!z80.Halt)
+        {
+            z80.Parse()
+        }
+    }
+}
 ```
 
 ### Run Swift test suite

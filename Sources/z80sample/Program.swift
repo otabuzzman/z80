@@ -15,15 +15,9 @@ extension Z80 {
         let mem = Memory(ram, 16384)
         var z80 = Z80(mem, ports)
 
-        var dump = 0
         while (!z80.Halt)
         {
             z80.Parse()
-
-            dump += 1
-            if dump % 1000 == 1 {
-                print(z80.DumpState())
-            }
         }
 
         print(z80.DumpState())
@@ -61,13 +55,13 @@ final class SamplePorts: IPorts
 {
     func ReadPort(_ port: ushort) -> byte
     {
-        print(String(format: "IN 0x%04X", port))
+        print(String(format: "  \(#function) : IN 0x%04X", port))
         return 0
     }
 
     func WritePort(_ port: ushort, _ value: byte)
     {
-        print(String(format: "OUT 0x%04X, 0x%02X", port, value))
+        print(String(format: "  \(#function) : OUT 0x%04X, 0x%02X", port, value))
     }
 
     var NMI: bool { false }
