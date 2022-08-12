@@ -70,11 +70,11 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
     func test_DAA_Add()
     {
         [
-            (a: byte(0x01), val: byte(0x99), correct: 0x100),
-            (a: byte(0x01), val: byte(0x98), correct: 0x99),
-            (a: byte(0x10), val: byte(0x89), correct: 0x99),
-            (a: byte(0x01), val: byte(0x89), correct: 0x90),
-            (a: byte(0x10), val: byte(0x90), correct: 0x100),
+            (a: byte(0x01), val: byte(0x99), correct: 0x100, halfcarry: false),
+            (a: byte(0x01), val: byte(0x98), correct: 0x99, halfcarry: false),
+            (a: byte(0x10), val: byte(0x89), correct: 0x99, halfcarry: false),
+            (a: byte(0x01), val: byte(0x89), correct: 0x90, halfcarry: true),
+            (a: byte(0x10), val: byte(0x90), correct: 0x100, halfcarry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -93,7 +93,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
-            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(testCase.halfcarry, z80.FlagH, "Flag H contained the wrong value")
             let overflow = trueSum > 256
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")
@@ -141,14 +141,14 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
     func test_DAA_Sub()
     {
         [
-            (a: byte(1), val: byte(1), correct: 0x00),
-            (a: byte(2), val: byte(1), correct: 0x01),
-            (a: byte(10), val: byte(1), correct: 0x09),
-            (a: byte(16), val: byte(1), correct: 0x15),
-            (a: byte(0xA0), val: byte(0x10), correct: 0x90),
-            (a: byte(0xAA), val: byte(0x11), correct: 0x99),
-            (a: byte(10), val: byte(0), correct: 0x10),
-            (a: byte(100), val: byte(1), correct: 99),
+            (a: byte(1), val: byte(1), correct: 0x00, halfcarry: false),
+            (a: byte(2), val: byte(1), correct: 0x01, halfcarry: false),
+            (a: byte(10), val: byte(1), correct: 0x09, halfcarry: false),
+            (a: byte(16), val: byte(1), correct: 0x15, halfcarry: true),
+            (a: byte(0xA0), val: byte(0x10), correct: 0x90, halfcarry: false),
+            (a: byte(0xAA), val: byte(0x11), correct: 0x99, halfcarry: false),
+            (a: byte(10), val: byte(0), correct: 0x10, halfcarry: true),
+            (a: byte(100), val: byte(1), correct: 99, halfcarry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -167,7 +167,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
-            XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(testCase.halfcarry, z80.FlagH, "Flag H contained the wrong value")
             let overflow = trueSum > 256
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(trueSum > 0xFF, z80.FlagC, "Flag C contained the wrong value")

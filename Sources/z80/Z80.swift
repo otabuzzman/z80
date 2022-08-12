@@ -2838,7 +2838,7 @@ public struct Z80
         if (sum & 0xFF) == 0 {
             f |= Fl.Z.rawValue
         }
-        if (a & 0x0F + b & 0x0F) > 0x0F {
+        if (a & 0x0F) + (b & 0x0F) > 0x0F {
             f |= Fl.H.rawValue
         }
         if (a >= 0x80 && b >= 0x80 && sbyte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0) {
@@ -2863,7 +2863,7 @@ public struct Z80
         if (sum & 0xFF) == 0 {
             f |= Fl.Z.rawValue
         }
-        if (a & 0x0F + b & 0x0F) > 0x0F {
+        if (a & 0x0F) + (b & 0x0F) > 0x0F {
             f |= Fl.H.rawValue
         }
         if (a >= 0x80 && b >= 0x80 && sbyte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && sbyte(truncatingIfNeeded: sum) < 0) {

@@ -71,7 +71,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -104,7 +104,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -139,7 +139,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -191,7 +191,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -243,7 +243,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -332,7 +332,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -378,7 +378,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -426,7 +426,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -507,7 +507,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -588,7 +588,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteSum < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -643,7 +643,7 @@ namespace z80.Tests
             Assert.AreEqual(byteDiff, en.A);
             Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -676,7 +676,7 @@ namespace z80.Tests
             Assert.AreEqual(byteDiff, en.A);
             Assert.AreEqual(sbyteDiff < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((0x0F & val2) > (0x0F & val), en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(((0x0F & val2) + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = (val < 0x7F == val2 < 0x7F) && (val < 0x7F == sbyteDiff < 0); // if both operands are positive and result is negative or if both are negative and result is positive
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual((ushort)trueDiff > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -2111,7 +2111,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.Reg8(reg));
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.Reg8(reg) == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual((1 + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = val == 0x7F;
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -2139,7 +2139,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, _ram[0x0040]);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(_ram[0x0040] == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual((1 + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = val == 0x7F;
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -2172,7 +2172,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, _ram[0x0040 + disp]);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(byteSum == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual((1 + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = val == 0x7F;
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -2204,7 +2204,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, _ram[0x0040 + disp]);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(byteSum == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual((1 + 0x0F & val) > 0x0F, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual((1 + (0x0F & val)) > 0x0F, en.FlagH, "Flag H contained the wrong value");
             var overflow = val == 0x7F;
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");

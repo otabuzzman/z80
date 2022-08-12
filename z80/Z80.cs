@@ -3284,7 +3284,7 @@ namespace z80
                 f |= (byte)Fl.S;
             if ((byte)sum == 0)
                 f |= (byte)Fl.Z;
-            if ((a & 0xF + b & 0xF) > 0xF)
+            if (((a & 0xF) + (b & 0xF)) > 0xF)
                 f |= (byte)Fl.H;
             if ((a >= 0x80 && b >= 0x80 && (sbyte)sum > 0) || (a < 0x80 && b < 0x80 && (sbyte)sum < 0))
                 f |= (byte)Fl.PV;
@@ -3304,7 +3304,7 @@ namespace z80
                 f |= (byte)Fl.S;
             if ((byte)sum == 0)
                 f |= (byte)Fl.Z;
-            if ((a & 0xF + b & 0xF) > 0xF)
+            if (((a & 0xF) + (b & 0xF)) > 0xF)
                 f |= (byte)Fl.H;
             if ((a >= 0x80 && b >= 0x80 && (sbyte)sum > 0) || (a < 0x80 && b < 0x80 && (sbyte)sum < 0))
                 f |= (byte)Fl.PV;

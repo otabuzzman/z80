@@ -55,12 +55,12 @@ namespace z80.Tests
         }
 
         [Test]
-        [TestCase(0x01, 0x99, 0x100)]
-        [TestCase(0x01, 0x98, 0x99)]
-        [TestCase(0x10, 0x89, 0x99)]
-        [TestCase(0x01, 0x89, 0x90)]
-        [TestCase(0x10, 0x90, 0x100)]
-        public void Test_DAA_Add(byte a, byte val, int correct)
+        [TestCase(0x01, 0x99, 0x100, false)]
+        [TestCase(0x01, 0x98, 0x99, false)]
+        [TestCase(0x10, 0x89, 0x99, false)]
+        [TestCase(0x01, 0x89, 0x90, true)]
+        [TestCase(0x10, 0x90, 0x100, false)]
+        public void Test_DAA_Add(byte a, byte val, int correct, bool halfcarry)
         {
             asm.LoadRegVal(7, a);
             asm.AddAVal(val);
@@ -76,7 +76,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(halfcarry, en.FlagH, "Flag H contained the wrong value");
             var overflow = trueSum > 256;
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
@@ -116,15 +116,15 @@ namespace z80.Tests
         }
 
         [Test]
-        [TestCase(1, 1, 0x00)]
-        [TestCase(2, 1, 0x01)]
-        [TestCase(10, 1, 0x09)]
-        [TestCase(16, 1, 0x15)]
-        [TestCase(0xA0, 0x10, 0x90)]
-        [TestCase(0xAA, 0x11, 0x99)]
-        [TestCase(10, 0, 0x10)]
-        [TestCase(100, 1, 99)]
-        public void Test_DAA_Sub(byte a, byte val, int correct)
+        [TestCase(1, 1, 0x00, false)]
+        [TestCase(2, 1, 0x01, false)]
+        [TestCase(10, 1, 0x09, false)]
+        [TestCase(16, 1, 0x15, true)]
+        [TestCase(0xA0, 0x10, 0x90, false)]
+        [TestCase(0xAA, 0x11, 0x99, false)]
+        [TestCase(10, 0, 0x10, true)]
+        [TestCase(100, 1, 99, false)]
+        public void Test_DAA_Sub(byte a, byte val, int correct, bool halfcarry)
         {
             asm.LoadRegVal(7, a);
             asm.SubVal(val);
@@ -140,7 +140,7 @@ namespace z80.Tests
             Assert.AreEqual(byteSum, en.A);
             Assert.AreEqual(sbyteSum < 0, en.FlagS, "Flag S contained the wrong value");
             Assert.AreEqual(en.A == 0x00, en.FlagZ, "Flag Z contained the wrong value");
-            Assert.AreEqual(false, en.FlagH, "Flag H contained the wrong value");
+            Assert.AreEqual(halfcarry, en.FlagH, "Flag H contained the wrong value");
             var overflow = trueSum > 256;
             Assert.AreEqual(overflow, en.FlagP, "Flag P contained the wrong value");
             Assert.AreEqual(trueSum > 0xFF, en.FlagC, "Flag C contained the wrong value");
