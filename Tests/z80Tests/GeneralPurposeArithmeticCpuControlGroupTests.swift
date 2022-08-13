@@ -28,7 +28,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
     }
 
     func test_NOOP()
@@ -38,7 +38,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
     }
 
     func test_EI()
@@ -49,7 +49,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(true, z80.Iff1)
         XCTAssertEqual(true, z80.Iff2)
     }
@@ -62,7 +62,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(false, z80.Iff1)
         XCTAssertEqual(false, z80.Iff2)
     }
@@ -86,7 +86,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = testCase.correct
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -133,7 +133,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(Character(testCase.val).asciiValue!, z80.A)
         }
     }
@@ -160,7 +160,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = testCase.correct
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -191,7 +191,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(a ^ 0xFF, z80.A)
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(true, z80.FlagN, "Flag N contained the wrong value")
@@ -216,7 +216,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
             z80.Run()
 
             let exp = -short(a)
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(byte(truncatingIfNeeded: exp), z80.A)
             XCTAssertEqual(sbyte(truncatingIfNeeded: exp) < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(exp == 0, z80.FlagZ, "Flag Z contained the wrong value")
@@ -246,7 +246,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.rest, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.rest, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(testCase.rest, z80.FlagH, "Flag H contained the wrong value")
@@ -275,7 +275,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.rest, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.rest, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(testCase.rest, z80.FlagH, "Flag H contained the wrong value")
@@ -292,7 +292,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertTrue(false, "IM 0 not implemented")
     }
 
@@ -303,7 +303,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertTrue(false, "IM 1 not implemented")
     }
 
@@ -314,7 +314,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertTrue(false, "IM 2 not implemented")
     }
 }

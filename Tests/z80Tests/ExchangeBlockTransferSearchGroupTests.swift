@@ -31,7 +31,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1122, z80.HL)
         XCTAssertEqual(0x1942, z80.DE)
     }
@@ -50,7 +50,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x4219, z80.AF)
         XCTAssertEqual(0x2211, z80.AFp)
     }
@@ -69,7 +69,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1942, z80.BC)
         XCTAssertEqual(0x2041, z80.DE)
         XCTAssertEqual(0x2140, z80.HL)
@@ -91,7 +91,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1122, z80.HL)
         XCTAssertEqual(0x42, mem[0x40])
         XCTAssertEqual(0x19, mem[0x41])
@@ -110,7 +110,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1122, z80.IX)
         XCTAssertEqual(0x42, mem[0x40])
         XCTAssertEqual(0x19, mem[0x41])
@@ -129,7 +129,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1122, z80.IY)
         XCTAssertEqual(0x42, mem[0x40])
         XCTAssertEqual(0x19, mem[0x41])
@@ -160,7 +160,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(ushort(bc - 1), z80.BC)
             XCTAssertEqual(0x2223, z80.DE)
             XCTAssertEqual(0x1112, z80.HL)
@@ -195,7 +195,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x0000, z80.BC)
         XCTAssertEqual(0x2225, z80.DE)
         XCTAssertEqual(0x1114, z80.HL)
@@ -237,7 +237,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(ushort(bc - 1), z80.BC)
             XCTAssertEqual(0x2221, z80.DE)
             XCTAssertEqual(0x1110, z80.HL)
@@ -272,7 +272,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x0000, z80.BC)
         XCTAssertEqual(0x2222, z80.DE)
         XCTAssertEqual(0x1111, z80.HL)
@@ -316,7 +316,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(ushort(testCase.bc - 1), z80.BC)
             XCTAssertEqual(0x1112, z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
@@ -360,7 +360,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(ushort(testCase.bc_res), z80.BC)
             XCTAssertEqual(0x1111 + ushort(testCase.bc) - ushort(testCase.bc_res), z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
@@ -402,7 +402,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(ushort(testCase.bc - 1), z80.BC)
             XCTAssertEqual(0x1110, z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
@@ -446,7 +446,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(ushort(testCase.bc_res), z80.BC)
             XCTAssertEqual(0x1118 - ushort(testCase.bc) + ushort(testCase.bc_res), z80.HL)
             XCTAssertEqual(testCase.a, z80.A)

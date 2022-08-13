@@ -600,21 +600,21 @@ final class CallReturnGroupTests: XCTestCase {
             asm.CpVal(0xFF)
             asm.JpZ(0x1000)
             asm.Halt()
-            asm.Position = 0x0008
+            asm.addr = 0x0008
             asm.Halt()
-            asm.Position = 0x0010
+            asm.addr = 0x0010
             asm.Halt()
-            asm.Position = 0x0018
+            asm.addr = 0x0018
             asm.Halt()
-            asm.Position = 0x0020
+            asm.addr = 0x0020
             asm.Halt()
-            asm.Position = 0x0028
+            asm.addr = 0x0028
             asm.Halt()
-            asm.Position = 0x0030
+            asm.addr = 0x0030
             asm.Halt()
-            asm.Position = 0x0038
+            asm.addr = 0x0038
             asm.Halt()
-            asm.Position = 0x1000
+            asm.addr = 0x1000
             asm.XorReg(7)
             asm.Rst(page)
             asm.Halt()

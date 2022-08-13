@@ -79,7 +79,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -114,7 +114,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -151,7 +151,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -205,7 +205,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -259,7 +259,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = ushort(testCase.val) + ushort(testCase.val2)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -349,7 +349,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
@@ -399,7 +399,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
@@ -451,7 +451,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
@@ -536,7 +536,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
@@ -621,7 +621,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueSum = ushort(testCase.val) + ushort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
@@ -681,7 +681,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -716,7 +716,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -753,7 +753,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -807,7 +807,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -861,7 +861,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -951,7 +951,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
@@ -1001,7 +1001,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
@@ -1053,7 +1053,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
@@ -1138,7 +1138,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
@@ -1223,7 +1223,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             var trueDiff = short(testCase.val) - short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
@@ -1283,7 +1283,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val & testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1317,7 +1317,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val & testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1353,7 +1353,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val & testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1406,7 +1406,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val & testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1459,7 +1459,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val & testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1515,7 +1515,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val | testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1549,7 +1549,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val | testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1585,7 +1585,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val | testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1638,7 +1638,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val | testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1691,7 +1691,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val | testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1747,7 +1747,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val ^ testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1781,7 +1781,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val ^ testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1817,7 +1817,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val ^ testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1870,7 +1870,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val ^ testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1923,7 +1923,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let res = byte(testCase.val ^ testCase.val2)
             let sres = sbyte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
@@ -1979,7 +1979,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -2014,7 +2014,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -2051,7 +2051,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -2105,7 +2105,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -2159,7 +2159,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueDiff = short(testCase.val) - short(testCase.val2)
             let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
             let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
@@ -2200,7 +2200,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(testCase.val) + short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2230,7 +2230,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(val) + short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2265,7 +2265,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(testCase.val) + short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2300,7 +2300,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(testCase.val) + short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2341,7 +2341,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(testCase.val) - short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2371,7 +2371,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(val) - short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2406,7 +2406,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(testCase.val) - short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
@@ -2441,7 +2441,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = short(testCase.val) - short(1)
             let byteSum = byte(trueSum % 256)
             let sbyteSum = sbyte(truncatingIfNeeded: byteSum)

@@ -27,10 +27,9 @@ final class TestSystem
     private let _IFF1: byte = 26
     private let _IFF2: byte = 27
 
-    private(set) var _mem: Memory
-    private var _dumpedState: [byte]?
-    private var _hasDump: bool = false
-    private(set) var _z80: Z80
+    private(set) var mem: Memory
+    private var z80State: [byte]?
+    private(set) var z80: Z80
 
     var AF: ushort { Reg16(_F) }
     var BC: ushort { Reg16(_B) }
@@ -80,59 +79,53 @@ final class TestSystem
 
     func Reg8(_ reg: byte) -> byte
     {
-        // if (!_hasDump) throw new InvalidOperationException("Don't have a state!")
-        return _dumpedState![reg]
+        return z80State![reg]
     }
 
     private func Reg16(_ reg: byte) -> ushort
     {
-        // if (!_hasDump) throw new InvalidOperationException("Don't have a state!")
-        let ret = ushort(_dumpedState![reg + 1]) + ushort(_dumpedState![reg]) * 256
-        return ret
+        return ushort(z80State![reg + 1]) + ushort(z80State![reg]) * 256
     }
 
     init(_ mem: Memory)
     {
-        _mem = mem
-        _z80 = Z80(_mem, testPorts)
+        self.mem = mem
+        z80 = Z80(mem, testPorts)
     }
 
     func Run()
     {
         var bailout: int = 1000
 
-        while !_z80.Halt && bailout > 0
+        while !z80.Halt && bailout > 0
         {
-            _z80.Parse()
+            z80.Parse()
             bailout -= 1
-            // DumpCpu()
+            // DumpZ80()
             // DumpRam()
         }
-        _dumpedState = _z80.GetState()
-        _hasDump = true
-        if !_z80.Halt {
+        z80State = z80.GetState()
+        if !z80.Halt {
             print("Bailout!")
         }
     }
 
     func Step() -> bool
     {
-        _z80.Parse()
-        _dumpedState = _z80.GetState()
-        _hasDump = true
-        return _z80.Halt
+        z80.Parse()
+        z80State = z80.GetState()
+        return z80.Halt
     }
 
     func Reset()
     {
-        _dumpedState = nil
-        _hasDump = false
-        _z80.Reset()
+        z80State = nil
+        z80.Reset()
     }
 
-    func DumpCpu()
+    func DumpZ80()
     {
-        print(_z80.DumpState())
+        print(z80.DumpState())
     }
 
     func DumpRam()
@@ -142,7 +135,7 @@ final class TestSystem
             if addr % 16 == 0 {
                 print(String(format: "%04X | ", addr))
             }
-            print(String(format: "%2X ", _mem[addr]))
+            print(String(format: "%2X ", mem[addr]))
             if addr % 8 == 7 {
                 print(String(format: "  "))
             }
@@ -156,7 +149,7 @@ final class TestSystem
             if addr % 16 == 0 {
                 print(String(format: "%04X | ", addr))
             }
-            print(String(format: "%2X ", _mem[addr]))
+            print(String(format: "%2X ", mem[addr]))
             if addr % 8 == 7 {
                 print(String(format: "  "))
             }

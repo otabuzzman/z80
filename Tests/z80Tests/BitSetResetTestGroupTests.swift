@@ -91,7 +91,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -120,7 +120,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -150,7 +150,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -180,7 +180,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -256,7 +256,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register), String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, z80.Reg8(testCase.register)))
         }
     }
@@ -283,7 +283,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[z80.HL], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.HL]))
         }
     }
@@ -311,7 +311,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[z80.IX + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IX + testCase.d]))
         }
     }
@@ -339,7 +339,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[z80.IY + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IY + testCase.d]))
         }
     }
@@ -413,7 +413,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register), String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, z80.Reg8(testCase.register)))
         }
     }
@@ -440,7 +440,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[z80.HL], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.HL]))
         }
     }
@@ -468,7 +468,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-           XCTAssertEqual(asm.Position, z80.PC)
+           XCTAssertEqual(asm.addr, z80.PC)
            XCTAssertEqual(testCase.res, mem[z80.IX + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IX + testCase.d]))
         }
     }
@@ -496,7 +496,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[z80.IY + testCase.d], String(format: "Expected 0x%02X but was 0x%02X\n", testCase.res, mem[z80.IY + testCase.d]))
         }
     }

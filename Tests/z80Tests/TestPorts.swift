@@ -4,7 +4,7 @@ final class TestPorts: IPorts
 {
     private(set) var inputs = Array<byte>(repeating: 0, count: 0x10000)
     private(set) var outputs = Array<byte>(repeating: 0, count: 0x10000)
-    private(set) var _data: byte = 0
+    private(set) var _data: byte = 0x00
     private(set) var _mi: bool = false
     private(set) var _nmi: bool = false
 

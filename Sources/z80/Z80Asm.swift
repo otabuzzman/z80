@@ -1,16 +1,16 @@
 ﻿public struct Z80Asm
 {
-    private(set) var _mem: Memory
-    var Position: ushort = 0
+    private(set) var mem: Memory
+    var addr: ushort = 0x0000
 
     init(_ mem: Memory) {
-        _mem = mem
+        self.mem = mem
     }
 
     public mutating func Reset()
     {
-        _mem.clear()
-        Position = 0
+        mem.clear()
+        addr = 0
     }
 
     public mutating func Halt()
@@ -35,8 +35,8 @@
 
     public mutating func Write(_ value: byte)
     {
-        _mem[Position] = value
-        Position += 1
+        mem[addr] = value
+        addr += 1
     }
 
     public mutating func Nop()

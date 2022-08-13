@@ -367,7 +367,7 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(loops, z80.A)
             XCTAssertEqual(0, z80.B)
         }

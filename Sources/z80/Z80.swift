@@ -28,7 +28,7 @@ public struct Z80
     private(set) var mem: Memory
     private(set) var registers = Array<byte>(repeating: 0, count: 26)
 
-    private var _clock = Date().timeIntervalSinceReferenceDate
+    private var clock = Date().timeIntervalSinceReferenceDate
 
     private var IFF1 = false
     private var IFF2 = false
@@ -3103,7 +3103,7 @@ public struct Z80
         //A CPU reset forces both the IFF1 and IFF2 to the reset state, which disables interrupts
         IFF1 = false
         IFF2 = false
-        _clock = Date().timeIntervalSinceReferenceDate
+        clock = Date().timeIntervalSinceReferenceDate
     }
 
     public func GetState() -> [byte] {
@@ -3135,19 +3135,19 @@ public struct Z80
     {
         registers[R] = registers[R] &+ byte(truncatingIfNeeded: (tStates + 3) / 4)
         let tTime = Double(tStates) / 4_000_000 // 4MHz
-        let epoch = Date().timeIntervalSinceReferenceDate - _clock
+        let epoch = Date().timeIntervalSinceReferenceDate - clock
         let sleep = tTime - epoch
         if sleep > 0
         {
             Thread.sleep(forTimeInterval: sleep)
-            _clock = _clock + tTime
+            clock = clock + tTime
         }
         else if (0 > sleep)
         {
 #if DEBUG
             print(String(format: "Clock expected %.3f but was %.3f microseconds", tTime * 1_000_000, epoch * 1_000_000))
 #endif
-            _clock = Date().timeIntervalSinceReferenceDate
+            clock = Date().timeIntervalSinceReferenceDate
         }
     }
 

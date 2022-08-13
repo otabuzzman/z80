@@ -51,7 +51,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = testCase.val + testCase.val2
             let sixteenBitSum = ushort(truncatingIfNeeded: trueSum)
             XCTAssertEqual(sixteenBitSum, z80.HL)
@@ -90,7 +90,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = testCase.val + testCase.val2
             let sixteenBitSum = ushort(truncatingIfNeeded: trueSum)
             XCTAssertEqual(sixteenBitSum, z80.IX)
@@ -129,7 +129,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = testCase.val + testCase.val2
             let sixteenBitSum = ushort(truncatingIfNeeded: trueSum)
             XCTAssertEqual(sixteenBitSum, z80.IY)
@@ -172,7 +172,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             let trueSum = testCase.val + testCase.val2 + (testCase.useCarry ? 1 : 0)
             let sixteenBitSum = ushort(truncatingIfNeeded: trueSum)
             XCTAssertEqual(sixteenBitSum, z80.HL)
@@ -243,7 +243,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             switch reg
             {
                 case 0:
@@ -272,7 +272,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1943, z80.IX)
     }
 
@@ -284,7 +284,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1943, z80.IY)
     }
 
@@ -305,7 +305,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             switch reg
             {
                 case 0:
@@ -334,7 +334,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1941, z80.IX)
     }
 
@@ -346,7 +346,7 @@ final class SixteenBitArithmeticGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x1941, z80.IY)
     }
 }

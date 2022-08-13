@@ -27,7 +27,7 @@ final class InterruptsTests: XCTestCase {
         asm.Ei()
         asm.Nop()
 
-        asm.Position = 0x66
+        asm.addr = 0x66
         asm.Nop()
 
         _ = z80.Step()
@@ -47,7 +47,7 @@ final class InterruptsTests: XCTestCase {
         asm.Ei()
         asm.Halt()
 
-        asm.Position = 0x66
+        asm.addr = 0x66
         asm.Nop()
 
         _ = z80.Step()
@@ -67,7 +67,7 @@ final class InterruptsTests: XCTestCase {
         asm.Di()
         asm.Halt()
 
-        asm.Position = 0x66
+        asm.addr = 0x66
         asm.Nop()
 
         _ = z80.Step()
@@ -87,7 +87,7 @@ final class InterruptsTests: XCTestCase {
         asm.Ei()
         asm.Halt()
 
-        asm.Position = 0x66
+        asm.addr = 0x66
         asm.RetN()
 
         _ = z80.Step()
@@ -168,7 +168,7 @@ final class InterruptsTests: XCTestCase {
         asm.Im0()
         asm.Halt()
 
-        asm.Position = 0x38
+        asm.addr = 0x38
         asm.Ei()
         asm.RetN()
 
@@ -251,7 +251,7 @@ final class InterruptsTests: XCTestCase {
         asm.Im1()
         asm.Halt()
 
-        asm.Position = 0x38
+        asm.addr = 0x38
         asm.Ei()
         asm.RetN()
 
@@ -277,7 +277,7 @@ final class InterruptsTests: XCTestCase {
         asm.Im2()
         asm.Nop()
 
-        asm.Position = 0x1234
+        asm.addr = 0x1234
         asm.Data(0x56)
         asm.Data(0x78)
 
@@ -304,7 +304,7 @@ final class InterruptsTests: XCTestCase {
         asm.Im2()
         asm.Halt()
 
-        asm.Position = 0x1234
+        asm.addr = 0x1234
         asm.Data(0x56)
         asm.Data(0x78)
 
@@ -331,7 +331,7 @@ final class InterruptsTests: XCTestCase {
         asm.Im2()
         asm.Halt()
 
-        asm.Position = 0x1234
+        asm.addr = 0x1234
         asm.Data(0x56)
         asm.Data(0x78)
 
@@ -356,7 +356,7 @@ final class InterruptsTests: XCTestCase {
         asm.Im2()
         asm.Halt()
 
-        asm.Position = 0x38
+        asm.addr = 0x38
         asm.Ei()
         asm.RetN()
 

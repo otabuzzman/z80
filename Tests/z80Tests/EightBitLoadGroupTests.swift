@@ -41,7 +41,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(42, z80.Reg8(r))
         }
     }
@@ -108,7 +108,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(33, z80.Reg8(testCase.r))
             XCTAssertEqual(33, z80.Reg8(testCase.r2))
         }
@@ -135,7 +135,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(1), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(1), z80.PC)
             XCTAssertEqual(123, z80.Reg8(r))
         }
     }
@@ -177,7 +177,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(3), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(3), z80.PC)
             XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.r))
         }
     }
@@ -219,7 +219,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(3), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(3), z80.PC)
             XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.r))
         }
     }
@@ -245,7 +245,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(1), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(1), z80.PC)
             XCTAssertEqual(66, mem[8])
         }
     }
@@ -304,7 +304,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
             XCTAssertEqual(201, mem[12 + testCase.d])
         }
     }
@@ -363,7 +363,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
             XCTAssertEqual(201, mem[12 + testCase.d])
         }
     }
@@ -377,7 +377,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
         XCTAssertEqual(201, mem[8])
     }
 
@@ -404,7 +404,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
             XCTAssertEqual(201, mem[11 + d])
         }
     }
@@ -432,7 +432,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
             XCTAssertEqual(201, mem[11 + d])
         }
     }
@@ -446,7 +446,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
         XCTAssertEqual(66, z80.A)
     }
 
@@ -459,7 +459,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
         XCTAssertEqual(66, z80.A)
     }
 
@@ -471,7 +471,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
         XCTAssertEqual(66, z80.A)
     }
 
@@ -484,7 +484,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(66, mem[8])
     }
 
@@ -497,7 +497,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(66, mem[8])
     }
 
@@ -509,7 +509,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(66, mem[8])
     }
 
@@ -521,7 +521,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(66, z80.I)
     }
 
@@ -543,7 +543,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(byte(truncatingIfNeeded: testCase.val), z80.A)
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -560,7 +560,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.Position, z80.PC)
+        XCTAssertEqual(asm.addr, z80.PC)
         //R is incremented by 3 machine cycles by the end.
         XCTAssertEqual(69, z80.R)
     }
@@ -583,7 +583,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             //R is incremented by 5 machine cycles by the end.
             XCTAssertEqual(testCase.val + 5, sbyte(truncatingIfNeeded: z80.A))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")

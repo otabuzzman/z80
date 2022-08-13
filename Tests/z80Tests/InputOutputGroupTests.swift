@@ -38,7 +38,7 @@ final class InputOutputTests: XCTestCase {
             z80.testPorts.SetInput(ushort(val) * 256 + 0x34, 0x56)
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(0x56, z80.A)
         }
     }
@@ -75,7 +75,7 @@ final class InputOutputTests: XCTestCase {
             z80.testPorts.SetInput(0x1234, testCase.val)
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.val, z80.Reg8(testCase.reg))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -102,7 +102,7 @@ final class InputOutputTests: XCTestCase {
             z80.testPorts.SetInput(ushort(testCase.b) * 256 + 0x34, 0x01)
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(0x01, mem[0x0040])
             XCTAssertEqual(testCase.b - 1, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -129,7 +129,7 @@ final class InputOutputTests: XCTestCase {
             z80.testPorts.SetInput(ushort(testCase.b)	 * 256 + 0x34, 0x01)
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(0x01, mem[0x0040])
             XCTAssertEqual(testCase.b - 1, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -158,7 +158,7 @@ final class InputOutputTests: XCTestCase {
             }
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             for i: byte in 0..<b {
                 XCTAssertEqual(b - i, mem[0x0040 + i])
             }
@@ -189,7 +189,7 @@ final class InputOutputTests: XCTestCase {
             }
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             for i: byte in 0..<b {
                 XCTAssertEqual(b - i, mem[0x0040 - i])
             }
@@ -216,7 +216,7 @@ final class InputOutputTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(val, z80.testPorts.GetOutput(ushort(val) * 256 + 0x34))
         }
     }
@@ -253,7 +253,7 @@ final class InputOutputTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.val, z80.testPorts.GetOutput(0x1234))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -280,7 +280,7 @@ final class InputOutputTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(0x01, z80.testPorts.GetOutput(ushort(testCase.b) * 256 + 0x34))
             XCTAssertEqual(testCase.b - 1, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -307,7 +307,7 @@ final class InputOutputTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(0x01, z80.testPorts.GetOutput(ushort(testCase.b) * 256 + 0x34))
             XCTAssertEqual(testCase.b - 1, z80.B)
             XCTAssertEqual(0x34, z80.C)
@@ -336,7 +336,7 @@ final class InputOutputTests: XCTestCase {
             }
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             for i: byte in (1...b).reversed() {
                 XCTAssertEqual(i, z80.testPorts.GetOutput(ushort(i) * 256 + 0x34))
             }
@@ -367,7 +367,7 @@ final class InputOutputTests: XCTestCase {
             }
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             for i: byte in (1...b).reversed() {
                 XCTAssertEqual(i, z80.testPorts.GetOutput(ushort(i) * 256 + 0x34))
             }

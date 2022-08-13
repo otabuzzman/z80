@@ -41,7 +41,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.A)
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -68,7 +68,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.A)
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -94,7 +94,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.A)
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -123,7 +123,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
 
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.A)
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
             XCTAssertEqual(false, z80.FlagN, "Flag N contained the wrong value")
@@ -175,7 +175,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -206,7 +206,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -248,7 +248,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -290,7 +290,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -345,7 +345,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -376,7 +376,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -418,7 +418,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -460,7 +460,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -516,7 +516,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -548,7 +548,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -591,7 +591,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -634,7 +634,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -695,7 +695,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -727,7 +727,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -770,7 +770,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -813,7 +813,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -868,7 +868,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -899,7 +899,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -941,7 +941,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -983,7 +983,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1039,7 +1039,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1071,7 +1071,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1114,7 +1114,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1157,7 +1157,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1213,7 +1213,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, z80.Reg8(testCase.register))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1245,7 +1245,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1288,7 +1288,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1331,7 +1331,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.res, mem[0x0040 + testCase.disp])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1358,7 +1358,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.ra, z80.A)
             XCTAssertEqual(testCase.rb, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
@@ -1385,7 +1385,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.Position, z80.PC)
+            XCTAssertEqual(asm.addr, z80.PC)
             XCTAssertEqual(testCase.ra, z80.A)
             XCTAssertEqual(testCase.rb, mem[0x0040])
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
