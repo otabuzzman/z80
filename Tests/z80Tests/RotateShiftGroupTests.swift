@@ -200,7 +200,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Ccf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RlcAddrHl()
             asm.Halt()
 
@@ -242,7 +242,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RlcAddrIx(testCase.disp)
             asm.Halt()
 
@@ -284,7 +284,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RlcAddrIy(testCase.disp)
             asm.Halt()
 
@@ -370,7 +370,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Scf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RlAddrHl()
             asm.Halt()
 
@@ -412,7 +412,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Scf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RlAddrIx(testCase.disp)
             asm.Halt()
 
@@ -454,7 +454,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Scf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RlAddrIy(testCase.disp)
             asm.Halt()
 
@@ -541,7 +541,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Ccf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RrcAddrHl()
             asm.RrcAddrHl()
             asm.Halt()
@@ -584,7 +584,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RrcAddrIx(testCase.disp)
             asm.RrcAddrIx(testCase.disp)
             asm.Halt()
@@ -627,7 +627,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RrcAddrIy(testCase.disp)
             asm.RrcAddrIy(testCase.disp)
             asm.Halt()
@@ -720,7 +720,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Ccf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RrAddrHl()
             asm.RrAddrHl()
             asm.Halt()
@@ -763,7 +763,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RrAddrIx(testCase.disp)
             asm.RrAddrIx(testCase.disp)
             asm.Halt()
@@ -806,7 +806,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.RrAddrIy(testCase.disp)
             asm.RrAddrIy(testCase.disp)
             asm.Halt()
@@ -893,7 +893,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Ccf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SlaAddrHl()
             asm.Halt()
 
@@ -935,7 +935,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SlaAddrIx(testCase.disp)
             asm.Halt()
 
@@ -977,7 +977,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SlaAddrIy(testCase.disp)
             asm.Halt()
 
@@ -1064,7 +1064,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Ccf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SraAddrHl()
             asm.SraAddrHl()
             asm.Halt()
@@ -1107,7 +1107,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SraAddrIx(testCase.disp)
             asm.SraAddrIx(testCase.disp)
             asm.Halt()
@@ -1150,7 +1150,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SraAddrIy(testCase.disp)
             asm.SraAddrIy(testCase.disp)
             asm.Halt()
@@ -1238,7 +1238,7 @@ final class RotateShiftGroupTests: XCTestCase {
 
             asm.Ccf()
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SrlAddrHl()
             asm.SrlAddrHl()
             asm.Halt()
@@ -1281,7 +1281,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIxVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SrlAddrIx(testCase.disp)
             asm.SrlAddrIx(testCase.disp)
             asm.Halt()
@@ -1324,7 +1324,7 @@ final class RotateShiftGroupTests: XCTestCase {
             asm.Ccf()
             asm.LoadIyVal(0x0040)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.reg)
+            asm.LoadAtHlVal(testCase.reg)
             asm.SrlAddrIy(testCase.disp)
             asm.SrlAddrIy(testCase.disp)
             asm.Halt()
@@ -1351,7 +1351,7 @@ final class RotateShiftGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.b)
+            asm.LoadAtHlVal(testCase.b)
             asm.LoadRegVal(7, testCase.a)
             asm.Rld()
             asm.Halt()
@@ -1378,7 +1378,7 @@ final class RotateShiftGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.b)
+            asm.LoadAtHlVal(testCase.b)
             asm.LoadRegVal(7, testCase.a)
             asm.Rrd()
             asm.Halt()

@@ -273,7 +273,7 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(0x01)
+            asm.LoadAtHlVal(0x01)
             asm.LoadReg16Val(0, ushort(testCase.b) * 256 + 0x34)
             asm.Outi()
             asm.Halt()
@@ -300,7 +300,7 @@ final class InputOutputTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(0x01)
+            asm.LoadAtHlVal(0x01)
             asm.LoadReg16Val(0, ushort(testCase.b) * 256 + 0x34)
             asm.Outd()
             asm.Halt()

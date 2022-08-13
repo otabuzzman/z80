@@ -33,7 +33,7 @@ final class GeneralPurposeArithmeticCpuControlGroupTests: XCTestCase {
 
     func test_NOOP()
     {
-        asm.Noop()
+        asm.Nop()
         asm.Halt()
 
         z80.Run()

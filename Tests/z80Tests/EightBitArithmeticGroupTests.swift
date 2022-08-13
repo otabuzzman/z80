@@ -144,7 +144,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.AddAAddrHl()
             asm.Halt()
@@ -197,7 +197,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.AddAAddrIx(testCase.disp)
@@ -251,7 +251,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.AddAAddrIy(testCase.disp)
@@ -444,7 +444,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.AdcAAddrHl()
             asm.Halt()
@@ -528,7 +528,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.AdcAAddrIx(testCase.disp)
@@ -613,7 +613,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.AdcAAddrIy(testCase.disp)
@@ -746,7 +746,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.SubAddrHl()
             asm.Halt()
@@ -799,7 +799,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.SubAddrIx(testCase.disp)
@@ -853,7 +853,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.SubAddrIy(testCase.disp)
@@ -1046,7 +1046,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.SbcAAddrHl()
             asm.Halt()
@@ -1130,7 +1130,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.SbcAAddrIx(testCase.disp)
@@ -1215,7 +1215,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.SbcAAddrIy(testCase.disp)
@@ -1346,7 +1346,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.AndAddrHl()
             asm.Halt()
@@ -1398,7 +1398,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.AndAddrIx(testCase.disp)
@@ -1451,7 +1451,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.AndAddrIy(testCase.disp)
@@ -1578,7 +1578,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.OrAddrHl()
             asm.Halt()
@@ -1630,7 +1630,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.OrAddrIx(testCase.disp)
@@ -1683,7 +1683,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.OrAddrIy(testCase.disp)
@@ -1810,7 +1810,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.XorAddrHl()
             asm.Halt()
@@ -1862,7 +1862,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.XorAddrIx(testCase.disp)
@@ -1915,7 +1915,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.XorAddrIy(testCase.disp)
@@ -2044,7 +2044,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.CpAddrHl()
             asm.Halt()
@@ -2097,7 +2097,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
             asm.CpAddrIx(testCase.disp)
@@ -2151,7 +2151,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val2)
+            asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
             asm.CpAddrIy(testCase.disp)
@@ -2224,7 +2224,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(val)
+            asm.LoadAtHlVal(val)
             asm.IncAddrHl()
             asm.Halt()
 
@@ -2258,7 +2258,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val)
+            asm.LoadAtHlVal(testCase.val)
             asm.LoadIxVal(0x0040)
             asm.IncAddrIx(testCase.disp)
             asm.Halt()
@@ -2293,7 +2293,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val)
+            asm.LoadAtHlVal(testCase.val)
             asm.LoadIyVal(0x0040)
             asm.IncAddrIy(testCase.disp)
             asm.Halt()
@@ -2365,7 +2365,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(val)
+            asm.LoadAtHlVal(val)
             asm.DecAddrHl()
             asm.Halt()
 
@@ -2399,7 +2399,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val)
+            asm.LoadAtHlVal(testCase.val)
             asm.LoadIxVal(0x0040)
             asm.DecAddrIx(testCase.disp)
             asm.Halt()
@@ -2434,7 +2434,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
-            asm.LoadAtHLVal(testCase.val)
+            asm.LoadAtHlVal(testCase.val)
             asm.LoadIyVal(0x0040)
             asm.DecAddrIy(testCase.disp)
             asm.Halt()

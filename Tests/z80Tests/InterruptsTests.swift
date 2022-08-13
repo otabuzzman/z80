@@ -25,10 +25,10 @@ final class InterruptsTests: XCTestCase {
     func test_NMI_Run()
     {
         asm.Ei()
-        asm.Noop()
+        asm.Nop()
 
         asm.Position = 0x66
-        asm.Noop()
+        asm.Nop()
 
         _ = z80.Step()
         _ = z80.Step()
@@ -48,7 +48,7 @@ final class InterruptsTests: XCTestCase {
         asm.Halt()
 
         asm.Position = 0x66
-        asm.Noop()
+        asm.Nop()
 
         _ = z80.Step()
         _ = z80.Step()
@@ -68,7 +68,7 @@ final class InterruptsTests: XCTestCase {
         asm.Halt()
 
         asm.Position = 0x66
-        asm.Noop()
+        asm.Nop()
 
         _ = z80.Step()
         _ = z80.Step()
@@ -107,7 +107,7 @@ final class InterruptsTests: XCTestCase {
     {
         asm.Ei()
         asm.Im0()
-        asm.Noop()
+        asm.Nop()
 
         _ = z80.Step()
         _ = z80.Step()
@@ -190,7 +190,7 @@ final class InterruptsTests: XCTestCase {
     {
         asm.Ei()
         asm.Im1()
-        asm.Noop()
+        asm.Nop()
 
         _ = z80.Step()
         _ = z80.Step()
@@ -275,7 +275,7 @@ final class InterruptsTests: XCTestCase {
         asm.LoadRegVal(7, 0x12)
         asm.LoadIA()
         asm.Im2()
-        asm.Noop()
+        asm.Nop()
 
         asm.Position = 0x1234
         asm.Data(0x56)

@@ -39,7 +39,7 @@
         Position += 1
     }
 
-    public mutating func Noop()
+    public mutating func Nop()
     {
         Write(0x00)
     }
@@ -102,12 +102,12 @@
         Write(value >> 8)
     }
 
-    public mutating func LoadAtHLReg(_ register: byte)
+    public mutating func LoadAtHlReg(_ register: byte)
     {
         Write(register + 0x70)
     }
 
-    public mutating func LoadIxR(_ register: byte, _ displacement: sbyte)
+    public mutating func LoadIxReg(_ register: byte, _ displacement: sbyte)
     {
         Write(0xDD)
         Write(register + 0x70)
@@ -121,7 +121,7 @@
         Write(displacement)
     }
 
-    public mutating func LoadAtHLVal(_ value: byte)
+    public mutating func LoadAtHlVal(_ value: byte)
     {
         Write(0x36)
         Write(value)
@@ -1424,4 +1424,3 @@
         Write(0xBB)
     }
 }
-

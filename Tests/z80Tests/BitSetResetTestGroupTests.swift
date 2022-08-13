@@ -114,7 +114,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.BitNAtHl(testCase.bit)
             asm.Halt()
 
@@ -143,7 +143,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.BitNAtIxd(testCase.bit, testCase.d)
             asm.Halt()
@@ -173,7 +173,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.BitNAtIyd(testCase.bit, testCase.d)
             asm.Halt()
@@ -277,7 +277,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.SetNAtHl(testCase.bit)
             asm.Halt()
 
@@ -304,7 +304,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.SetNAtIxd(testCase.bit, testCase.d)
             asm.Halt()
@@ -332,7 +332,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.SetNAtIyd(testCase.bit, testCase.d)
             asm.Halt()
@@ -434,7 +434,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, 0x0040)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.ResNAtHl(testCase.bit)
             asm.Halt()
 
@@ -461,7 +461,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.ResNAtIxd(testCase.bit, testCase.d)
             asm.Halt()
@@ -489,7 +489,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
             setUp()
 
             asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
-            asm.LoadAtHLVal(testCase.set)
+            asm.LoadAtHlVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.ResNAtIyd(testCase.bit, testCase.d)
             asm.Halt()

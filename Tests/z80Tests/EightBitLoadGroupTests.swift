@@ -238,8 +238,8 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             asm.LoadReg16Val(2, 8)
             asm.LoadRegVal(r, 66)
-            asm.LoadAtHLReg(r)
-            asm.Noop()
+            asm.LoadAtHlReg(r)
+            asm.Nop()
             asm.Halt()
             asm.Data(123)
 
@@ -294,7 +294,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             asm.LoadIxVal(12)
             asm.LoadRegVal(testCase.r, 201)
-            asm.LoadIxR(testCase.r, testCase.d)
+            asm.LoadIxReg(testCase.r, testCase.d)
             asm.Halt()
             asm.Data(0x11)
             asm.Data(0x22)
@@ -371,7 +371,7 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_HL_n()
     {
         asm.LoadReg16Val(2, 8)
-        asm.LoadAtHLVal(201)
+        asm.LoadAtHlVal(201)
         asm.Halt()
         asm.Data(123)
 
