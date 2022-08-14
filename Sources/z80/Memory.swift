@@ -17,11 +17,11 @@ public class Memory
 
     public subscript(address: ushort) -> byte {
         get {
-            memory[int(address)]
+            memory[Int(address)]
         }
         set(newValue) {
             if address >= start {
-                memory[int(address)] = newValue
+                memory[Int(address)] = newValue
             }
         }
     }

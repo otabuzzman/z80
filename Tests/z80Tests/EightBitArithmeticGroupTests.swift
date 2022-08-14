@@ -22,7 +22,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
         super.tearDown()
     }
 
-    private func Countbits(_ value: int) -> int
+    private func Countbits(_ value: Int) -> Int
     {
         var count = 0
         var v = value
@@ -1290,7 +1290,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1324,7 +1324,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1360,7 +1360,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1413,7 +1413,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1466,7 +1466,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(true, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1522,7 +1522,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1556,7 +1556,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1592,7 +1592,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1645,7 +1645,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1698,7 +1698,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1754,7 +1754,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1788,7 +1788,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1824,7 +1824,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1877,7 +1877,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }
@@ -1930,7 +1930,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
-            let parity = Countbits(int(res)) % 2 == 0
+            let parity = Countbits(Int(res)) % 2 == 0
             XCTAssertEqual(parity, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(false, z80.FlagC, "Flag C contained the wrong value")
         }

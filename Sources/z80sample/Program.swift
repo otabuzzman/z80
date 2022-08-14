@@ -64,8 +64,8 @@ final class SamplePorts: IPorts
         print(String(format: "  \(#function) : OUT 0x%04X, 0x%02X", port, value))
     }
 
-    var NMI: bool { false }
-    var MI: bool { false }
+    var NMI: Bool { false }
+    var MI: Bool { false }
     var Data: byte { 0x00 }
 }
 

@@ -1,31 +1,25 @@
-public typealias int = Int
-
 public typealias byte = UInt8
 public typealias sbyte = Int8
 
 public typealias short = Int16
 public typealias ushort = UInt16
 
-public typealias bool = Bool
-
-public typealias string = String
-
 extension Array {
     public subscript(index: byte) -> Element {
         get {
-            self[int(index)]
+            self[Int(index)]
         }
         set(newValue) {
-            self[int(index)] = newValue
+            self[Int(index)] = newValue
         }
     }
 
     public subscript(index: ushort) -> Element {
         get {
-            self[int(index)]
+            self[Int(index)]
         }
         set(newValue) {
-            self[int(index)] = newValue
+            self[Int(index)] = newValue
         }
     }
 }
@@ -40,22 +34,22 @@ extension short {
     }
 }
 
-public func +(lhs: ushort, rhs: int) -> ushort {
-    ushort(truncatingIfNeeded: int(lhs) + rhs)
+public func +(lhs: ushort, rhs: Int) -> ushort {
+    ushort(truncatingIfNeeded: Int(lhs) + rhs)
 }
 
 public func +(lhs: ushort, rhs: sbyte) -> ushort {
-    ushort(truncatingIfNeeded: int(lhs) + int(rhs))
+    ushort(truncatingIfNeeded: Int(lhs) + Int(rhs))
 }
 
 public func +(lhs: ushort, rhs: byte) -> ushort {
-    ushort(truncatingIfNeeded: int(lhs) + int(rhs))
+    ushort(truncatingIfNeeded: Int(lhs) + Int(rhs))
 }
 
-public func -(lhs: ushort, rhs: int) -> ushort {
-    ushort(truncatingIfNeeded: int(lhs) - rhs)
+public func -(lhs: ushort, rhs: Int) -> ushort {
+    ushort(truncatingIfNeeded: Int(lhs) - rhs)
 }
 
 public func -(lhs: ushort, rhs: byte) -> ushort {
-    ushort(truncatingIfNeeded: int(lhs) - int(rhs))
+    ushort(truncatingIfNeeded: Int(lhs) - Int(rhs))
 }

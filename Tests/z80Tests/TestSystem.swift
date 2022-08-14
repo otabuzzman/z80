@@ -65,15 +65,15 @@ final class TestSystem
     var Lp: byte { Reg8(_Lp) }
 
     // SZ-H-PNC
-    var FlagS: bool { (Reg8(_F) & 0x80) > 0 }
-    var FlagZ: bool { (Reg8(_F) & 0x40) > 0 }
-    var FlagH: bool { (Reg8(_F) & 0x10) > 0 }
-    var FlagP: bool { (Reg8(_F) & 0x04) > 0 }
-    var FlagN: bool { (Reg8(_F) & 0x02) > 0 }
-    var FlagC: bool { (Reg8(_F) & 0x01) > 0 }
+    var FlagS: Bool { (Reg8(_F) & 0x80) > 0 }
+    var FlagZ: Bool { (Reg8(_F) & 0x40) > 0 }
+    var FlagH: Bool { (Reg8(_F) & 0x10) > 0 }
+    var FlagP: Bool { (Reg8(_F) & 0x04) > 0 }
+    var FlagN: Bool { (Reg8(_F) & 0x02) > 0 }
+    var FlagC: Bool { (Reg8(_F) & 0x01) > 0 }
 
-    var Iff1: bool { Reg8(_IFF1) > 0 }
-    var Iff2: bool { Reg8(_IFF2) > 0 }
+    var Iff1: Bool { Reg8(_IFF1) > 0 }
+    var Iff2: Bool { Reg8(_IFF2) > 0 }
 
     private(set) var testPorts = TestPorts()
 
@@ -95,7 +95,7 @@ final class TestSystem
 
     func Run()
     {
-        var bailout: int = 1000
+        var bailout: Int = 1000
 
         while !z80.Halt && bailout > 0
         {
@@ -110,7 +110,7 @@ final class TestSystem
         }
     }
 
-    func Step() -> bool
+    func Step() -> Bool
     {
         z80.Parse()
         z80State = z80.GetState()
@@ -159,7 +159,7 @@ final class TestSystem
         }
     }
 
-    func RaiseInterrupt(_ maskable: bool, _ data: byte = 0x00)
+    func RaiseInterrupt(_ maskable: Bool, _ data: byte = 0x00)
     {
         if maskable
         {

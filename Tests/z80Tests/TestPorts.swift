@@ -5,8 +5,8 @@ final class TestPorts: IPorts
     private(set) var inputs = Array<byte>(repeating: 0, count: 0x10000)
     private(set) var outputs = Array<byte>(repeating: 0, count: 0x10000)
     private(set) var _data: byte = 0x00
-    private(set) var _mi: bool = false
-    private(set) var _nmi: bool = false
+    private(set) var _mi: Bool = false
+    private(set) var _nmi: Bool = false
 
     func SetInput(_ port: ushort, _ value: byte)
     {
@@ -28,7 +28,7 @@ final class TestPorts: IPorts
         outputs[port] = value
     }
 
-    var NMI: bool
+    var NMI: Bool
     {
         get
         {
@@ -39,7 +39,7 @@ final class TestPorts: IPorts
         set { _nmi = newValue }
     }
 
-    var MI: bool
+    var MI: Bool
     {
         get
         {

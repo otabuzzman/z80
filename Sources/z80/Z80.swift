@@ -32,7 +32,7 @@ public struct Z80
 
     private var IFF1 = false
     private var IFF2 = false
-    private var interruptMode: int = 0
+    private var interruptMode: Int = 0
 
     private(set) var ports: IPorts
 
@@ -1112,7 +1112,7 @@ public struct Z80
         Halt = true
     }
 
-    private static func JCName(_ condition: byte) -> string
+    private static func JCName(_ condition: byte) -> String
     {
         switch condition
         {
@@ -1325,7 +1325,7 @@ public struct Z80
 
     private mutating func Add(_ value1: ushort, _ value2: ushort) -> ushort
     {
-        let sum = int(value1) + int(value2)
+        let sum = Int(value1) + Int(value2)
         var f = registers[F] & ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
         if (value1 & 0x0FFF) + (value2 & 0x0FFF) > 0x0FFF {
             f |= Fl.H.rawValue
@@ -1346,7 +1346,7 @@ public struct Z80
 
     private mutating func Adc(_ value1: ushort, _ value2: ushort) -> ushort
     {
-        let sum = int(value1) + int(value2) + int((registers[F] & Fl.C.rawValue))
+        let sum = Int(value1) + Int(value2) + Int((registers[F] & Fl.C.rawValue))
         var f = registers[F] & ~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)
         if sum < 0 {
             f |= Fl.S.rawValue
@@ -1376,7 +1376,7 @@ public struct Z80
 
     private mutating func Sbc(_ value1: ushort, _ value2: ushort) -> ushort
     {
-        let diff = int(value1) - int(value2) - int(registers[F] & Fl.C.rawValue)
+        let diff = Int(value1) - Int(value2) - Int(registers[F] & Fl.C.rawValue)
         var f = registers[F] & ~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)
         if diff < 0 {
             f |= Fl.S.rawValue
@@ -3031,12 +3031,12 @@ public struct Z80
         return byte(truncatingIfNeeded: diff)
     }
 
-    private static func Parity(_ value: byte) -> bool
+    private static func Parity(_ value: byte) -> Bool
     {
         Z80.Parity(ushort(value))
     }
 
-    private static func Parity(_ value: ushort) -> bool
+    private static func Parity(_ value: ushort) -> Bool
     {
         var v = value
         var parity = true
@@ -3050,7 +3050,7 @@ public struct Z80
         return parity
     }
 
-    private func JumpCondition(_ condition: byte) -> bool
+    private func JumpCondition(_ condition: byte) -> Bool
     {
         var mask: Fl
         switch condition & 0xFE
@@ -3117,7 +3117,7 @@ public struct Z80
         return state
     }
 
-    public func DumpState() -> string {
+    public func DumpState() -> String {
         return " BC   DE   HL  SZ-H-PNC A\n"
         + String(format: "%02X%02X %02X%02X %02X%02X %d%d%d%d%d%d%d%d %02X\n", registers[B], registers[C], registers[D], registers[E], registers[H], registers[L],
             (registers[F] & 0x80) >> 7, (registers[F] & 0x40) >> 6, (registers[F] & 0x20) >> 5, (registers[F] & 0x10) >> 4,
@@ -3131,7 +3131,7 @@ public struct Z80
             registers[SP], registers[SP + 1], registers[PC], registers[PC + 1])
     }
 
-    private mutating func Wait(_ tStates: int)
+    private mutating func Wait(_ tStates: Int)
     {
         registers[R] = registers[R] &+ byte(truncatingIfNeeded: (tStates + 3) / 4)
         let tTime = Double(tStates) / 4_000_000 // 4MHz
@@ -3171,7 +3171,7 @@ public struct Z80
     }
 
 #if DEBUG
-    private static func RName(_ n: byte) -> string
+    private static func RName(_ n: byte) -> String
     {
         switch n
         {
@@ -3194,7 +3194,7 @@ public struct Z80
         }
     }
 
-    private static func R16Name(_ n: byte) -> string
+    private static func R16Name(_ n: byte) -> String
     {
         switch n
         {

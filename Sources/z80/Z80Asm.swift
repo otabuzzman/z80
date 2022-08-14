@@ -18,7 +18,7 @@
         Write(0x76)
     }
 
-    public mutating func Write(_ value: int)
+    public mutating func Write(_ value: Int)
     {
         Write(byte(truncatingIfNeeded: value))
     }
