@@ -34,7 +34,6 @@ let package = Package(
             name: "z80",
             dependencies: [],
             sources: [
-                "CSharp.swift",
                 "IPorts.swift",
                 "Memory.swift",
                 "Z80.swift",

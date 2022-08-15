@@ -9,7 +9,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -39,35 +39,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -80,9 +80,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = UShort(testCase.val) + UShort(testCase.val2)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -96,14 +96,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -115,9 +115,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = UShort(testCase.val) + UShort(testCase.val2)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -131,14 +131,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -152,9 +152,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = UShort(testCase.val) + UShort(testCase.val2)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -168,35 +168,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -206,9 +206,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = UShort(testCase.val) + UShort(testCase.val2)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -222,35 +222,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -260,9 +260,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = ushort(testCase.val) + ushort(testCase.val2)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = UShort(testCase.val) + UShort(testCase.val2)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -276,70 +276,70 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44), carry: true),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -350,12 +350,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            var trueSum = UShort(testCase.val) + UShort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
             }
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -369,28 +369,28 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), carry: true),
-            (val: byte(0x44), val2: byte(0x01), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), carry: true),
-            (val: byte(0x44), val2: byte(0x11), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), carry: false),
-            (val: byte(0x44), val2: byte(0x01), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -400,12 +400,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            var trueSum = UShort(testCase.val) + UShort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
             }
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -419,28 +419,28 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), carry: true),
-            (val: byte(0x44), val2: byte(0x01), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), carry: true),
-            (val: byte(0x44), val2: byte(0x11), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), carry: false),
-            (val: byte(0x44), val2: byte(0x01), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, 0x0040)
@@ -452,12 +452,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            var trueSum = UShort(testCase.val) + UShort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
             }
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -471,63 +471,63 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -537,12 +537,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            var trueSum = UShort(testCase.val) + UShort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
             }
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -556,63 +556,63 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -622,12 +622,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueSum = ushort(testCase.val) + ushort(testCase.val2)
+            var trueSum = UShort(testCase.val) + UShort(testCase.val2)
             if testCase.carry {
                 trueSum += 1
             }
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.A)
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -641,35 +641,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SUB_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -682,30 +682,30 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_SUB_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -717,30 +717,30 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_SUB_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -754,51 +754,51 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_SUB_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -808,51 +808,51 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_SUB_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -862,86 +862,86 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueDiff) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_SBC_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: false),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: false),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: false),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: false),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF), carry: true),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF), carry: true),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01), carry: true),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF), carry: false),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44), carry: false),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF), carry: true),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44), carry: true),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -952,12 +952,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueDiff = short(testCase.val) - short(testCase.val2)
+            var trueDiff = Short(testCase.val) - Short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
             }
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -971,28 +971,28 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SBC_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), carry: true),
-            (val: byte(0x44), val2: byte(0x01), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), carry: true),
-            (val: byte(0x44), val2: byte(0x11), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), carry: false),
-            (val: byte(0x44), val2: byte(0x01), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadRegVal(7, testCase.val)
@@ -1002,12 +1002,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueDiff = short(testCase.val) - short(testCase.val2)
+            var trueDiff = Short(testCase.val) - Short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
             }
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1021,28 +1021,28 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SBC_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), carry: true),
-            (val: byte(0x44), val2: byte(0x01), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), carry: true),
-            (val: byte(0x44), val2: byte(0x11), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), carry: false),
-            (val: byte(0x44), val2: byte(0x01), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
             asm.LoadReg16Val(2, 0x0040)
@@ -1054,12 +1054,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueDiff = short(testCase.val) - short(testCase.val2)
+            var trueDiff = Short(testCase.val) - Short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
             }
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1073,63 +1073,63 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SBC_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1139,12 +1139,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueDiff = short(testCase.val) - short(testCase.val2)
+            var trueDiff = Short(testCase.val) - Short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
             }
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1158,63 +1158,63 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SBC_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: true),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: true),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1), carry: false),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1), carry: false),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(3, 0x0060)
-            asm.LoadReg16Val(0, ushort(testCase.carry ? 1 : 0))
+            asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1224,12 +1224,12 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            var trueDiff = short(testCase.val) - short(testCase.val2)
+            var trueDiff = Short(testCase.val) - Short(testCase.val2)
             if testCase.carry {
                 trueDiff -= 1
             }
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(byteDiff, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1243,35 +1243,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1284,8 +1284,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val & testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val & testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1299,14 +1299,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1318,8 +1318,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val & testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val & testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1333,14 +1333,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1354,8 +1354,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val & testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val & testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1369,35 +1369,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1407,8 +1407,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val & testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val & testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1422,35 +1422,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1460,8 +1460,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val & testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val & testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1475,35 +1475,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1516,8 +1516,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val | testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val | testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1531,14 +1531,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1550,8 +1550,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val | testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val | testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1565,14 +1565,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1586,8 +1586,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val | testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val | testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1601,35 +1601,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1639,8 +1639,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val | testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val | testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1654,35 +1654,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1692,8 +1692,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val | testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val | testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1707,35 +1707,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1748,8 +1748,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val ^ testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val ^ testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1763,14 +1763,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1782,8 +1782,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val ^ testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val ^ testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1797,14 +1797,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1818,8 +1818,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val ^ testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val ^ testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1833,35 +1833,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -1871,8 +1871,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val ^ testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val ^ testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1886,35 +1886,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -1924,8 +1924,8 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let res = byte(testCase.val ^ testCase.val2)
-            let sres = sbyte(truncatingIfNeeded: res)
+            let res = Byte(testCase.val ^ testCase.val2)
+            let sres = SByte(truncatingIfNeeded: res)
             XCTAssertEqual(res, z80.A)
             XCTAssertEqual(sres < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1939,35 +1939,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_r()
     {
         [
-            (reg: byte(0), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x11)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x0F)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0xFF)),
-            (reg: byte(0), val: byte(0xF4), val2: byte(0x01)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(1), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(2), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(3), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(4), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x11)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x0F)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0xFF)),
-            (reg: byte(5), val: byte(0x44), val2: byte(0x01)),
-            (reg: byte(7), val: byte(0x44), val2: byte(0x44)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x11)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x0F)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0xFF)),
+            (reg: Byte(0), val: Byte(0xF4), val2: Byte(0x01)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(1), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(2), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(3), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(4), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x11)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x0F)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0xFF)),
+            (reg: Byte(5), val: Byte(0x44), val2: Byte(0x01)),
+            (reg: Byte(7), val: Byte(0x44), val2: Byte(0x44)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1980,9 +1980,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(testCase.val, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
@@ -1996,14 +1996,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_n()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -2015,9 +2015,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(testCase.val, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2031,14 +2031,14 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_at_HL()
     {
         [
-            (val: byte(0x44), val2: byte(0x11)),
-            (val: byte(0x44), val2: byte(0x0F)),
-            (val: byte(0x44), val2: byte(0xFF)),
-            (val: byte(0x44), val2: byte(0x01)),
-            (val: byte(0xF4), val2: byte(0x11)),
-            (val: byte(0xF4), val2: byte(0x0F)),
-            (val: byte(0xF4), val2: byte(0xFF)),
-            (val: byte(0xF4), val2: byte(0x01)),
+            (val: Byte(0x44), val2: Byte(0x11)),
+            (val: Byte(0x44), val2: Byte(0x0F)),
+            (val: Byte(0x44), val2: Byte(0xFF)),
+            (val: Byte(0x44), val2: Byte(0x01)),
+            (val: Byte(0xF4), val2: Byte(0x11)),
+            (val: Byte(0xF4), val2: Byte(0x0F)),
+            (val: Byte(0xF4), val2: Byte(0xFF)),
+            (val: Byte(0xF4), val2: Byte(0x01)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -2052,9 +2052,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(testCase.val, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2068,35 +2068,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_at_IX()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
@@ -2106,9 +2106,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(testCase.val, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.val == testCase.val2, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2122,35 +2122,35 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_at_IY()
     {
         [
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(0)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(0)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(1)),
-            (val: byte(0x44), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0x44), val2: byte(0x01), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x11), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x0F), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0xFF), disp: sbyte(-1)),
-            (val: byte(0xF4), val2: byte(0x01), disp: sbyte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
@@ -2160,9 +2160,9 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueDiff = short(testCase.val) - short(testCase.val2)
-            let byteDiff = byte(truncatingIfNeeded: trueDiff % 256)
-            let sbyteDiff = sbyte(truncatingIfNeeded: byteDiff)
+            let trueDiff = Short(testCase.val) - Short(testCase.val2)
+            let byteDiff = Byte(truncatingIfNeeded: trueDiff % 256)
+            let sbyteDiff = SByte(truncatingIfNeeded: byteDiff)
             XCTAssertEqual(testCase.val, z80.A)
             XCTAssertEqual(sbyteDiff < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.A == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
@@ -2176,20 +2176,20 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_INC_r()
     {
         [
-            (reg: byte(0), val: byte(0x28)),
-            (reg: byte(0), val: byte(0x7F)),
-            (reg: byte(1), val: byte(0x28)),
-            (reg: byte(1), val: byte(0x7F)),
-            (reg: byte(2), val: byte(0x28)),
-            (reg: byte(2), val: byte(0x7F)),
-            (reg: byte(3), val: byte(0x28)),
-            (reg: byte(3), val: byte(0x7F)),
-            (reg: byte(4), val: byte(0x28)),
-            (reg: byte(4), val: byte(0x7F)),
-            (reg: byte(5), val: byte(0x28)),
-            (reg: byte(5), val: byte(0x7F)),
-            (reg: byte(7), val: byte(0x28)),
-            (reg: byte(7), val: byte(0x7F)),
+            (reg: Byte(0), val: Byte(0x28)),
+            (reg: Byte(0), val: Byte(0x7F)),
+            (reg: Byte(1), val: Byte(0x28)),
+            (reg: Byte(1), val: Byte(0x7F)),
+            (reg: Byte(2), val: Byte(0x28)),
+            (reg: Byte(2), val: Byte(0x7F)),
+            (reg: Byte(3), val: Byte(0x28)),
+            (reg: Byte(3), val: Byte(0x7F)),
+            (reg: Byte(4), val: Byte(0x28)),
+            (reg: Byte(4), val: Byte(0x7F)),
+            (reg: Byte(5), val: Byte(0x28)),
+            (reg: Byte(5), val: Byte(0x7F)),
+            (reg: Byte(7), val: Byte(0x28)),
+            (reg: Byte(7), val: Byte(0x7F)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -2201,24 +2201,24 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(testCase.val) + short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(testCase.val) + Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_INC_at_HL()
     {
         [
-            byte(0x28),
-            byte(0x7F),
+            Byte(0x28),
+            Byte(0x7F),
         ].forEach { val in
             tearDown()
             setUp()
@@ -2231,33 +2231,33 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(val) + short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(val) + Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(1 + (0x0F & val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_INC_at_IX()
     {
         [
-            (val: byte(0x28), disp: sbyte(0)),
-            (val: byte(0x7F), disp: sbyte(0)),
-            (val: byte(0x28), disp: sbyte(1)),
-            (val: byte(0x7F), disp: sbyte(1)),
-            (val: byte(0x28), disp: sbyte(-1)),
-            (val: byte(0x7F), disp: sbyte(-1)),
+            (val: Byte(0x28), disp: SByte(0)),
+            (val: Byte(0x7F), disp: SByte(0)),
+            (val: Byte(0x28), disp: SByte(1)),
+            (val: Byte(0x7F), disp: SByte(1)),
+            (val: Byte(0x28), disp: SByte(-1)),
+            (val: Byte(0x7F), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIxVal(0x0040)
             asm.IncAddrIx(testCase.disp)
@@ -2266,33 +2266,33 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(testCase.val) + short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(testCase.val) + Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_INC_at_IY()
     {
         [
-            (val: byte(0x28), disp: sbyte(0)),
-            (val: byte(0x7F), disp: sbyte(0)),
-            (val: byte(0x28), disp: sbyte(1)),
-            (val: byte(0x7F), disp: sbyte(1)),
-            (val: byte(0x28), disp: sbyte(-1)),
-            (val: byte(0x7F), disp: sbyte(-1)),
+            (val: Byte(0x28), disp: SByte(0)),
+            (val: Byte(0x7F), disp: SByte(0)),
+            (val: Byte(0x28), disp: SByte(1)),
+            (val: Byte(0x7F), disp: SByte(1)),
+            (val: Byte(0x28), disp: SByte(-1)),
+            (val: Byte(0x7F), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIyVal(0x0040)
             asm.IncAddrIy(testCase.disp)
@@ -2301,36 +2301,36 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(testCase.val) + short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(testCase.val) + Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_DEC_r()
     {
         [
-            (reg: byte(0), val: byte(0x28)),
-            (reg: byte(0), val: byte(0x80)),
-            (reg: byte(1), val: byte(0x28)),
-            (reg: byte(1), val: byte(0x80)),
-            (reg: byte(2), val: byte(0x28)),
-            (reg: byte(2), val: byte(0x80)),
-            (reg: byte(3), val: byte(0x28)),
-            (reg: byte(3), val: byte(0x80)),
-            (reg: byte(4), val: byte(0x28)),
-            (reg: byte(4), val: byte(0x80)),
-            (reg: byte(5), val: byte(0x28)),
-            (reg: byte(5), val: byte(0x80)),
-            (reg: byte(7), val: byte(0x28)),
-            (reg: byte(7), val: byte(0x80)),
+            (reg: Byte(0), val: Byte(0x28)),
+            (reg: Byte(0), val: Byte(0x80)),
+            (reg: Byte(1), val: Byte(0x28)),
+            (reg: Byte(1), val: Byte(0x80)),
+            (reg: Byte(2), val: Byte(0x28)),
+            (reg: Byte(2), val: Byte(0x80)),
+            (reg: Byte(3), val: Byte(0x28)),
+            (reg: Byte(3), val: Byte(0x80)),
+            (reg: Byte(4), val: Byte(0x28)),
+            (reg: Byte(4), val: Byte(0x80)),
+            (reg: Byte(5), val: Byte(0x28)),
+            (reg: Byte(5), val: Byte(0x80)),
+            (reg: Byte(7), val: Byte(0x28)),
+            (reg: Byte(7), val: Byte(0x80)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -2342,24 +2342,24 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(testCase.val) - short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(testCase.val) - Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x80
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_DEC_at_HL()
     {
         [
-            byte(0x28),
-            byte(0x80),
+            Byte(0x28),
+            Byte(0x80),
         ].forEach { val in
             tearDown()
             setUp()
@@ -2372,33 +2372,33 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(val) - short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(val) - Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & val) == 0, z80.FlagH, "Flag H contained the wrong value")
             let overflow = val == 0x80
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_DEC_at_IX()
     {
         [
-            (val: byte(0x28), disp: sbyte(0)),
-            (val: byte(0x80), disp: sbyte(0)),
-            (val: byte(0x28), disp: sbyte(1)),
-            (val: byte(0x80), disp: sbyte(1)),
-            (val: byte(0x28), disp: sbyte(-1)),
-            (val: byte(0x80), disp: sbyte(-1)),
+            (val: Byte(0x28), disp: SByte(0)),
+            (val: Byte(0x80), disp: SByte(0)),
+            (val: Byte(0x28), disp: SByte(1)),
+            (val: Byte(0x80), disp: SByte(1)),
+            (val: Byte(0x28), disp: SByte(-1)),
+            (val: Byte(0x80), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIxVal(0x0040)
             asm.DecAddrIx(testCase.disp)
@@ -2407,33 +2407,33 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(testCase.val) - short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(testCase.val) - Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x80
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
     func test_DEC_at_IY()
     {
         [
-            (val: byte(0x28), disp: sbyte(0)),
-            (val: byte(0x80), disp: sbyte(0)),
-            (val: byte(0x28), disp: sbyte(1)),
-            (val: byte(0x80), disp: sbyte(1)),
-            (val: byte(0x28), disp: sbyte(-1)),
-            (val: byte(0x80), disp: sbyte(-1)),
+            (val: Byte(0x28), disp: SByte(0)),
+            (val: Byte(0x80), disp: SByte(0)),
+            (val: Byte(0x28), disp: SByte(1)),
+            (val: Byte(0x80), disp: SByte(1)),
+            (val: Byte(0x28), disp: SByte(-1)),
+            (val: Byte(0x80), disp: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIyVal(0x0040)
             asm.DecAddrIy(testCase.disp)
@@ -2442,16 +2442,16 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            let trueSum = short(testCase.val) - short(1)
-            let byteSum = byte(trueSum % 256)
-            let sbyteSum = sbyte(truncatingIfNeeded: byteSum)
+            let trueSum = Short(testCase.val) - Short(1)
+            let byteSum = Byte(trueSum % 256)
+            let sbyteSum = SByte(truncatingIfNeeded: byteSum)
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x80
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(ushort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 }

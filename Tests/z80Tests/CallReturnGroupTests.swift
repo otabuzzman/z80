@@ -9,7 +9,7 @@ final class CallReturnGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -40,8 +40,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_NZ_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09), branch: true),
-            (val: byte(0x00), addr: short(0x07), branch: false),
+            (val: Byte(0xFF), addr: Short(0x09), branch: true),
+            (val: Byte(0x00), addr: Short(0x07), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -55,7 +55,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -72,8 +72,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_Z_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x07), branch: false),
-            (val: byte(0x00), addr: short(0x09), branch: true),
+            (val: Byte(0xFF), addr: Short(0x07), branch: false),
+            (val: Byte(0x00), addr: Short(0x09), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -87,7 +87,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -104,8 +104,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_NC_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x07), branch: false),
-            (val: byte(0x00), addr: short(0x09), branch: true),
+            (val: Byte(0xFF), addr: Short(0x07), branch: false),
+            (val: Byte(0x00), addr: Short(0x09), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -119,7 +119,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -136,8 +136,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_C_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09), branch: true),
-            (val: byte(0x00), addr: short(0x07), branch: false),
+            (val: Byte(0xFF), addr: Short(0x09), branch: true),
+            (val: Byte(0x00), addr: Short(0x07), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -151,7 +151,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -168,8 +168,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_PO_nn()
     {
         [
-            (val: byte(0x7F), addr: short(0x07), branch: false),
-            (val: byte(0x00), addr: short(0x09), branch: true),
+            (val: Byte(0x7F), addr: Short(0x07), branch: false),
+            (val: Byte(0x00), addr: Short(0x09), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -183,7 +183,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -200,8 +200,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_PE_nn()
     {
         [
-            (val: byte(0x7F), addr: short(0x09), branch: true),
-            (val: byte(0x00), addr: short(0x07), branch: false),
+            (val: Byte(0x7F), addr: Short(0x09), branch: true),
+            (val: Byte(0x00), addr: Short(0x07), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -215,15 +215,15 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_CALL_P_nn()
     {
         [
-            (val: byte(0x01), addr: short(0x09), branch: true),
-            (val: byte(0x80), addr: short(0x07), branch: false),
+            (val: Byte(0x01), addr: Short(0x09), branch: true),
+            (val: Byte(0x80), addr: Short(0x07), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -237,7 +237,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -254,8 +254,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_CALL_M_nn()
     {
         [
-            (val: byte(0x01), addr: short(0x07), branch: false),
-            (val: byte(0x80), addr: short(0x09), branch: true),
+            (val: Byte(0x01), addr: Short(0x07), branch: false),
+            (val: Byte(0x80), addr: Short(0x09), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -269,7 +269,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFD, z80.SP)
@@ -299,8 +299,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_NZ_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x04), branch: true),
-            (val: byte(0x00), addr: short(0x09), branch: false),
+            (val: Byte(0xFF), addr: Short(0x04), branch: true),
+            (val: Byte(0x00), addr: Short(0x09), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -314,7 +314,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -331,8 +331,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_Z_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09), branch: false),
-            (val: byte(0x00), addr: short(0x04), branch: true),
+            (val: Byte(0xFF), addr: Short(0x09), branch: false),
+            (val: Byte(0x00), addr: Short(0x04), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -346,7 +346,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -363,8 +363,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_NC_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09), branch: false),
-            (val: byte(0x00), addr: short(0x04), branch: true),
+            (val: Byte(0xFF), addr: Short(0x09), branch: false),
+            (val: Byte(0x00), addr: Short(0x04), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -378,7 +378,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -395,8 +395,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_C_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x04), branch: true),
-            (val: byte(0x00), addr: short(0x09), branch: false),
+            (val: Byte(0xFF), addr: Short(0x04), branch: true),
+            (val: Byte(0x00), addr: Short(0x09), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -410,7 +410,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -427,8 +427,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_PO_nn()
     {
         [
-            (val: byte(0x00), addr: short(0x04), branch: true),
-            (val: byte(0x7F), addr: short(0x09), branch: false),
+            (val: Byte(0x00), addr: Short(0x04), branch: true),
+            (val: Byte(0x7F), addr: Short(0x09), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -442,7 +442,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -459,8 +459,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_PE_nn()
     {
         [
-            (val: byte(0x7F), addr: short(0x04), branch: true),
-            (val: byte(0x00), addr: short(0x09), branch: false),
+            (val: Byte(0x7F), addr: Short(0x04), branch: true),
+            (val: Byte(0x00), addr: Short(0x09), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -474,7 +474,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -491,8 +491,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_P_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09), branch: false),
-            (val: byte(0x00), addr: short(0x04), branch: true),
+            (val: Byte(0xFF), addr: Short(0x09), branch: false),
+            (val: Byte(0x00), addr: Short(0x04), branch: true),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -506,7 +506,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -523,8 +523,8 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RET_M_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x04), branch: true),
-            (val: byte(0x00), addr: short(0x09), branch: false),
+            (val: Byte(0xFF), addr: Short(0x04), branch: true),
+            (val: Byte(0x00), addr: Short(0x09), branch: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -538,7 +538,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
             if testCase.branch
             {
                 XCTAssertEqual(0xFFFF, z80.SP)
@@ -585,14 +585,14 @@ final class CallReturnGroupTests: XCTestCase {
     func test_RST_nn()
     {
         [
-            byte(0),
-            byte(1),
-            byte(2),
-            byte(3),
-            byte(4),
-            byte(5),
-            byte(6),
-            byte(7),
+            Byte(0),
+            Byte(1),
+            Byte(2),
+            Byte(3),
+            Byte(4),
+            Byte(5),
+            Byte(6),
+            Byte(7),
         ].forEach { page in
             tearDown()
             setUp()
@@ -621,7 +621,7 @@ final class CallReturnGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(page), z80.PC / 8)
+            XCTAssertEqual(UShort(page), z80.PC / 8)
             XCTAssertEqual(0xFFFD, z80.SP)
             XCTAssertEqual(0x02, mem[0xFFFD])
             XCTAssertEqual(0x10, mem[0xFFFE])

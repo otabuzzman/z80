@@ -2,67 +2,67 @@
 
 final class TestSystem
 {
-    private let _B: byte = 0
-    private let _C: byte = 1
-    private let _D: byte = 2
-    private let _E: byte = 3
-    private let _H: byte = 4
-    private let _L: byte = 5
-    private let _F: byte = 6
-    private let _A: byte = 7
-    private let _Bp: byte = 8
-    private let _Cp: byte = 9
-    private let _Dp: byte = 10
-    private let _Ep: byte = 11
-    private let _Hp: byte = 12
-    private let _Lp: byte = 13
-    private let _Fp: byte = 14
-    private let _Ap: byte = 15
-    private let _I: byte = 16
-    private let _R: byte = 17
-    private let _IX: byte = 18
-    private let _IY: byte = 20
-    private let _SP: byte = 22
-    private let _PC: byte = 24
-    private let _IFF1: byte = 26
-    private let _IFF2: byte = 27
+    private let _B: Byte = 0
+    private let _C: Byte = 1
+    private let _D: Byte = 2
+    private let _E: Byte = 3
+    private let _H: Byte = 4
+    private let _L: Byte = 5
+    private let _F: Byte = 6
+    private let _A: Byte = 7
+    private let _Bp: Byte = 8
+    private let _Cp: Byte = 9
+    private let _Dp: Byte = 10
+    private let _Ep: Byte = 11
+    private let _Hp: Byte = 12
+    private let _Lp: Byte = 13
+    private let _Fp: Byte = 14
+    private let _Ap: Byte = 15
+    private let _I: Byte = 16
+    private let _R: Byte = 17
+    private let _IX: Byte = 18
+    private let _IY: Byte = 20
+    private let _SP: Byte = 22
+    private let _PC: Byte = 24
+    private let _IFF1: Byte = 26
+    private let _IFF2: Byte = 27
 
     private(set) var mem: Memory
-    private var z80State: [byte]?
+    private var z80State: [Byte]?
     private(set) var z80: Z80
 
-    var AF: ushort { Reg16(_F) }
-    var BC: ushort { Reg16(_B) }
-    var DE: ushort { Reg16(_D) }
-    var HL: ushort { Reg16(_H) }
-    var IX: ushort { Reg16(_IX) }
-    var IY: ushort { Reg16(_IY) }
-    var SP: ushort { Reg16(_SP) }
-    var PC: ushort { Reg16(_PC) }
-    var AFp: ushort { Reg16(_Fp) }
-    var BCp: ushort { Reg16(_Bp) }
-    var DEp: ushort { Reg16(_Dp) }
-    var HLp: ushort { Reg16(_Hp) }
+    var AF: UShort { Reg16(_F) }
+    var BC: UShort { Reg16(_B) }
+    var DE: UShort { Reg16(_D) }
+    var HL: UShort { Reg16(_H) }
+    var IX: UShort { Reg16(_IX) }
+    var IY: UShort { Reg16(_IY) }
+    var SP: UShort { Reg16(_SP) }
+    var PC: UShort { Reg16(_PC) }
+    var AFp: UShort { Reg16(_Fp) }
+    var BCp: UShort { Reg16(_Bp) }
+    var DEp: UShort { Reg16(_Dp) }
+    var HLp: UShort { Reg16(_Hp) }
 
-    var A: byte { Reg8(_A) }
-    var B: byte { Reg8(_B) }
-    var C: byte { Reg8(_C) }
-    var D: byte { Reg8(_D) }
-    var E: byte { Reg8(_E) }
-    var F: byte { Reg8(_F) }
-    var H: byte { Reg8(_H) }
-    var L: byte { Reg8(_L) }
-    var I: byte { Reg8(_I) }
-    var R: byte { Reg8(_R) }
+    var A: Byte { Reg8(_A) }
+    var B: Byte { Reg8(_B) }
+    var C: Byte { Reg8(_C) }
+    var D: Byte { Reg8(_D) }
+    var E: Byte { Reg8(_E) }
+    var F: Byte { Reg8(_F) }
+    var H: Byte { Reg8(_H) }
+    var L: Byte { Reg8(_L) }
+    var I: Byte { Reg8(_I) }
+    var R: Byte { Reg8(_R) }
 
-    var Ap: byte { Reg8(_Ap) }
-    var Bp: byte { Reg8(_Bp) }
-    var Cp: byte { Reg8(_Cp) }
-    var Dp: byte { Reg8(_Dp) }
-    var Ep: byte { Reg8(_Ep) }
-    var Fp: byte { Reg8(_Fp) }
-    var Hp: byte { Reg8(_Hp) }
-    var Lp: byte { Reg8(_Lp) }
+    var Ap: Byte { Reg8(_Ap) }
+    var Bp: Byte { Reg8(_Bp) }
+    var Cp: Byte { Reg8(_Cp) }
+    var Dp: Byte { Reg8(_Dp) }
+    var Ep: Byte { Reg8(_Ep) }
+    var Fp: Byte { Reg8(_Fp) }
+    var Hp: Byte { Reg8(_Hp) }
+    var Lp: Byte { Reg8(_Lp) }
 
     // SZ-H-PNC
     var FlagS: Bool { (Reg8(_F) & 0x80) > 0 }
@@ -77,14 +77,14 @@ final class TestSystem
 
     private(set) var testPorts = TestPorts()
 
-    func Reg8(_ reg: byte) -> byte
+    func Reg8(_ reg: Byte) -> Byte
     {
         return z80State![reg]
     }
 
-    private func Reg16(_ reg: byte) -> ushort
+    private func Reg16(_ reg: Byte) -> UShort
     {
-        return ushort(z80State![reg + 1]) + ushort(z80State![reg]) * 256
+        return UShort(z80State![reg + 1]) + UShort(z80State![reg]) * 256
     }
 
     init(_ mem: Memory)
@@ -130,7 +130,7 @@ final class TestSystem
 
     func DumpRam()
     {
-        for addr: ushort in 0..<0x80
+        for addr: UShort in 0..<0x80
         {
             if addr % 16 == 0 {
                 print(String(format: "%04X | ", addr))
@@ -144,7 +144,7 @@ final class TestSystem
             }
         }
         print("")
-        for addr: ushort in 0x8080..<0x80A0
+        for addr: UShort in 0x8080..<0x80A0
         {
             if addr % 16 == 0 {
                 print(String(format: "%04X | ", addr))
@@ -159,7 +159,7 @@ final class TestSystem
         }
     }
 
-    func RaiseInterrupt(_ maskable: Bool, _ data: byte = 0x00)
+    func RaiseInterrupt(_ maskable: Bool, _ data: Byte = 0x00)
     {
         if maskable
         {

@@ -9,7 +9,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -100,7 +100,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x19, z80.H)
         XCTAssertEqual(0x42, z80.L)
     }
@@ -114,7 +114,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x19, z80.B)
         XCTAssertEqual(0x42, z80.C)
     }
@@ -128,7 +128,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x19, z80.D)
         XCTAssertEqual(0x42, z80.E)
     }
@@ -142,7 +142,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x19, z80.H)
         XCTAssertEqual(0x42, z80.L)
     }
@@ -156,7 +156,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x1942, z80.SP)
     }
 
@@ -169,7 +169,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x1942, z80.IX)
     }
 
@@ -182,7 +182,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x1942, z80.IY)
     }
 
@@ -196,7 +196,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
         XCTAssertEqual(0x42, mem[asm.addr - 1])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
@@ -211,8 +211,8 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.addr - ushort(1)])
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
+        XCTAssertEqual(0x42, mem[asm.addr - UShort(1)])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
 
@@ -226,8 +226,8 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.addr - ushort(1)])
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
+        XCTAssertEqual(0x42, mem[asm.addr - UShort(1)])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
 
@@ -241,8 +241,8 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.addr - ushort(1)])
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
+        XCTAssertEqual(0x42, mem[asm.addr - UShort(1)])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
 
@@ -256,8 +256,8 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.addr - ushort(1)])
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
+        XCTAssertEqual(0x42, mem[asm.addr - UShort(1)])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
 
@@ -271,8 +271,8 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.addr - ushort(1)])
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
+        XCTAssertEqual(0x42, mem[asm.addr - UShort(1)])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
 
@@ -286,8 +286,8 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(2), z80.PC)
-        XCTAssertEqual(0x42, mem[asm.addr - ushort(1)])
+        XCTAssertEqual(asm.addr - UShort(2), z80.PC)
+        XCTAssertEqual(0x42, mem[asm.addr - UShort(1)])
         XCTAssertEqual(0x19, mem[asm.addr])
     }
 
@@ -398,7 +398,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x000E, z80.SP)
-        XCTAssertEqual(z80.IX, ushort(mem[z80.SP + ushort(1)]) * 256 + mem[z80.SP])
+        XCTAssertEqual(z80.IX, UShort(mem[z80.SP + UShort(1)]) * 256 + mem[z80.SP])
     }
 
     func test_PUSH_IY()
@@ -412,7 +412,7 @@ final class SixteenBitLoadGroupTests: XCTestCase {
 
         XCTAssertEqual(asm.addr, z80.PC)
         XCTAssertEqual(0x000E, z80.SP)
-        XCTAssertEqual(z80.IY, ushort(mem[z80.SP + ushort(1)]) * 256 + mem[z80.SP])
+        XCTAssertEqual(z80.IY, UShort(mem[z80.SP + UShort(1)]) * 256 + mem[z80.SP])
     }
 
     func test_POP_BC()

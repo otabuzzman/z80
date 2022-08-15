@@ -9,7 +9,7 @@ final class InterruptsTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)

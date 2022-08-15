@@ -9,7 +9,7 @@ final class BitSetResetTestGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -25,62 +25,62 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_BIT_B_R()
     {
         [
-            (bit: byte(0), register: byte(0), set: byte(0x55), zero: false),
-            (bit: byte(0), register: byte(1), set: byte(0x57), zero: false),
-            (bit: byte(0), register: byte(2), set: byte(0xA9), zero: false),
-            (bit: byte(0), register: byte(3), set: byte(0xA1), zero: false),
-            (bit: byte(0), register: byte(4), set: byte(0xD3), zero: false),
-            (bit: byte(0), register: byte(5), set: byte(0xF5), zero: false),
-            (bit: byte(0), register: byte(7), set: byte(0xD4), zero: true),
-            (bit: byte(1), register: byte(0), set: byte(0x7D), zero: true),
-            (bit: byte(1), register: byte(1), set: byte(0xD8), zero: true),
-            (bit: byte(1), register: byte(2), set: byte(0xF6), zero: false),
-            (bit: byte(1), register: byte(3), set: byte(0x5E), zero: false),
-            (bit: byte(1), register: byte(4), set: byte(0x08), zero: true),
-            (bit: byte(1), register: byte(5), set: byte(0xE4), zero: true),
-            (bit: byte(1), register: byte(7), set: byte(0x3D), zero: true),
-            (bit: byte(2), register: byte(0), set: byte(0x5F), zero: false),
-            (bit: byte(2), register: byte(1), set: byte(0x1E), zero: false),
-            (bit: byte(2), register: byte(2), set: byte(0x04), zero: false),
-            (bit: byte(2), register: byte(3), set: byte(0x90), zero: true),
-            (bit: byte(2), register: byte(4), set: byte(0x1B), zero: true),
-            (bit: byte(2), register: byte(5), set: byte(0x97), zero: false),
-            (bit: byte(2), register: byte(7), set: byte(0xE5), zero: false),
-            (bit: byte(3), register: byte(0), set: byte(0x68), zero: false),
-            (bit: byte(3), register: byte(1), set: byte(0x55), zero: true),
-            (bit: byte(3), register: byte(2), set: byte(0x0F), zero: false),
-            (bit: byte(3), register: byte(3), set: byte(0x97), zero: true),
-            (bit: byte(3), register: byte(4), set: byte(0x06), zero: true),
-            (bit: byte(3), register: byte(5), set: byte(0x1B), zero: false),
-            (bit: byte(3), register: byte(7), set: byte(0xEE), zero: false),
-            (bit: byte(4), register: byte(0), set: byte(0x48), zero: true),
-            (bit: byte(4), register: byte(1), set: byte(0x36), zero: false),
-            (bit: byte(4), register: byte(2), set: byte(0xEF), zero: true),
-            (bit: byte(4), register: byte(3), set: byte(0xE1), zero: true),
-            (bit: byte(4), register: byte(4), set: byte(0xA3), zero: true),
-            (bit: byte(4), register: byte(5), set: byte(0xE0), zero: true),
-            (bit: byte(4), register: byte(7), set: byte(0x11), zero: false),
-            (bit: byte(5), register: byte(0), set: byte(0x15), zero: true),
-            (bit: byte(5), register: byte(1), set: byte(0xF8), zero: false),
-            (bit: byte(5), register: byte(2), set: byte(0xC1), zero: true),
-            (bit: byte(5), register: byte(3), set: byte(0x06), zero: true),
-            (bit: byte(5), register: byte(4), set: byte(0x9D), zero: true),
-            (bit: byte(5), register: byte(5), set: byte(0x1C), zero: true),
-            (bit: byte(5), register: byte(7), set: byte(0xD1), zero: true),
-            (bit: byte(6), register: byte(0), set: byte(0x6A), zero: false),
-            (bit: byte(6), register: byte(1), set: byte(0x66), zero: false),
-            (bit: byte(6), register: byte(2), set: byte(0x38), zero: true),
-            (bit: byte(6), register: byte(3), set: byte(0x9D), zero: true),
-            (bit: byte(6), register: byte(4), set: byte(0x3A), zero: true),
-            (bit: byte(6), register: byte(5), set: byte(0x0C), zero: true),
-            (bit: byte(6), register: byte(7), set: byte(0x72), zero: false),
-            (bit: byte(7), register: byte(0), set: byte(0x44), zero: true),
-            (bit: byte(7), register: byte(1), set: byte(0x7F), zero: true),
-            (bit: byte(7), register: byte(2), set: byte(0x47), zero: true),
-            (bit: byte(7), register: byte(3), set: byte(0xE0), zero: false),
-            (bit: byte(7), register: byte(4), set: byte(0xE7), zero: false),
-            (bit: byte(7), register: byte(5), set: byte(0x44), zero: true),
-            (bit: byte(7), register: byte(7), set: byte(0xEC), zero: false),
+            (bit: Byte(0), register: Byte(0), set: Byte(0x55), zero: false),
+            (bit: Byte(0), register: Byte(1), set: Byte(0x57), zero: false),
+            (bit: Byte(0), register: Byte(2), set: Byte(0xA9), zero: false),
+            (bit: Byte(0), register: Byte(3), set: Byte(0xA1), zero: false),
+            (bit: Byte(0), register: Byte(4), set: Byte(0xD3), zero: false),
+            (bit: Byte(0), register: Byte(5), set: Byte(0xF5), zero: false),
+            (bit: Byte(0), register: Byte(7), set: Byte(0xD4), zero: true),
+            (bit: Byte(1), register: Byte(0), set: Byte(0x7D), zero: true),
+            (bit: Byte(1), register: Byte(1), set: Byte(0xD8), zero: true),
+            (bit: Byte(1), register: Byte(2), set: Byte(0xF6), zero: false),
+            (bit: Byte(1), register: Byte(3), set: Byte(0x5E), zero: false),
+            (bit: Byte(1), register: Byte(4), set: Byte(0x08), zero: true),
+            (bit: Byte(1), register: Byte(5), set: Byte(0xE4), zero: true),
+            (bit: Byte(1), register: Byte(7), set: Byte(0x3D), zero: true),
+            (bit: Byte(2), register: Byte(0), set: Byte(0x5F), zero: false),
+            (bit: Byte(2), register: Byte(1), set: Byte(0x1E), zero: false),
+            (bit: Byte(2), register: Byte(2), set: Byte(0x04), zero: false),
+            (bit: Byte(2), register: Byte(3), set: Byte(0x90), zero: true),
+            (bit: Byte(2), register: Byte(4), set: Byte(0x1B), zero: true),
+            (bit: Byte(2), register: Byte(5), set: Byte(0x97), zero: false),
+            (bit: Byte(2), register: Byte(7), set: Byte(0xE5), zero: false),
+            (bit: Byte(3), register: Byte(0), set: Byte(0x68), zero: false),
+            (bit: Byte(3), register: Byte(1), set: Byte(0x55), zero: true),
+            (bit: Byte(3), register: Byte(2), set: Byte(0x0F), zero: false),
+            (bit: Byte(3), register: Byte(3), set: Byte(0x97), zero: true),
+            (bit: Byte(3), register: Byte(4), set: Byte(0x06), zero: true),
+            (bit: Byte(3), register: Byte(5), set: Byte(0x1B), zero: false),
+            (bit: Byte(3), register: Byte(7), set: Byte(0xEE), zero: false),
+            (bit: Byte(4), register: Byte(0), set: Byte(0x48), zero: true),
+            (bit: Byte(4), register: Byte(1), set: Byte(0x36), zero: false),
+            (bit: Byte(4), register: Byte(2), set: Byte(0xEF), zero: true),
+            (bit: Byte(4), register: Byte(3), set: Byte(0xE1), zero: true),
+            (bit: Byte(4), register: Byte(4), set: Byte(0xA3), zero: true),
+            (bit: Byte(4), register: Byte(5), set: Byte(0xE0), zero: true),
+            (bit: Byte(4), register: Byte(7), set: Byte(0x11), zero: false),
+            (bit: Byte(5), register: Byte(0), set: Byte(0x15), zero: true),
+            (bit: Byte(5), register: Byte(1), set: Byte(0xF8), zero: false),
+            (bit: Byte(5), register: Byte(2), set: Byte(0xC1), zero: true),
+            (bit: Byte(5), register: Byte(3), set: Byte(0x06), zero: true),
+            (bit: Byte(5), register: Byte(4), set: Byte(0x9D), zero: true),
+            (bit: Byte(5), register: Byte(5), set: Byte(0x1C), zero: true),
+            (bit: Byte(5), register: Byte(7), set: Byte(0xD1), zero: true),
+            (bit: Byte(6), register: Byte(0), set: Byte(0x6A), zero: false),
+            (bit: Byte(6), register: Byte(1), set: Byte(0x66), zero: false),
+            (bit: Byte(6), register: Byte(2), set: Byte(0x38), zero: true),
+            (bit: Byte(6), register: Byte(3), set: Byte(0x9D), zero: true),
+            (bit: Byte(6), register: Byte(4), set: Byte(0x3A), zero: true),
+            (bit: Byte(6), register: Byte(5), set: Byte(0x0C), zero: true),
+            (bit: Byte(6), register: Byte(7), set: Byte(0x72), zero: false),
+            (bit: Byte(7), register: Byte(0), set: Byte(0x44), zero: true),
+            (bit: Byte(7), register: Byte(1), set: Byte(0x7F), zero: true),
+            (bit: Byte(7), register: Byte(2), set: Byte(0x47), zero: true),
+            (bit: Byte(7), register: Byte(3), set: Byte(0xE0), zero: false),
+            (bit: Byte(7), register: Byte(4), set: Byte(0xE7), zero: false),
+            (bit: Byte(7), register: Byte(5), set: Byte(0x44), zero: true),
+            (bit: Byte(7), register: Byte(7), set: Byte(0xEC), zero: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -101,14 +101,14 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_BIT_B_HL()
     {
         [
-            (bit: byte(0), set: byte(0x60), zero: true),
-            (bit: byte(1), set: byte(0x22), zero: false),
-            (bit: byte(2), set: byte(0x11), zero: true),
-            (bit: byte(3), set: byte(0x87), zero: true),
-            (bit: byte(4), set: byte(0xB9), zero: false),
-            (bit: byte(5), set: byte(0x11), zero: true),
-            (bit: byte(6), set: byte(0x11), zero: true),
-            (bit: byte(7), set: byte(0x90), zero: false),
+            (bit: Byte(0), set: Byte(0x60), zero: true),
+            (bit: Byte(1), set: Byte(0x22), zero: false),
+            (bit: Byte(2), set: Byte(0x11), zero: true),
+            (bit: Byte(3), set: Byte(0x87), zero: true),
+            (bit: Byte(4), set: Byte(0xB9), zero: false),
+            (bit: Byte(5), set: Byte(0x11), zero: true),
+            (bit: Byte(6), set: Byte(0x11), zero: true),
+            (bit: Byte(7), set: Byte(0x90), zero: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -130,19 +130,19 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_BIT_B_IX_d()
     {
         [
-            (bit: byte(0), d: sbyte(-70), set: byte(0x55), zero: false),
-            (bit: byte(1), d: sbyte(75), set: byte(0xA7), zero: false),
-            (bit: byte(2), d: sbyte(-43), set: byte(0x35), zero: false),
-            (bit: byte(3), d: sbyte(26), set: byte(0x7C), zero: false),
-            (bit: byte(4), d: sbyte(-77), set: byte(0x26), zero: true),
-            (bit: byte(5), d: sbyte(-18), set: byte(0x57), zero: true),
-            (bit: byte(6), d: sbyte(-6), set: byte(0xDC), zero: false),
-            (bit: byte(7), d: sbyte(-101), set: byte(0xDE), zero: false),
+            (bit: Byte(0), d: SByte(-70), set: Byte(0x55), zero: false),
+            (bit: Byte(1), d: SByte(75), set: Byte(0xA7), zero: false),
+            (bit: Byte(2), d: SByte(-43), set: Byte(0x35), zero: false),
+            (bit: Byte(3), d: SByte(26), set: Byte(0x7C), zero: false),
+            (bit: Byte(4), d: SByte(-77), set: Byte(0x26), zero: true),
+            (bit: Byte(5), d: SByte(-18), set: Byte(0x57), zero: true),
+            (bit: Byte(6), d: SByte(-6), set: Byte(0xDC), zero: false),
+            (bit: Byte(7), d: SByte(-101), set: Byte(0xDE), zero: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, UShort(0x0140) + testCase.d)
             asm.LoadAtHlVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.BitNAtIxd(testCase.bit, testCase.d)
@@ -160,19 +160,19 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_BIT_B_IY_d()
     {
         [
-            (bit: byte(0), d: sbyte(37), set: byte(0x72), zero: true),
-            (bit: byte(1), d: sbyte(-33), set: byte(0xB4), zero: true),
-            (bit: byte(2), d: sbyte(-80), set: byte(0x16), zero: false),
-            (bit: byte(3), d: sbyte(62), set: byte(0x33), zero: true),
-            (bit: byte(4), d: sbyte(-87), set: byte(0x16), zero: false),
-            (bit: byte(5), d: sbyte(-94), set: byte(0x50), zero: true),
-            (bit: byte(6), d: sbyte(50), set: byte(0x94), zero: true),
-            (bit: byte(7), d: sbyte(-117), set: byte(0x05), zero: true),
+            (bit: Byte(0), d: SByte(37), set: Byte(0x72), zero: true),
+            (bit: Byte(1), d: SByte(-33), set: Byte(0xB4), zero: true),
+            (bit: Byte(2), d: SByte(-80), set: Byte(0x16), zero: false),
+            (bit: Byte(3), d: SByte(62), set: Byte(0x33), zero: true),
+            (bit: Byte(4), d: SByte(-87), set: Byte(0x16), zero: false),
+            (bit: Byte(5), d: SByte(-94), set: Byte(0x50), zero: true),
+            (bit: Byte(6), d: SByte(50), set: Byte(0x94), zero: true),
+            (bit: Byte(7), d: SByte(-117), set: Byte(0x05), zero: true),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, UShort(0x0140) + testCase.d)
             asm.LoadAtHlVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.BitNAtIyd(testCase.bit, testCase.d)
@@ -190,62 +190,62 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_SET_B_R()
     {
         [
-            (register: byte(0), bit: byte(0), set: byte(0x4D), res: byte(0x4D)),
-            (register: byte(0), bit: byte(1), set: byte(0x94), res: byte(0x96)),
-            (register: byte(0), bit: byte(2), set: byte(0x69), res: byte(0x6D)),
-            (register: byte(0), bit: byte(3), set: byte(0x23), res: byte(0x2B)),
-            (register: byte(0), bit: byte(4), set: byte(0xCC), res: byte(0xDC)),
-            (register: byte(0), bit: byte(5), set: byte(0x40), res: byte(0x60)),
-            (register: byte(0), bit: byte(6), set: byte(0xB5), res: byte(0xF5)),
-            (register: byte(0), bit: byte(7), set: byte(0xF3), res: byte(0xF3)),
-            (register: byte(1), bit: byte(0), set: byte(0xD4), res: byte(0xD5)),
-            (register: byte(1), bit: byte(1), set: byte(0xB7), res: byte(0xB7)),
-            (register: byte(1), bit: byte(2), set: byte(0x9E), res: byte(0x9E)),
-            (register: byte(1), bit: byte(3), set: byte(0x39), res: byte(0x39)),
-            (register: byte(1), bit: byte(4), set: byte(0x79), res: byte(0x79)),
-            (register: byte(1), bit: byte(5), set: byte(0x6B), res: byte(0x6B)),
-            (register: byte(1), bit: byte(6), set: byte(0xDB), res: byte(0xDB)),
-            (register: byte(1), bit: byte(7), set: byte(0x8D), res: byte(0x8D)),
-            (register: byte(2), bit: byte(0), set: byte(0x6A), res: byte(0x6B)),
-            (register: byte(2), bit: byte(1), set: byte(0xAC), res: byte(0xAE)),
-            (register: byte(2), bit: byte(2), set: byte(0xC6), res: byte(0xC6)),
-            (register: byte(2), bit: byte(3), set: byte(0x25), res: byte(0x2D)),
-            (register: byte(2), bit: byte(4), set: byte(0x16), res: byte(0x16)),
-            (register: byte(2), bit: byte(5), set: byte(0xDA), res: byte(0xFA)),
-            (register: byte(2), bit: byte(6), set: byte(0x8C), res: byte(0xCC)),
-            (register: byte(2), bit: byte(7), set: byte(0x25), res: byte(0xA5)),
-            (register: byte(3), bit: byte(0), set: byte(0xA9), res: byte(0xA9)),
-            (register: byte(3), bit: byte(1), set: byte(0xA0), res: byte(0xA2)),
-            (register: byte(3), bit: byte(2), set: byte(0x8C), res: byte(0x8C)),
-            (register: byte(3), bit: byte(3), set: byte(0x9C), res: byte(0x9C)),
-            (register: byte(3), bit: byte(4), set: byte(0xF2), res: byte(0xF2)),
-            (register: byte(3), bit: byte(5), set: byte(0x57), res: byte(0x77)),
-            (register: byte(3), bit: byte(6), set: byte(0x50), res: byte(0x50)),
-            (register: byte(3), bit: byte(7), set: byte(0x97), res: byte(0x97)),
-            (register: byte(4), bit: byte(0), set: byte(0xA9), res: byte(0xA9)),
-            (register: byte(4), bit: byte(1), set: byte(0x1A), res: byte(0x1A)),
-            (register: byte(4), bit: byte(2), set: byte(0xDA), res: byte(0xDE)),
-            (register: byte(4), bit: byte(3), set: byte(0x0C), res: byte(0x0C)),
-            (register: byte(4), bit: byte(4), set: byte(0xF7), res: byte(0xF7)),
-            (register: byte(4), bit: byte(5), set: byte(0x78), res: byte(0x78)),
-            (register: byte(4), bit: byte(6), set: byte(0x3A), res: byte(0x7A)),
-            (register: byte(4), bit: byte(7), set: byte(0xA3), res: byte(0xA3)),
-            (register: byte(5), bit: byte(0), set: byte(0xF5), res: byte(0xF5)),
-            (register: byte(5), bit: byte(1), set: byte(0xF6), res: byte(0xF6)),
-            (register: byte(5), bit: byte(2), set: byte(0x44), res: byte(0x44)),
-            (register: byte(5), bit: byte(3), set: byte(0x90), res: byte(0x98)),
-            (register: byte(5), bit: byte(4), set: byte(0xB3), res: byte(0xB3)),
-            (register: byte(5), bit: byte(5), set: byte(0x4B), res: byte(0x6B)),
-            (register: byte(5), bit: byte(6), set: byte(0x59), res: byte(0x59)),
-            (register: byte(5), bit: byte(7), set: byte(0x85), res: byte(0x85)),
-            (register: byte(7), bit: byte(0), set: byte(0xB9), res: byte(0xB9)),
-            (register: byte(7), bit: byte(1), set: byte(0x6C), res: byte(0x6E)),
-            (register: byte(7), bit: byte(2), set: byte(0x33), res: byte(0x37)),
-            (register: byte(7), bit: byte(3), set: byte(0x68), res: byte(0x68)),
-            (register: byte(7), bit: byte(4), set: byte(0x89), res: byte(0x99)),
-            (register: byte(7), bit: byte(5), set: byte(0x9F), res: byte(0xBF)),
-            (register: byte(7), bit: byte(6), set: byte(0x60), res: byte(0x60)),
-            (register: byte(7), bit: byte(7), set: byte(0x72), res: byte(0xF2)),
+            (register: Byte(0), bit: Byte(0), set: Byte(0x4D), res: Byte(0x4D)),
+            (register: Byte(0), bit: Byte(1), set: Byte(0x94), res: Byte(0x96)),
+            (register: Byte(0), bit: Byte(2), set: Byte(0x69), res: Byte(0x6D)),
+            (register: Byte(0), bit: Byte(3), set: Byte(0x23), res: Byte(0x2B)),
+            (register: Byte(0), bit: Byte(4), set: Byte(0xCC), res: Byte(0xDC)),
+            (register: Byte(0), bit: Byte(5), set: Byte(0x40), res: Byte(0x60)),
+            (register: Byte(0), bit: Byte(6), set: Byte(0xB5), res: Byte(0xF5)),
+            (register: Byte(0), bit: Byte(7), set: Byte(0xF3), res: Byte(0xF3)),
+            (register: Byte(1), bit: Byte(0), set: Byte(0xD4), res: Byte(0xD5)),
+            (register: Byte(1), bit: Byte(1), set: Byte(0xB7), res: Byte(0xB7)),
+            (register: Byte(1), bit: Byte(2), set: Byte(0x9E), res: Byte(0x9E)),
+            (register: Byte(1), bit: Byte(3), set: Byte(0x39), res: Byte(0x39)),
+            (register: Byte(1), bit: Byte(4), set: Byte(0x79), res: Byte(0x79)),
+            (register: Byte(1), bit: Byte(5), set: Byte(0x6B), res: Byte(0x6B)),
+            (register: Byte(1), bit: Byte(6), set: Byte(0xDB), res: Byte(0xDB)),
+            (register: Byte(1), bit: Byte(7), set: Byte(0x8D), res: Byte(0x8D)),
+            (register: Byte(2), bit: Byte(0), set: Byte(0x6A), res: Byte(0x6B)),
+            (register: Byte(2), bit: Byte(1), set: Byte(0xAC), res: Byte(0xAE)),
+            (register: Byte(2), bit: Byte(2), set: Byte(0xC6), res: Byte(0xC6)),
+            (register: Byte(2), bit: Byte(3), set: Byte(0x25), res: Byte(0x2D)),
+            (register: Byte(2), bit: Byte(4), set: Byte(0x16), res: Byte(0x16)),
+            (register: Byte(2), bit: Byte(5), set: Byte(0xDA), res: Byte(0xFA)),
+            (register: Byte(2), bit: Byte(6), set: Byte(0x8C), res: Byte(0xCC)),
+            (register: Byte(2), bit: Byte(7), set: Byte(0x25), res: Byte(0xA5)),
+            (register: Byte(3), bit: Byte(0), set: Byte(0xA9), res: Byte(0xA9)),
+            (register: Byte(3), bit: Byte(1), set: Byte(0xA0), res: Byte(0xA2)),
+            (register: Byte(3), bit: Byte(2), set: Byte(0x8C), res: Byte(0x8C)),
+            (register: Byte(3), bit: Byte(3), set: Byte(0x9C), res: Byte(0x9C)),
+            (register: Byte(3), bit: Byte(4), set: Byte(0xF2), res: Byte(0xF2)),
+            (register: Byte(3), bit: Byte(5), set: Byte(0x57), res: Byte(0x77)),
+            (register: Byte(3), bit: Byte(6), set: Byte(0x50), res: Byte(0x50)),
+            (register: Byte(3), bit: Byte(7), set: Byte(0x97), res: Byte(0x97)),
+            (register: Byte(4), bit: Byte(0), set: Byte(0xA9), res: Byte(0xA9)),
+            (register: Byte(4), bit: Byte(1), set: Byte(0x1A), res: Byte(0x1A)),
+            (register: Byte(4), bit: Byte(2), set: Byte(0xDA), res: Byte(0xDE)),
+            (register: Byte(4), bit: Byte(3), set: Byte(0x0C), res: Byte(0x0C)),
+            (register: Byte(4), bit: Byte(4), set: Byte(0xF7), res: Byte(0xF7)),
+            (register: Byte(4), bit: Byte(5), set: Byte(0x78), res: Byte(0x78)),
+            (register: Byte(4), bit: Byte(6), set: Byte(0x3A), res: Byte(0x7A)),
+            (register: Byte(4), bit: Byte(7), set: Byte(0xA3), res: Byte(0xA3)),
+            (register: Byte(5), bit: Byte(0), set: Byte(0xF5), res: Byte(0xF5)),
+            (register: Byte(5), bit: Byte(1), set: Byte(0xF6), res: Byte(0xF6)),
+            (register: Byte(5), bit: Byte(2), set: Byte(0x44), res: Byte(0x44)),
+            (register: Byte(5), bit: Byte(3), set: Byte(0x90), res: Byte(0x98)),
+            (register: Byte(5), bit: Byte(4), set: Byte(0xB3), res: Byte(0xB3)),
+            (register: Byte(5), bit: Byte(5), set: Byte(0x4B), res: Byte(0x6B)),
+            (register: Byte(5), bit: Byte(6), set: Byte(0x59), res: Byte(0x59)),
+            (register: Byte(5), bit: Byte(7), set: Byte(0x85), res: Byte(0x85)),
+            (register: Byte(7), bit: Byte(0), set: Byte(0xB9), res: Byte(0xB9)),
+            (register: Byte(7), bit: Byte(1), set: Byte(0x6C), res: Byte(0x6E)),
+            (register: Byte(7), bit: Byte(2), set: Byte(0x33), res: Byte(0x37)),
+            (register: Byte(7), bit: Byte(3), set: Byte(0x68), res: Byte(0x68)),
+            (register: Byte(7), bit: Byte(4), set: Byte(0x89), res: Byte(0x99)),
+            (register: Byte(7), bit: Byte(5), set: Byte(0x9F), res: Byte(0xBF)),
+            (register: Byte(7), bit: Byte(6), set: Byte(0x60), res: Byte(0x60)),
+            (register: Byte(7), bit: Byte(7), set: Byte(0x72), res: Byte(0xF2)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -264,14 +264,14 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_SET_B_HL()
     {
         [
-            (bit: byte(0), set: byte(0xB0), res: byte(0xB1)),
-            (bit: byte(1), set: byte(0xCB), res: byte(0xCB)),
-            (bit: byte(2), set: byte(0x3C), res: byte(0x3C)),
-            (bit: byte(3), set: byte(0xBF), res: byte(0xBF)),
-            (bit: byte(4), set: byte(0xCB), res: byte(0xDB)),
-            (bit: byte(5), set: byte(0x23), res: byte(0x23)),
-            (bit: byte(6), set: byte(0xF7), res: byte(0xF7)),
-            (bit: byte(7), set: byte(0x56), res: byte(0xD6)),
+            (bit: Byte(0), set: Byte(0xB0), res: Byte(0xB1)),
+            (bit: Byte(1), set: Byte(0xCB), res: Byte(0xCB)),
+            (bit: Byte(2), set: Byte(0x3C), res: Byte(0x3C)),
+            (bit: Byte(3), set: Byte(0xBF), res: Byte(0xBF)),
+            (bit: Byte(4), set: Byte(0xCB), res: Byte(0xDB)),
+            (bit: Byte(5), set: Byte(0x23), res: Byte(0x23)),
+            (bit: Byte(6), set: Byte(0xF7), res: Byte(0xF7)),
+            (bit: Byte(7), set: Byte(0x56), res: Byte(0xD6)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -291,19 +291,19 @@ final class BitSetResetTestGroupTests: XCTestCase {
    func test_SET_B_IX_d()
    {
         [
-            (bit: byte(0), d: sbyte(-78), set: byte(0x29), res: byte(0x29)),
-            (bit: byte(1), d: sbyte(-29), set: byte(0x27), res: byte(0x27)),
-            (bit: byte(2), d: sbyte(-54), set: byte(0xC7), res: byte(0xC7)),
-            (bit: byte(3), d: sbyte(-56), set: byte(0x31), res: byte(0x39)),
-            (bit: byte(4), d: sbyte(124), set: byte(0xCE), res: byte(0xDE)),
-            (bit: byte(5), d: sbyte(-94), set: byte(0x02), res: byte(0x22)),
-            (bit: byte(6), d: sbyte(12), set: byte(0x2C), res: byte(0x6C)),
-            (bit: byte(7), d: sbyte(-8), set: byte(0x83), res: byte(0x83)),
+            (bit: Byte(0), d: SByte(-78), set: Byte(0x29), res: Byte(0x29)),
+            (bit: Byte(1), d: SByte(-29), set: Byte(0x27), res: Byte(0x27)),
+            (bit: Byte(2), d: SByte(-54), set: Byte(0xC7), res: Byte(0xC7)),
+            (bit: Byte(3), d: SByte(-56), set: Byte(0x31), res: Byte(0x39)),
+            (bit: Byte(4), d: SByte(124), set: Byte(0xCE), res: Byte(0xDE)),
+            (bit: Byte(5), d: SByte(-94), set: Byte(0x02), res: Byte(0x22)),
+            (bit: Byte(6), d: SByte(12), set: Byte(0x2C), res: Byte(0x6C)),
+            (bit: Byte(7), d: SByte(-8), set: Byte(0x83), res: Byte(0x83)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, UShort(0x0140) + testCase.d)
             asm.LoadAtHlVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.SetNAtIxd(testCase.bit, testCase.d)
@@ -319,19 +319,19 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_SET_B_IY_d()
     {
         [
-            (bit: byte(0), d: sbyte(-31), set: byte(0x26), res: byte(0x27)),
-            (bit: byte(1), d: sbyte(24), set: byte(0x3B), res: byte(0x3B)),
-            (bit: byte(2), d: sbyte(-68), set: byte(0x47), res: byte(0x47)),
-            (bit: byte(3), d: sbyte(110), set: byte(0x69), res: byte(0x69)),
-            (bit: byte(4), d: sbyte(43), set: byte(0x52), res: byte(0x52)),
-            (bit: byte(5), d: sbyte(3), set: byte(0x04), res: byte(0x24)),
-            (bit: byte(6), d: sbyte(-76), set: byte(0xFF), res: byte(0xFF)),
-            (bit: byte(7), d: sbyte(54), set: byte(0x52), res: byte(0xD2)),
+            (bit: Byte(0), d: SByte(-31), set: Byte(0x26), res: Byte(0x27)),
+            (bit: Byte(1), d: SByte(24), set: Byte(0x3B), res: Byte(0x3B)),
+            (bit: Byte(2), d: SByte(-68), set: Byte(0x47), res: Byte(0x47)),
+            (bit: Byte(3), d: SByte(110), set: Byte(0x69), res: Byte(0x69)),
+            (bit: Byte(4), d: SByte(43), set: Byte(0x52), res: Byte(0x52)),
+            (bit: Byte(5), d: SByte(3), set: Byte(0x04), res: Byte(0x24)),
+            (bit: Byte(6), d: SByte(-76), set: Byte(0xFF), res: Byte(0xFF)),
+            (bit: Byte(7), d: SByte(54), set: Byte(0x52), res: Byte(0xD2)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, UShort(0x0140) + testCase.d)
             asm.LoadAtHlVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.SetNAtIyd(testCase.bit, testCase.d)
@@ -347,62 +347,62 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_RES_B_R()
     {
         [
-            (register: byte(0), bit: byte(0), set: byte(0x17), res: byte(0x16)),
-            (register: byte(0), bit: byte(1), set: byte(0xFC), res: byte(0xFC)),
-            (register: byte(0), bit: byte(2), set: byte(0x73), res: byte(0x73)),
-            (register: byte(0), bit: byte(3), set: byte(0xBD), res: byte(0xB5)),
-            (register: byte(0), bit: byte(4), set: byte(0x19), res: byte(0x09)),
-            (register: byte(0), bit: byte(5), set: byte(0xF5), res: byte(0xD5)),
-            (register: byte(0), bit: byte(6), set: byte(0xFD), res: byte(0xBD)),
-            (register: byte(0), bit: byte(7), set: byte(0xC7), res: byte(0x47)),
-            (register: byte(1), bit: byte(0), set: byte(0xD1), res: byte(0xD0)),
-            (register: byte(1), bit: byte(1), set: byte(0xD9), res: byte(0xD9)),
-            (register: byte(1), bit: byte(2), set: byte(0x59), res: byte(0x59)),
-            (register: byte(1), bit: byte(3), set: byte(0xB2), res: byte(0xB2)),
-            (register: byte(1), bit: byte(4), set: byte(0x68), res: byte(0x68)),
-            (register: byte(1), bit: byte(5), set: byte(0x39), res: byte(0x19)),
-            (register: byte(1), bit: byte(6), set: byte(0xC9), res: byte(0x89)),
-            (register: byte(1), bit: byte(7), set: byte(0x6D), res: byte(0x6D)),
-            (register: byte(2), bit: byte(0), set: byte(0x9F), res: byte(0x9E)),
-            (register: byte(2), bit: byte(1), set: byte(0xA3), res: byte(0xA1)),
-            (register: byte(2), bit: byte(2), set: byte(0x8B), res: byte(0x8B)),
-            (register: byte(2), bit: byte(3), set: byte(0xB8), res: byte(0xB0)),
-            (register: byte(2), bit: byte(4), set: byte(0x70), res: byte(0x60)),
-            (register: byte(2), bit: byte(5), set: byte(0xAA), res: byte(0x8A)),
-            (register: byte(2), bit: byte(6), set: byte(0xBC), res: byte(0xBC)),
-            (register: byte(2), bit: byte(7), set: byte(0x50), res: byte(0x50)),
-            (register: byte(3), bit: byte(0), set: byte(0x96), res: byte(0x96)),
-            (register: byte(3), bit: byte(1), set: byte(0x5F), res: byte(0x5D)),
-            (register: byte(3), bit: byte(2), set: byte(0x23), res: byte(0x23)),
-            (register: byte(3), bit: byte(3), set: byte(0x3C), res: byte(0x34)),
-            (register: byte(3), bit: byte(4), set: byte(0x2E), res: byte(0x2E)),
-            (register: byte(3), bit: byte(5), set: byte(0xA9), res: byte(0x89)),
-            (register: byte(3), bit: byte(6), set: byte(0xD0), res: byte(0x90)),
-            (register: byte(3), bit: byte(7), set: byte(0x2D), res: byte(0x2D)),
-            (register: byte(4), bit: byte(0), set: byte(0xBD), res: byte(0xBC)),
-            (register: byte(4), bit: byte(1), set: byte(0xAC), res: byte(0xAC)),
-            (register: byte(4), bit: byte(2), set: byte(0x30), res: byte(0x30)),
-            (register: byte(4), bit: byte(3), set: byte(0x00), res: byte(0x00)),
-            (register: byte(4), bit: byte(4), set: byte(0x67), res: byte(0x67)),
-            (register: byte(4), bit: byte(5), set: byte(0xF4), res: byte(0xD4)),
-            (register: byte(4), bit: byte(6), set: byte(0xE2), res: byte(0xA2)),
-            (register: byte(4), bit: byte(7), set: byte(0x7D), res: byte(0x7D)),
-            (register: byte(5), bit: byte(0), set: byte(0xF0), res: byte(0xF0)),
-            (register: byte(5), bit: byte(1), set: byte(0xE5), res: byte(0xE5)),
-            (register: byte(5), bit: byte(2), set: byte(0xE7), res: byte(0xE3)),
-            (register: byte(5), bit: byte(3), set: byte(0x55), res: byte(0x55)),
-            (register: byte(5), bit: byte(4), set: byte(0xEA), res: byte(0xEA)),
-            (register: byte(5), bit: byte(5), set: byte(0x53), res: byte(0x53)),
-            (register: byte(5), bit: byte(6), set: byte(0x01), res: byte(0x01)),
-            (register: byte(5), bit: byte(7), set: byte(0x0E), res: byte(0x0E)),
-            (register: byte(7), bit: byte(0), set: byte(0xE2), res: byte(0xE2)),
-            (register: byte(7), bit: byte(1), set: byte(0xEB), res: byte(0xE9)),
-            (register: byte(7), bit: byte(2), set: byte(0x93), res: byte(0x93)),
-            (register: byte(7), bit: byte(3), set: byte(0xF5), res: byte(0xF5)),
-            (register: byte(7), bit: byte(4), set: byte(0x58), res: byte(0x48)),
-            (register: byte(7), bit: byte(5), set: byte(0xD0), res: byte(0xD0)),
-            (register: byte(7), bit: byte(6), set: byte(0x5D), res: byte(0x1D)),
-            (register: byte(7), bit: byte(7), set: byte(0xA8), res: byte(0x28)),
+            (register: Byte(0), bit: Byte(0), set: Byte(0x17), res: Byte(0x16)),
+            (register: Byte(0), bit: Byte(1), set: Byte(0xFC), res: Byte(0xFC)),
+            (register: Byte(0), bit: Byte(2), set: Byte(0x73), res: Byte(0x73)),
+            (register: Byte(0), bit: Byte(3), set: Byte(0xBD), res: Byte(0xB5)),
+            (register: Byte(0), bit: Byte(4), set: Byte(0x19), res: Byte(0x09)),
+            (register: Byte(0), bit: Byte(5), set: Byte(0xF5), res: Byte(0xD5)),
+            (register: Byte(0), bit: Byte(6), set: Byte(0xFD), res: Byte(0xBD)),
+            (register: Byte(0), bit: Byte(7), set: Byte(0xC7), res: Byte(0x47)),
+            (register: Byte(1), bit: Byte(0), set: Byte(0xD1), res: Byte(0xD0)),
+            (register: Byte(1), bit: Byte(1), set: Byte(0xD9), res: Byte(0xD9)),
+            (register: Byte(1), bit: Byte(2), set: Byte(0x59), res: Byte(0x59)),
+            (register: Byte(1), bit: Byte(3), set: Byte(0xB2), res: Byte(0xB2)),
+            (register: Byte(1), bit: Byte(4), set: Byte(0x68), res: Byte(0x68)),
+            (register: Byte(1), bit: Byte(5), set: Byte(0x39), res: Byte(0x19)),
+            (register: Byte(1), bit: Byte(6), set: Byte(0xC9), res: Byte(0x89)),
+            (register: Byte(1), bit: Byte(7), set: Byte(0x6D), res: Byte(0x6D)),
+            (register: Byte(2), bit: Byte(0), set: Byte(0x9F), res: Byte(0x9E)),
+            (register: Byte(2), bit: Byte(1), set: Byte(0xA3), res: Byte(0xA1)),
+            (register: Byte(2), bit: Byte(2), set: Byte(0x8B), res: Byte(0x8B)),
+            (register: Byte(2), bit: Byte(3), set: Byte(0xB8), res: Byte(0xB0)),
+            (register: Byte(2), bit: Byte(4), set: Byte(0x70), res: Byte(0x60)),
+            (register: Byte(2), bit: Byte(5), set: Byte(0xAA), res: Byte(0x8A)),
+            (register: Byte(2), bit: Byte(6), set: Byte(0xBC), res: Byte(0xBC)),
+            (register: Byte(2), bit: Byte(7), set: Byte(0x50), res: Byte(0x50)),
+            (register: Byte(3), bit: Byte(0), set: Byte(0x96), res: Byte(0x96)),
+            (register: Byte(3), bit: Byte(1), set: Byte(0x5F), res: Byte(0x5D)),
+            (register: Byte(3), bit: Byte(2), set: Byte(0x23), res: Byte(0x23)),
+            (register: Byte(3), bit: Byte(3), set: Byte(0x3C), res: Byte(0x34)),
+            (register: Byte(3), bit: Byte(4), set: Byte(0x2E), res: Byte(0x2E)),
+            (register: Byte(3), bit: Byte(5), set: Byte(0xA9), res: Byte(0x89)),
+            (register: Byte(3), bit: Byte(6), set: Byte(0xD0), res: Byte(0x90)),
+            (register: Byte(3), bit: Byte(7), set: Byte(0x2D), res: Byte(0x2D)),
+            (register: Byte(4), bit: Byte(0), set: Byte(0xBD), res: Byte(0xBC)),
+            (register: Byte(4), bit: Byte(1), set: Byte(0xAC), res: Byte(0xAC)),
+            (register: Byte(4), bit: Byte(2), set: Byte(0x30), res: Byte(0x30)),
+            (register: Byte(4), bit: Byte(3), set: Byte(0x00), res: Byte(0x00)),
+            (register: Byte(4), bit: Byte(4), set: Byte(0x67), res: Byte(0x67)),
+            (register: Byte(4), bit: Byte(5), set: Byte(0xF4), res: Byte(0xD4)),
+            (register: Byte(4), bit: Byte(6), set: Byte(0xE2), res: Byte(0xA2)),
+            (register: Byte(4), bit: Byte(7), set: Byte(0x7D), res: Byte(0x7D)),
+            (register: Byte(5), bit: Byte(0), set: Byte(0xF0), res: Byte(0xF0)),
+            (register: Byte(5), bit: Byte(1), set: Byte(0xE5), res: Byte(0xE5)),
+            (register: Byte(5), bit: Byte(2), set: Byte(0xE7), res: Byte(0xE3)),
+            (register: Byte(5), bit: Byte(3), set: Byte(0x55), res: Byte(0x55)),
+            (register: Byte(5), bit: Byte(4), set: Byte(0xEA), res: Byte(0xEA)),
+            (register: Byte(5), bit: Byte(5), set: Byte(0x53), res: Byte(0x53)),
+            (register: Byte(5), bit: Byte(6), set: Byte(0x01), res: Byte(0x01)),
+            (register: Byte(5), bit: Byte(7), set: Byte(0x0E), res: Byte(0x0E)),
+            (register: Byte(7), bit: Byte(0), set: Byte(0xE2), res: Byte(0xE2)),
+            (register: Byte(7), bit: Byte(1), set: Byte(0xEB), res: Byte(0xE9)),
+            (register: Byte(7), bit: Byte(2), set: Byte(0x93), res: Byte(0x93)),
+            (register: Byte(7), bit: Byte(3), set: Byte(0xF5), res: Byte(0xF5)),
+            (register: Byte(7), bit: Byte(4), set: Byte(0x58), res: Byte(0x48)),
+            (register: Byte(7), bit: Byte(5), set: Byte(0xD0), res: Byte(0xD0)),
+            (register: Byte(7), bit: Byte(6), set: Byte(0x5D), res: Byte(0x1D)),
+            (register: Byte(7), bit: Byte(7), set: Byte(0xA8), res: Byte(0x28)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -421,14 +421,14 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_RES_B_HL()
     {
         [
-            (bit: byte(0), set: byte(0x7E), res: byte(0x7E)),
-            (bit: byte(1), set: byte(0x64), res: byte(0x64)),
-            (bit: byte(2), set: byte(0x81), res: byte(0x81)),
-            (bit: byte(3), set: byte(0x08), res: byte(0x00)),
-            (bit: byte(4), set: byte(0x8E), res: byte(0x8E)),
-            (bit: byte(5), set: byte(0x91), res: byte(0x91)),
-            (bit: byte(6), set: byte(0xB5), res: byte(0xB5)),
-            (bit: byte(7), set: byte(0x55), res: byte(0x55)),
+            (bit: Byte(0), set: Byte(0x7E), res: Byte(0x7E)),
+            (bit: Byte(1), set: Byte(0x64), res: Byte(0x64)),
+            (bit: Byte(2), set: Byte(0x81), res: Byte(0x81)),
+            (bit: Byte(3), set: Byte(0x08), res: Byte(0x00)),
+            (bit: Byte(4), set: Byte(0x8E), res: Byte(0x8E)),
+            (bit: Byte(5), set: Byte(0x91), res: Byte(0x91)),
+            (bit: Byte(6), set: Byte(0xB5), res: Byte(0xB5)),
+            (bit: Byte(7), set: Byte(0x55), res: Byte(0x55)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -448,19 +448,19 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_RES_B_IX_d()
     {
         [
-            (bit: byte(0), d: sbyte(-90),  set: byte(0x3C), res: byte(0x3C)),
-            (bit: byte(1), d: sbyte(-122), set: byte(0x3E), res: byte(0x3C)),
-            (bit: byte(2), d: sbyte(-127), set: byte(0xE7), res: byte(0xE3)),
-            (bit: byte(3), d: sbyte(26),   set: byte(0x26), res: byte(0x26)),
-            (bit: byte(4), d: sbyte(-26),  set: byte(0x90), res: byte(0x80)),
-            (bit: byte(5), d: sbyte(-93),  set: byte(0x4C), res: byte(0x4C)),
-            (bit: byte(6), d: sbyte(-102), set: byte(0x7E), res: byte(0x3E)),
-            (bit: byte(7), d: sbyte(68),   set: byte(0x31), res: byte(0x31)),
+            (bit: Byte(0), d: SByte(-90),  set: Byte(0x3C), res: Byte(0x3C)),
+            (bit: Byte(1), d: SByte(-122), set: Byte(0x3E), res: Byte(0x3C)),
+            (bit: Byte(2), d: SByte(-127), set: Byte(0xE7), res: Byte(0xE3)),
+            (bit: Byte(3), d: SByte(26),   set: Byte(0x26), res: Byte(0x26)),
+            (bit: Byte(4), d: SByte(-26),  set: Byte(0x90), res: Byte(0x80)),
+            (bit: Byte(5), d: SByte(-93),  set: Byte(0x4C), res: Byte(0x4C)),
+            (bit: Byte(6), d: SByte(-102), set: Byte(0x7E), res: Byte(0x3E)),
+            (bit: Byte(7), d: SByte(68),   set: Byte(0x31), res: Byte(0x31)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, UShort(0x0140) + testCase.d)
             asm.LoadAtHlVal(testCase.set)
             asm.LoadIxVal(0x0140)
             asm.ResNAtIxd(testCase.bit, testCase.d)
@@ -476,19 +476,19 @@ final class BitSetResetTestGroupTests: XCTestCase {
     func test_RES_B_IY_d()
     {
         [
-            (bit: byte(0), d: sbyte(58), set: byte(0x52), res: byte(0x52)),
-            (bit: byte(1), d: sbyte(-101), set: byte(0x45), res: byte(0x45)),
-            (bit: byte(2), d: sbyte(57), set: byte(0x43), res: byte(0x43)),
-            (bit: byte(3), d: sbyte(125), set: byte(0x5A), res: byte(0x52)),
-            (bit: byte(4), d: sbyte(-123), set: byte(0x65), res: byte(0x65)),
-            (bit: byte(5), d: sbyte(42), set: byte(0x09), res: byte(0x09)),
-            (bit: byte(6), d: sbyte(-30), set: byte(0x4E), res: byte(0x0E)),
-            (bit: byte(7), d: sbyte(-80), set: byte(0x83), res: byte(0x03)),
+            (bit: Byte(0), d: SByte(58), set: Byte(0x52), res: Byte(0x52)),
+            (bit: Byte(1), d: SByte(-101), set: Byte(0x45), res: Byte(0x45)),
+            (bit: Byte(2), d: SByte(57), set: Byte(0x43), res: Byte(0x43)),
+            (bit: Byte(3), d: SByte(125), set: Byte(0x5A), res: Byte(0x52)),
+            (bit: Byte(4), d: SByte(-123), set: Byte(0x65), res: Byte(0x65)),
+            (bit: Byte(5), d: SByte(42), set: Byte(0x09), res: Byte(0x09)),
+            (bit: Byte(6), d: SByte(-30), set: Byte(0x4E), res: Byte(0x0E)),
+            (bit: Byte(7), d: SByte(-80), set: Byte(0x83), res: Byte(0x03)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, ushort(0x0140) + testCase.d)
+            asm.LoadReg16Val(2, UShort(0x0140) + testCase.d)
             asm.LoadAtHlVal(testCase.set)
             asm.LoadIyVal(0x0140)
             asm.ResNAtIyd(testCase.bit, testCase.d)

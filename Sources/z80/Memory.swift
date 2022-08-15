@@ -1,9 +1,9 @@
 public class Memory
 {
-    private(set) var memory: [byte]
-    private(set) var start: ushort
+    private(set) var memory: [Byte]
+    private(set) var start: UShort
 
-    public init(_ ram: [byte], _ start: ushort)
+    public init(_ ram: [Byte], _ start: UShort)
     {
         memory = ram
         self.start = start
@@ -15,7 +15,7 @@ public class Memory
         }
     }
 
-    public subscript(address: ushort) -> byte {
+    public subscript(address: UShort) -> Byte {
         get {
             memory[Int(address)]
         }

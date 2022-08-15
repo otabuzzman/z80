@@ -9,7 +9,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -138,8 +138,8 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     func test_LDI()
     {
         [
-            byte(7),
-            byte(1),
+            Byte(7),
+            Byte(1),
         ].forEach { bc in
             tearDown()
             setUp()
@@ -148,7 +148,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             asm.LoadReg16Val(0, 0xFFFF)
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(0, ushort(bc))
+            asm.LoadReg16Val(0, UShort(bc))
             asm.LoadReg16Val(1, 0x2222)
             asm.LoadReg16Val(2, 0x1111)
             asm.LoadRegVal(7, 0x88)
@@ -161,7 +161,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(ushort(bc - 1), z80.BC)
+            XCTAssertEqual(UShort(bc - 1), z80.BC)
             XCTAssertEqual(0x2223, z80.DE)
             XCTAssertEqual(0x1112, z80.HL)
             XCTAssertEqual(0x88, mem[0x1111])
@@ -215,8 +215,8 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     func test_LDD()
     {
         [
-            byte(7),
-            byte(1),
+            Byte(7),
+            Byte(1),
         ].forEach { bc in
             tearDown()
             setUp()
@@ -225,7 +225,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             asm.LoadReg16Val(0, 0xFFFF)
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(0, ushort(bc))
+            asm.LoadReg16Val(0, UShort(bc))
             asm.LoadReg16Val(1, 0x2222)
             asm.LoadReg16Val(2, 0x1111)
             asm.LoadRegVal(7, 0x88)
@@ -238,7 +238,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(ushort(bc - 1), z80.BC)
+            XCTAssertEqual(UShort(bc - 1), z80.BC)
             XCTAssertEqual(0x2221, z80.DE)
             XCTAssertEqual(0x1110, z80.HL)
             XCTAssertEqual(0x88, mem[0x1111])
@@ -292,12 +292,12 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     func test_CPI()
     {
         [
-            (bc: byte(7), a: byte(0x3F)),
-            (bc: byte(1), a: byte(0x3F)),
-            (bc: byte(7), a: byte(0x42)),
-            (bc: byte(1), a: byte(0x42)),
-            (bc: byte(7), a: byte(0x21)),
-            (bc: byte(1), a: byte(0x21)),
+            (bc: Byte(7), a: Byte(0x3F)),
+            (bc: Byte(1), a: Byte(0x3F)),
+            (bc: Byte(7), a: Byte(0x42)),
+            (bc: Byte(1), a: Byte(0x42)),
+            (bc: Byte(7), a: Byte(0x21)),
+            (bc: Byte(1), a: Byte(0x21)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -306,7 +306,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             asm.LoadReg16Val(0, 0xFFFF)
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(0, UShort(testCase.bc))
             asm.LoadReg16Val(2, 0x1111)
             asm.LoadRegVal(7, 0x3F)
             asm.LoadAddrA(0x1111)
@@ -317,7 +317,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(ushort(testCase.bc - 1), z80.BC)
+            XCTAssertEqual(UShort(testCase.bc - 1), z80.BC)
             XCTAssertEqual(0x1112, z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
             XCTAssertEqual(0x3F, mem[0x1111])
@@ -334,12 +334,12 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     func test_CPIR()
     {
         [
-            (bc: byte(7), a: byte(0xF3), bc_res: byte(4)),
-            (bc: byte(1), a: byte(0xF3), bc_res: byte(0)),
-            (bc: byte(7), a: byte(0x42), bc_res: byte(0)),
-            (bc: byte(1), a: byte(0x42), bc_res: byte(0)),
-            (bc: byte(7), a: byte(0x21), bc_res: byte(0)),
-            (bc: byte(1), a: byte(0x21), bc_res: byte(0)),
+            (bc: Byte(7), a: Byte(0xF3), bc_res: Byte(4)),
+            (bc: Byte(1), a: Byte(0xF3), bc_res: Byte(0)),
+            (bc: Byte(7), a: Byte(0x42), bc_res: Byte(0)),
+            (bc: Byte(1), a: Byte(0x42), bc_res: Byte(0)),
+            (bc: Byte(7), a: Byte(0x21), bc_res: Byte(0)),
+            (bc: Byte(1), a: Byte(0x21), bc_res: Byte(0)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -352,7 +352,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             asm.LoadReg16Val(0, 0xFFFF)
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(0, UShort(testCase.bc))
             asm.LoadReg16Val(2, 0x1111)
             asm.LoadRegVal(7, testCase.a)
             asm.Cpir()
@@ -361,11 +361,11 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(ushort(testCase.bc_res), z80.BC)
-            XCTAssertEqual(0x1111 + ushort(testCase.bc) - ushort(testCase.bc_res), z80.HL)
+            XCTAssertEqual(UShort(testCase.bc_res), z80.BC)
+            XCTAssertEqual(0x1111 + UShort(testCase.bc) - UShort(testCase.bc_res), z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
 
-            let last = mem[z80.HL - ushort(1)]
+            let last = mem[z80.HL - UShort(1)]
             XCTAssertEqual(testCase.a < last, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.a == last, z80.FlagZ, "Flag Z contained the wrong value")
             // (hl) has bit 3 set, if a doesn't a borrow occurs from bit 4 (half carry flag)
@@ -378,12 +378,12 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     func test_CPD()
     {
         [
-            (bc: byte(7), a: byte(0x3F)),
-            (bc: byte(1), a: byte(0x3F)),
-            (bc: byte(7), a: byte(0x42)),
-            (bc: byte(1), a: byte(0x42)),
-            (bc: byte(7), a: byte(0x21)),
-            (bc: byte(1), a: byte(0x21)),
+            (bc: Byte(7), a: Byte(0x3F)),
+            (bc: Byte(1), a: Byte(0x3F)),
+            (bc: Byte(7), a: Byte(0x42)),
+            (bc: Byte(1), a: Byte(0x42)),
+            (bc: Byte(7), a: Byte(0x21)),
+            (bc: Byte(1), a: Byte(0x21)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -392,7 +392,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             asm.LoadReg16Val(0, 0xFFFF)
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(0, UShort(testCase.bc))
             asm.LoadReg16Val(2, 0x1111)
             asm.LoadRegVal(7, 0x3F)
             asm.LoadAddrA(0x1111)
@@ -403,7 +403,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(ushort(testCase.bc - 1), z80.BC)
+            XCTAssertEqual(UShort(testCase.bc - 1), z80.BC)
             XCTAssertEqual(0x1110, z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
             XCTAssertEqual(0x3F, mem[0x1111])
@@ -420,12 +420,12 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
     func test_CPDR()
     {
         [
-            (bc: byte(7), a: byte(0xF3), bc_res: byte(4)),
-            (bc: byte(1), a: byte(0xF3), bc_res: byte(0)),
-            (bc: byte(7), a: byte(0x42), bc_res: byte(0)),
-            (bc: byte(1), a: byte(0x42), bc_res: byte(0)),
-            (bc: byte(7), a: byte(0x21), bc_res: byte(0)),
-            (bc: byte(1), a: byte(0x21), bc_res: byte(0)),
+            (bc: Byte(7), a: Byte(0xF3), bc_res: Byte(4)),
+            (bc: Byte(1), a: Byte(0xF3), bc_res: Byte(0)),
+            (bc: Byte(7), a: Byte(0x42), bc_res: Byte(0)),
+            (bc: Byte(1), a: Byte(0x42), bc_res: Byte(0)),
+            (bc: Byte(7), a: Byte(0x21), bc_res: Byte(0)),
+            (bc: Byte(1), a: Byte(0x21), bc_res: Byte(0)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -438,7 +438,7 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             asm.LoadReg16Val(0, 0xFFFF)
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(0, ushort(testCase.bc))
+            asm.LoadReg16Val(0, UShort(testCase.bc))
             asm.LoadReg16Val(2, 0x1118)
             asm.LoadRegVal(7, testCase.a)
             asm.Cpdr()
@@ -447,11 +447,11 @@ final class ExchangeBlockTransferSearchGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(ushort(testCase.bc_res), z80.BC)
-            XCTAssertEqual(0x1118 - ushort(testCase.bc) + ushort(testCase.bc_res), z80.HL)
+            XCTAssertEqual(UShort(testCase.bc_res), z80.BC)
+            XCTAssertEqual(0x1118 - UShort(testCase.bc) + UShort(testCase.bc_res), z80.HL)
             XCTAssertEqual(testCase.a, z80.A)
 
-            let last = mem[z80.HL + ushort(1)]
+            let last = mem[z80.HL + UShort(1)]
             XCTAssertEqual(testCase.a < last, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.a == last, z80.FlagZ, "Flag Z contained the wrong value")
             // (hl) has bit 3 set, if a doesn't a borrow occurs from bit 4 (half carry flag)

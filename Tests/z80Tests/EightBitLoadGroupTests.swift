@@ -9,7 +9,7 @@ final class EightBitLoadGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -25,13 +25,13 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_r_n()
     {
         [
-            byte(0),
-            byte(1),
-            byte(2),
-            byte(3),
-            byte(4),
-            byte(5),
-            byte(7),
+            Byte(0),
+            Byte(1),
+            Byte(2),
+            Byte(3),
+            Byte(4),
+            Byte(5),
+            Byte(7),
         ].forEach { r in
             tearDown()
             setUp()
@@ -49,55 +49,55 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_r1_r2()
     {
         [
-            (r: byte(0), r2: byte(0)),
-            (r: byte(1), r2: byte(0)),
-            (r: byte(2), r2: byte(0)),
-            (r: byte(3), r2: byte(0)),
-            (r: byte(4), r2: byte(0)),
-            (r: byte(5), r2: byte(0)),
-            (r: byte(7), r2: byte(0)),
-            (r: byte(0), r2: byte(1)),
-            (r: byte(1), r2: byte(1)),
-            (r: byte(2), r2: byte(1)),
-            (r: byte(3), r2: byte(1)),
-            (r: byte(4), r2: byte(1)),
-            (r: byte(5), r2: byte(1)),
-            (r: byte(7), r2: byte(1)),
-            (r: byte(0), r2: byte(2)),
-            (r: byte(1), r2: byte(2)),
-            (r: byte(2), r2: byte(2)),
-            (r: byte(3), r2: byte(2)),
-            (r: byte(4), r2: byte(2)),
-            (r: byte(5), r2: byte(2)),
-            (r: byte(7), r2: byte(2)),
-            (r: byte(0), r2: byte(3)),
-            (r: byte(1), r2: byte(3)),
-            (r: byte(2), r2: byte(3)),
-            (r: byte(3), r2: byte(3)),
-            (r: byte(4), r2: byte(3)),
-            (r: byte(5), r2: byte(3)),
-            (r: byte(7), r2: byte(3)),
-            (r: byte(0), r2: byte(4)),
-            (r: byte(1), r2: byte(4)),
-            (r: byte(2), r2: byte(4)),
-            (r: byte(3), r2: byte(4)),
-            (r: byte(4), r2: byte(4)),
-            (r: byte(5), r2: byte(4)),
-            (r: byte(7), r2: byte(4)),
-            (r: byte(0), r2: byte(5)),
-            (r: byte(1), r2: byte(5)),
-            (r: byte(2), r2: byte(5)),
-            (r: byte(3), r2: byte(5)),
-            (r: byte(4), r2: byte(5)),
-            (r: byte(5), r2: byte(5)),
-            (r: byte(7), r2: byte(5)),
-            (r: byte(0), r2: byte(7)),
-            (r: byte(1), r2: byte(7)),
-            (r: byte(2), r2: byte(7)),
-            (r: byte(3), r2: byte(7)),
-            (r: byte(4), r2: byte(7)),
-            (r: byte(5), r2: byte(7)),
-            (r: byte(7), r2: byte(7)),
+            (r: Byte(0), r2: Byte(0)),
+            (r: Byte(1), r2: Byte(0)),
+            (r: Byte(2), r2: Byte(0)),
+            (r: Byte(3), r2: Byte(0)),
+            (r: Byte(4), r2: Byte(0)),
+            (r: Byte(5), r2: Byte(0)),
+            (r: Byte(7), r2: Byte(0)),
+            (r: Byte(0), r2: Byte(1)),
+            (r: Byte(1), r2: Byte(1)),
+            (r: Byte(2), r2: Byte(1)),
+            (r: Byte(3), r2: Byte(1)),
+            (r: Byte(4), r2: Byte(1)),
+            (r: Byte(5), r2: Byte(1)),
+            (r: Byte(7), r2: Byte(1)),
+            (r: Byte(0), r2: Byte(2)),
+            (r: Byte(1), r2: Byte(2)),
+            (r: Byte(2), r2: Byte(2)),
+            (r: Byte(3), r2: Byte(2)),
+            (r: Byte(4), r2: Byte(2)),
+            (r: Byte(5), r2: Byte(2)),
+            (r: Byte(7), r2: Byte(2)),
+            (r: Byte(0), r2: Byte(3)),
+            (r: Byte(1), r2: Byte(3)),
+            (r: Byte(2), r2: Byte(3)),
+            (r: Byte(3), r2: Byte(3)),
+            (r: Byte(4), r2: Byte(3)),
+            (r: Byte(5), r2: Byte(3)),
+            (r: Byte(7), r2: Byte(3)),
+            (r: Byte(0), r2: Byte(4)),
+            (r: Byte(1), r2: Byte(4)),
+            (r: Byte(2), r2: Byte(4)),
+            (r: Byte(3), r2: Byte(4)),
+            (r: Byte(4), r2: Byte(4)),
+            (r: Byte(5), r2: Byte(4)),
+            (r: Byte(7), r2: Byte(4)),
+            (r: Byte(0), r2: Byte(5)),
+            (r: Byte(1), r2: Byte(5)),
+            (r: Byte(2), r2: Byte(5)),
+            (r: Byte(3), r2: Byte(5)),
+            (r: Byte(4), r2: Byte(5)),
+            (r: Byte(5), r2: Byte(5)),
+            (r: Byte(7), r2: Byte(5)),
+            (r: Byte(0), r2: Byte(7)),
+            (r: Byte(1), r2: Byte(7)),
+            (r: Byte(2), r2: Byte(7)),
+            (r: Byte(3), r2: Byte(7)),
+            (r: Byte(4), r2: Byte(7)),
+            (r: Byte(5), r2: Byte(7)),
+            (r: Byte(7), r2: Byte(7)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -117,13 +117,13 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_r_HL()
     {
         [
-            byte(0),
-            byte(1),
-            byte(2),
-            byte(3),
-            byte(4),
-            byte(5),
-            byte(7),
+            Byte(0),
+            Byte(1),
+            Byte(2),
+            Byte(3),
+            Byte(4),
+            Byte(5),
+            Byte(7),
         ].forEach { r in
             tearDown()
             setUp()
@@ -135,7 +135,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(1), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(1), z80.PC)
             XCTAssertEqual(123, z80.Reg8(r))
         }
     }
@@ -143,27 +143,27 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_r_at_IX()
     {
         [
-            (r: byte(0), d: sbyte(0)),
-            (r: byte(1), d: sbyte(0)),
-            (r: byte(2), d: sbyte(0)),
-            (r: byte(3), d: sbyte(0)),
-            (r: byte(4), d: sbyte(0)),
-            (r: byte(5), d: sbyte(0)),
-            (r: byte(7), d: sbyte(0)),
-            (r: byte(0), d: sbyte(1)),
-            (r: byte(1), d: sbyte(1)),
-            (r: byte(2), d: sbyte(1)),
-            (r: byte(3), d: sbyte(1)),
-            (r: byte(4), d: sbyte(1)),
-            (r: byte(5), d: sbyte(1)),
-            (r: byte(7), d: sbyte(1)),
-            (r: byte(0), d: sbyte(2)),
-            (r: byte(1), d: sbyte(2)),
-            (r: byte(2), d: sbyte(2)),
-            (r: byte(3), d: sbyte(2)),
-            (r: byte(4), d: sbyte(2)),
-            (r: byte(5), d: sbyte(2)),
-            (r: byte(7), d: sbyte(2)),
+            (r: Byte(0), d: SByte(0)),
+            (r: Byte(1), d: SByte(0)),
+            (r: Byte(2), d: SByte(0)),
+            (r: Byte(3), d: SByte(0)),
+            (r: Byte(4), d: SByte(0)),
+            (r: Byte(5), d: SByte(0)),
+            (r: Byte(7), d: SByte(0)),
+            (r: Byte(0), d: SByte(1)),
+            (r: Byte(1), d: SByte(1)),
+            (r: Byte(2), d: SByte(1)),
+            (r: Byte(3), d: SByte(1)),
+            (r: Byte(4), d: SByte(1)),
+            (r: Byte(5), d: SByte(1)),
+            (r: Byte(7), d: SByte(1)),
+            (r: Byte(0), d: SByte(2)),
+            (r: Byte(1), d: SByte(2)),
+            (r: Byte(2), d: SByte(2)),
+            (r: Byte(3), d: SByte(2)),
+            (r: Byte(4), d: SByte(2)),
+            (r: Byte(5), d: SByte(2)),
+            (r: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -177,7 +177,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(3), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(3), z80.PC)
             XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.r))
         }
     }
@@ -185,27 +185,27 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_r_at_IY()
     {
         [
-            (r: byte(0), d: sbyte(0)),
-            (r: byte(1), d: sbyte(0)),
-            (r: byte(2), d: sbyte(0)),
-            (r: byte(3), d: sbyte(0)),
-            (r: byte(4), d: sbyte(0)),
-            (r: byte(5), d: sbyte(0)),
-            (r: byte(7), d: sbyte(0)),
-            (r: byte(0), d: sbyte(1)),
-            (r: byte(1), d: sbyte(1)),
-            (r: byte(2), d: sbyte(1)),
-            (r: byte(3), d: sbyte(1)),
-            (r: byte(4), d: sbyte(1)),
-            (r: byte(5), d: sbyte(1)),
-            (r: byte(7), d: sbyte(1)),
-            (r: byte(0), d: sbyte(2)),
-            (r: byte(1), d: sbyte(2)),
-            (r: byte(2), d: sbyte(2)),
-            (r: byte(3), d: sbyte(2)),
-            (r: byte(4), d: sbyte(2)),
-            (r: byte(5), d: sbyte(2)),
-            (r: byte(7), d: sbyte(2)),
+            (r: Byte(0), d: SByte(0)),
+            (r: Byte(1), d: SByte(0)),
+            (r: Byte(2), d: SByte(0)),
+            (r: Byte(3), d: SByte(0)),
+            (r: Byte(4), d: SByte(0)),
+            (r: Byte(5), d: SByte(0)),
+            (r: Byte(7), d: SByte(0)),
+            (r: Byte(0), d: SByte(1)),
+            (r: Byte(1), d: SByte(1)),
+            (r: Byte(2), d: SByte(1)),
+            (r: Byte(3), d: SByte(1)),
+            (r: Byte(4), d: SByte(1)),
+            (r: Byte(5), d: SByte(1)),
+            (r: Byte(7), d: SByte(1)),
+            (r: Byte(0), d: SByte(2)),
+            (r: Byte(1), d: SByte(2)),
+            (r: Byte(2), d: SByte(2)),
+            (r: Byte(3), d: SByte(2)),
+            (r: Byte(4), d: SByte(2)),
+            (r: Byte(5), d: SByte(2)),
+            (r: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -219,7 +219,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(3), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(3), z80.PC)
             XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.r))
         }
     }
@@ -227,11 +227,11 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_HL_r()
     {
         [
-            byte(0),
-            byte(1),
-            byte(2),
-            byte(3),
-            byte(7),
+            Byte(0),
+            Byte(1),
+            Byte(2),
+            Byte(3),
+            Byte(7),
         ].forEach { r in
             tearDown()
             setUp()
@@ -245,7 +245,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(1), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(1), z80.PC)
             XCTAssertEqual(66, mem[8])
         }
     }
@@ -253,41 +253,41 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_IX_r()
     {
         [
-            (r: byte(0), d: sbyte(-2)),
-            (r: byte(1), d: sbyte(-2)),
-            (r: byte(2), d: sbyte(-2)),
-            (r: byte(3), d: sbyte(-2)),
-            (r: byte(4), d: sbyte(-2)),
-            (r: byte(5), d: sbyte(-2)),
-            (r: byte(7), d: sbyte(-2)),
-            (r: byte(0), d: sbyte(-1)),
-            (r: byte(1), d: sbyte(-1)),
-            (r: byte(2), d: sbyte(-1)),
-            (r: byte(3), d: sbyte(-1)),
-            (r: byte(4), d: sbyte(-1)),
-            (r: byte(5), d: sbyte(-1)),
-            (r: byte(7), d: sbyte(-1)),
-            (r: byte(0), d: sbyte(0)),
-            (r: byte(1), d: sbyte(0)),
-            (r: byte(2), d: sbyte(0)),
-            (r: byte(3), d: sbyte(0)),
-            (r: byte(4), d: sbyte(0)),
-            (r: byte(5), d: sbyte(0)),
-            (r: byte(7), d: sbyte(0)),
-            (r: byte(0), d: sbyte(1)),
-            (r: byte(1), d: sbyte(1)),
-            (r: byte(2), d: sbyte(1)),
-            (r: byte(3), d: sbyte(1)),
-            (r: byte(4), d: sbyte(1)),
-            (r: byte(5), d: sbyte(1)),
-            (r: byte(7), d: sbyte(1)),
-            (r: byte(0), d: sbyte(2)),
-            (r: byte(1), d: sbyte(2)),
-            (r: byte(2), d: sbyte(2)),
-            (r: byte(3), d: sbyte(2)),
-            (r: byte(4), d: sbyte(2)),
-            (r: byte(5), d: sbyte(2)),
-            (r: byte(7), d: sbyte(2)),
+            (r: Byte(0), d: SByte(-2)),
+            (r: Byte(1), d: SByte(-2)),
+            (r: Byte(2), d: SByte(-2)),
+            (r: Byte(3), d: SByte(-2)),
+            (r: Byte(4), d: SByte(-2)),
+            (r: Byte(5), d: SByte(-2)),
+            (r: Byte(7), d: SByte(-2)),
+            (r: Byte(0), d: SByte(-1)),
+            (r: Byte(1), d: SByte(-1)),
+            (r: Byte(2), d: SByte(-1)),
+            (r: Byte(3), d: SByte(-1)),
+            (r: Byte(4), d: SByte(-1)),
+            (r: Byte(5), d: SByte(-1)),
+            (r: Byte(7), d: SByte(-1)),
+            (r: Byte(0), d: SByte(0)),
+            (r: Byte(1), d: SByte(0)),
+            (r: Byte(2), d: SByte(0)),
+            (r: Byte(3), d: SByte(0)),
+            (r: Byte(4), d: SByte(0)),
+            (r: Byte(5), d: SByte(0)),
+            (r: Byte(7), d: SByte(0)),
+            (r: Byte(0), d: SByte(1)),
+            (r: Byte(1), d: SByte(1)),
+            (r: Byte(2), d: SByte(1)),
+            (r: Byte(3), d: SByte(1)),
+            (r: Byte(4), d: SByte(1)),
+            (r: Byte(5), d: SByte(1)),
+            (r: Byte(7), d: SByte(1)),
+            (r: Byte(0), d: SByte(2)),
+            (r: Byte(1), d: SByte(2)),
+            (r: Byte(2), d: SByte(2)),
+            (r: Byte(3), d: SByte(2)),
+            (r: Byte(4), d: SByte(2)),
+            (r: Byte(5), d: SByte(2)),
+            (r: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -304,7 +304,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(5), z80.PC)
             XCTAssertEqual(201, mem[12 + testCase.d])
         }
     }
@@ -312,41 +312,41 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_IY_r()
     {
         [
-            (r: byte(0), d: sbyte(-2)),
-            (r: byte(1), d: sbyte(-2)),
-            (r: byte(2), d: sbyte(-2)),
-            (r: byte(3), d: sbyte(-2)),
-            (r: byte(4), d: sbyte(-2)),
-            (r: byte(5), d: sbyte(-2)),
-            (r: byte(7), d: sbyte(-2)),
-            (r: byte(0), d: sbyte(-1)),
-            (r: byte(1), d: sbyte(-1)),
-            (r: byte(2), d: sbyte(-1)),
-            (r: byte(3), d: sbyte(-1)),
-            (r: byte(4), d: sbyte(-1)),
-            (r: byte(5), d: sbyte(-1)),
-            (r: byte(7), d: sbyte(-1)),
-            (r: byte(0), d: sbyte(0)),
-            (r: byte(1), d: sbyte(0)),
-            (r: byte(2), d: sbyte(0)),
-            (r: byte(3), d: sbyte(0)),
-            (r: byte(4), d: sbyte(0)),
-            (r: byte(5), d: sbyte(0)),
-            (r: byte(7), d: sbyte(0)),
-            (r: byte(0), d: sbyte(1)),
-            (r: byte(1), d: sbyte(1)),
-            (r: byte(2), d: sbyte(1)),
-            (r: byte(3), d: sbyte(1)),
-            (r: byte(4), d: sbyte(1)),
-            (r: byte(5), d: sbyte(1)),
-            (r: byte(7), d: sbyte(1)),
-            (r: byte(0), d: sbyte(2)),
-            (r: byte(1), d: sbyte(2)),
-            (r: byte(2), d: sbyte(2)),
-            (r: byte(3), d: sbyte(2)),
-            (r: byte(4), d: sbyte(2)),
-            (r: byte(5), d: sbyte(2)),
-            (r: byte(7), d: sbyte(2)),
+            (r: Byte(0), d: SByte(-2)),
+            (r: Byte(1), d: SByte(-2)),
+            (r: Byte(2), d: SByte(-2)),
+            (r: Byte(3), d: SByte(-2)),
+            (r: Byte(4), d: SByte(-2)),
+            (r: Byte(5), d: SByte(-2)),
+            (r: Byte(7), d: SByte(-2)),
+            (r: Byte(0), d: SByte(-1)),
+            (r: Byte(1), d: SByte(-1)),
+            (r: Byte(2), d: SByte(-1)),
+            (r: Byte(3), d: SByte(-1)),
+            (r: Byte(4), d: SByte(-1)),
+            (r: Byte(5), d: SByte(-1)),
+            (r: Byte(7), d: SByte(-1)),
+            (r: Byte(0), d: SByte(0)),
+            (r: Byte(1), d: SByte(0)),
+            (r: Byte(2), d: SByte(0)),
+            (r: Byte(3), d: SByte(0)),
+            (r: Byte(4), d: SByte(0)),
+            (r: Byte(5), d: SByte(0)),
+            (r: Byte(7), d: SByte(0)),
+            (r: Byte(0), d: SByte(1)),
+            (r: Byte(1), d: SByte(1)),
+            (r: Byte(2), d: SByte(1)),
+            (r: Byte(3), d: SByte(1)),
+            (r: Byte(4), d: SByte(1)),
+            (r: Byte(5), d: SByte(1)),
+            (r: Byte(7), d: SByte(1)),
+            (r: Byte(0), d: SByte(2)),
+            (r: Byte(1), d: SByte(2)),
+            (r: Byte(2), d: SByte(2)),
+            (r: Byte(3), d: SByte(2)),
+            (r: Byte(4), d: SByte(2)),
+            (r: Byte(5), d: SByte(2)),
+            (r: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -363,7 +363,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(5), z80.PC)
             XCTAssertEqual(201, mem[12 + testCase.d])
         }
     }
@@ -377,18 +377,18 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(1), z80.PC)
         XCTAssertEqual(201, mem[8])
     }
 
     func test_LD_at_IX_n()
     {
         [
-            sbyte(-2),
-            sbyte(-1),
-            sbyte(0),
-            sbyte(1),
-            sbyte(2),
+            SByte(-2),
+            SByte(-1),
+            SByte(0),
+            SByte(1),
+            SByte(2),
         ].forEach { d in
             tearDown()
             setUp()
@@ -404,7 +404,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(5), z80.PC)
             XCTAssertEqual(201, mem[11 + d])
         }
     }
@@ -412,11 +412,11 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_IY_n()
     {
         [
-            sbyte(-2),
-            sbyte(-1),
-            sbyte(0),
-            sbyte(1),
-            sbyte(2),
+            SByte(-2),
+            SByte(-1),
+            SByte(0),
+            SByte(1),
+            SByte(2),
         ].forEach { d in
             tearDown()
             setUp()
@@ -432,7 +432,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(asm.addr - ushort(5), z80.PC)
+            XCTAssertEqual(asm.addr - UShort(5), z80.PC)
             XCTAssertEqual(201, mem[11 + d])
         }
     }
@@ -446,7 +446,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(1), z80.PC)
         XCTAssertEqual(66, z80.A)
     }
 
@@ -459,7 +459,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(1), z80.PC)
         XCTAssertEqual(66, z80.A)
     }
 
@@ -471,7 +471,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
         z80.Run()
 
-        XCTAssertEqual(asm.addr - ushort(1), z80.PC)
+        XCTAssertEqual(asm.addr - UShort(1), z80.PC)
         XCTAssertEqual(66, z80.A)
     }
 
@@ -528,14 +528,14 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_A_I()
     {
         [
-            (val: sbyte(23), sign: false, zero: false),
-            (val: sbyte(0), sign: false, zero: true),
-            (val: sbyte(-1), sign: true, zero: false),
+            (val: SByte(23), sign: false, zero: false),
+            (val: SByte(0), sign: false, zero: true),
+            (val: SByte(-1), sign: true, zero: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadRegVal(7, byte(truncatingIfNeeded: testCase.val))
+            asm.LoadRegVal(7, Byte(truncatingIfNeeded: testCase.val))
             asm.LoadIA()
             asm.LoadRegVal(7, 0xC9)
             asm.LoadAI()
@@ -544,7 +544,7 @@ final class EightBitLoadGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(byte(truncatingIfNeeded: testCase.val), z80.A)
+            XCTAssertEqual(Byte(truncatingIfNeeded: testCase.val), z80.A)
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")
@@ -568,14 +568,14 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_A_R()
     {
         [
-            (val: sbyte(23), sign: false, zero: false),
-            (val: sbyte(-5), sign: false, zero: true),
-            (val: sbyte(-6), sign: true, zero: false),
+            (val: SByte(23), sign: false, zero: false),
+            (val: SByte(-5), sign: false, zero: true),
+            (val: SByte(-6), sign: true, zero: false),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadRegVal(7, byte(truncatingIfNeeded: testCase.val))
+            asm.LoadRegVal(7, Byte(truncatingIfNeeded: testCase.val))
             asm.LoadRA()
             asm.LoadRegVal(7, 0xC9)
             asm.LoadAR()
@@ -585,7 +585,7 @@ final class EightBitLoadGroupTests: XCTestCase {
 
             XCTAssertEqual(asm.addr, z80.PC)
             //R is incremented by 5 machine cycles by the end.
-            XCTAssertEqual(testCase.val + 5, sbyte(truncatingIfNeeded: z80.A))
+            XCTAssertEqual(testCase.val + 5, SByte(truncatingIfNeeded: z80.A))
             XCTAssertEqual(testCase.sign, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(testCase.zero, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(false, z80.FlagH, "Flag H contained the wrong value")

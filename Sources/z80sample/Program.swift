@@ -6,7 +6,7 @@ import z80
 @main
 extension Z80 {
     static func main() {
-        var ram = Array<byte>(repeating: 0, count: 0x10000)
+        var ram = Array<Byte>(repeating: 0, count: 0x10000)
         let rom = NSData(contentsOfFile: "z80Sample/48.rom")
         ram.replaceSubrange(0..<rom!.count, with: rom!)
 
@@ -53,20 +53,20 @@ extension Z80 {
 
 final class SamplePorts: IPorts
 {
-    func ReadPort(_ port: ushort) -> byte
+    func ReadPort(_ port: UShort) -> Byte
     {
         print(String(format: "  \(#function) : IN 0x%04X", port))
         return 0
     }
 
-    func WritePort(_ port: ushort, _ value: byte)
+    func WritePort(_ port: UShort, _ value: Byte)
     {
         print(String(format: "  \(#function) : OUT 0x%04X, 0x%02X", port, value))
     }
 
     var NMI: Bool { false }
     var MI: Bool { false }
-    var Data: byte { 0x00 }
+    var Data: Byte { 0x00 }
 }
 
 #endif

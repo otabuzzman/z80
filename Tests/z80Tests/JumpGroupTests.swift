@@ -9,7 +9,7 @@ final class JumpGroupTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let ram = Array<byte>(repeating: 0, count: 0x10000)
+        let ram = Array<Byte>(repeating: 0, count: 0x10000)
         mem = Memory(ram, 0)
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
@@ -37,8 +37,8 @@ final class JumpGroupTests: XCTestCase {
     func test_JP_NZ_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09)),
-            (val: byte(0x00), addr: short(0x07)),
+            (val: Byte(0xFF), addr: Short(0x09)),
+            (val: Byte(0x00), addr: Short(0x07)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -52,7 +52,7 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
@@ -60,8 +60,8 @@ final class JumpGroupTests: XCTestCase {
     func test_JP_Z_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x07)),
-            (val: byte(0x00), addr: short(0x09)),
+            (val: Byte(0xFF), addr: Short(0x07)),
+            (val: Byte(0x00), addr: Short(0x09)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -75,15 +75,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JP_NC_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x07)),
-            (val: byte(0x00), addr: short(0x09)),
+            (val: Byte(0xFF), addr: Short(0x07)),
+            (val: Byte(0x00), addr: Short(0x09)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -97,15 +97,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JP_C_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x09)),
-            (val: byte(0x00), addr: short(0x07)),
+            (val: Byte(0xFF), addr: Short(0x09)),
+            (val: Byte(0x00), addr: Short(0x07)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -119,15 +119,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JP_PO_nn()
     {
         [
-            (val: byte(0x7F), addr: short(0x07)),
-            (val: byte(0x00), addr: short(0x09)),
+            (val: Byte(0x7F), addr: Short(0x07)),
+            (val: Byte(0x00), addr: Short(0x09)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -141,15 +141,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JP_PE_nn()
     {
         [
-            (val: byte(0x7F), addr: short(0x09)),
-            (val: byte(0x00), addr: short(0x07)),
+            (val: Byte(0x7F), addr: Short(0x09)),
+            (val: Byte(0x00), addr: Short(0x07)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -163,15 +163,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JP_P_nn()
     {
         [
-            (val: byte(0x01), addr: short(0x09)),
-            (val: byte(0x80), addr: short(0x07)),
+            (val: Byte(0x01), addr: Short(0x09)),
+            (val: Byte(0x80), addr: Short(0x07)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -185,15 +185,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JP_M_nn()
     {
         [
-            (val: byte(0x01), addr: short(0x07)),
-            (val: byte(0x80), addr: short(0x09)),
+            (val: Byte(0x01), addr: Short(0x07)),
+            (val: Byte(0x80), addr: Short(0x09)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -207,7 +207,7 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
@@ -226,8 +226,8 @@ final class JumpGroupTests: XCTestCase {
     func test_JR_NZ_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x08)),
-            (val: byte(0x00), addr: short(0x06)),
+            (val: Byte(0xFF), addr: Short(0x08)),
+            (val: Byte(0x00), addr: Short(0x06)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -241,15 +241,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JR_Z_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x06)),
-            (val: byte(0x00), addr: short(0x08)),
+            (val: Byte(0xFF), addr: Short(0x06)),
+            (val: Byte(0x00), addr: Short(0x08)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -263,15 +263,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JR_NC_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x06)),
-            (val: byte(0x00), addr: short(0x08)),
+            (val: Byte(0xFF), addr: Short(0x06)),
+            (val: Byte(0x00), addr: Short(0x08)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -285,15 +285,15 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
     func test_JR_C_nn()
     {
         [
-            (val: byte(0xFF), addr: short(0x08)),
-            (val: byte(0x00), addr: short(0x06)),
+            (val: Byte(0xFF), addr: Short(0x08)),
+            (val: Byte(0x00), addr: Short(0x06)),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -307,7 +307,7 @@ final class JumpGroupTests: XCTestCase {
 
             z80.Run()
 
-            XCTAssertEqual(ushort(truncatingIfNeeded: testCase.addr), z80.PC)
+            XCTAssertEqual(UShort(truncatingIfNeeded: testCase.addr), z80.PC)
         }
     }
 
@@ -353,8 +353,8 @@ final class JumpGroupTests: XCTestCase {
     func test_DJNZ_e()
     {
         [
-            byte(0x01),
-            byte(0x42),
+            Byte(0x01),
+            Byte(0x42),
         ].forEach { loops in
             tearDown()
             setUp()
