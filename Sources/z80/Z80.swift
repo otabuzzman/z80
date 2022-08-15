@@ -31,23 +31,24 @@ public struct Z80
     private let SP: Byte = 22
     private let PC: Byte = 24
 
-    private(set) var mem: Memory
+    private var cfreq: UInt
+
+    private(set) var mem: Memory!
     private(set) var registers = Array<Byte>(repeating: 0, count: 26)
 
     private var clock = Date().timeIntervalSinceReferenceDate
 
     private var IFF1 = false
     private var IFF2 = false
-    private var interruptMode: Int = 0
+    private var IM: Int = 0 // interrupt mode
 
-    private(set) var ports: IPorts
+    private(set) var ports: IPorts!
 
-    public init(_ mem: Memory, _ ports: IPorts)
+    public init(_ mem: Memory, _ ports: IPorts, _ cfreq: UInt = 4_000_000)
     {
-        // if (memory == null) throw new ArgumentNullException(nameof(memory))
-        // if (ports == null) throw new ArgumentNullException(nameof(ports))
         self.mem = mem
         self.ports = ports
+        self.cfreq = cfreq
         reset()
     }
 
@@ -87,7 +88,7 @@ public struct Z80
         {
             IFF1 = false
             IFF2 = false
-            switch interruptMode
+            switch IM
             {
                 case 0:
                     // This is not quite correct, as it only runs a RST xx
@@ -1329,11 +1330,11 @@ public struct Z80
         registers[IY + 1] = Byte(sum & 0xFF)
     }
 
-    private mutating func Add(_ val1: UShort, _ val2: UShort) -> UShort
+    private mutating func Add(_ a: UShort, _ b: UShort) -> UShort
     {
-        let sum = Int(val1) + Int(val2)
+        let sum = Int(a) + Int(b)
         var f = registers[F] & ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
-        if (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF {
+        if (a & 0x0FFF) + (b & 0x0FFF) > 0x0FFF {
             f |= Flags.H.rawValue
         }
         if sum > 0xFFFF {
@@ -1350,9 +1351,9 @@ public struct Z80
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func Adc(_ val1: UShort, _ val2: UShort) -> UShort
+    private mutating func Adc(_ a: UShort, _ b: UShort) -> UShort
     {
-        let sum = Int(val1) + Int(val2) + Int((registers[F] & Flags.C.rawValue))
+        let sum = Int(a) + Int(b) + Int((registers[F] & Flags.C.rawValue))
         var f = registers[F] & ~(Flags.S.rawValue | Flags.Z.rawValue | Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.C.rawValue)
         if sum < 0 {
             f |= Flags.S.rawValue
@@ -1360,7 +1361,7 @@ public struct Z80
         if sum == 0 {
             f |= Flags.Z.rawValue
         }
-        if (val1 & 0x0FFF) + (val2 & 0x0FFF) + Flags.C.rawValue > 0x0FFF {
+        if (a & 0x0FFF) + (b & 0x0FFF) + Flags.C.rawValue > 0x0FFF {
             f |= Flags.H.rawValue
         }
         if sum > 0x7FFF {
@@ -1380,27 +1381,27 @@ public struct Z80
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func Sbc(_ val1: UShort, _ val2: UShort) -> UShort
+    private mutating func Sbc(_ a: UShort, _ b: UShort) -> UShort
     {
-        let diff = Int(val1) - Int(val2) - Int(registers[F] & Flags.C.rawValue)
+        let dif = Int(a) - Int(b) - Int(registers[F] & Flags.C.rawValue)
         var f = registers[F] & ~(Flags.S.rawValue | Flags.Z.rawValue | Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.C.rawValue)
-        if diff < 0 {
+        if dif < 0 {
             f |= Flags.S.rawValue
         }
-        if diff == 0 {
+        if dif == 0 {
             f |= Flags.Z.rawValue
         }
-        if (val1 & 0xFFF) < (val2 & 0xFFF) + (registers[F] & Flags.C.rawValue) {
+        if (a & 0xFFF) < (b & 0xFFF) + (registers[F] & Flags.C.rawValue) {
             f |= Flags.H.rawValue
         }
-        if diff > Short.max || diff < Short.min {
+        if dif > Short.max || dif < Short.min {
             f |= Flags.PV.rawValue
         }
-        if UShort(truncatingIfNeeded: diff) > val1 {
+        if UShort(truncatingIfNeeded: dif) > a {
             f |= Flags.C.rawValue
         }
         registers[F] = f
-        return UShort(truncatingIfNeeded: diff)
+        return UShort(truncatingIfNeeded: dif)
     }
 
     private mutating func ParseED()
@@ -1829,13 +1830,13 @@ public struct Z80
             case 0x44, 0x54, 0x64, 0x74, 0x4C, 0x5C, 0x6C, 0x7C:
                 // NEG
                 let a = registers[A]
-                let diff = -Short(truncatingIfNeeded: a)
-                registers[A] = Byte(truncatingIfNeeded: diff)
+                let dif = -Short(truncatingIfNeeded: a)
+                registers[A] = Byte(truncatingIfNeeded: dif)
                 var f = registers[F] & ~Flags.All.rawValue
-                if (Byte(truncatingIfNeeded: diff) & 0x80) > 0 {
+                if (Byte(truncatingIfNeeded: dif) & 0x80) > 0 {
                     f |= Flags.S.rawValue
                 }
-                if diff == 0 {
+                if dif == 0 {
                     f |= Flags.Z.rawValue
                 }
                 if (a & 0x0F) != 0 {
@@ -1845,7 +1846,7 @@ public struct Z80
                     f |= Flags.PV.rawValue
                 }
                 f |= Flags.N.rawValue
-                if diff != 0 {
+                if dif != 0 {
                     f |= Flags.C.rawValue
                 }
                 registers[F] = f
@@ -1856,7 +1857,7 @@ public struct Z80
                 return
             case 0x46, 0x66:
                 // IM 0
-                interruptMode = 0
+                IM = 0
 #if DEBUG
                 print("IM 0")
 #endif
@@ -1864,7 +1865,7 @@ public struct Z80
                 return
             case 0x56, 0x76:
                 // IM 1
-                interruptMode = 1
+                IM = 1
 #if DEBUG
                 print("IM 1")
 #endif
@@ -1872,7 +1873,7 @@ public struct Z80
                 return
             case 0x5E, 0x7E:
                 // IM 2
-                interruptMode = 2
+                IM = 2
 #if DEBUG
                 print("IM 2")
 #endif
@@ -2865,23 +2866,23 @@ public struct Z80
     private mutating func Sub(_ b: Byte)
     {
         let a = registers[A]
-        let diff = Short(a) - Short(b)
-        registers[A] = Byte(truncatingIfNeeded: diff)
+        let dif = Short(a) - Short(b)
+        registers[A] = Byte(truncatingIfNeeded: dif)
         var f = registers[F] & ~Flags.All.rawValue
-        if (diff & 0x80) > 0 {
+        if (dif & 0x80) > 0 {
             f |= Flags.S.rawValue
         }
-        if (diff & 0xFF) == 0 {
+        if (dif & 0xFF) == 0 {
             f |= Flags.Z.rawValue
         }
         if (a & 0x0F) < (b & 0x0F) {
             f |= Flags.H.rawValue
         }
-        if (a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0) {
+        if (a >= 0x80 && b >= 0x80 && dif > 0) || (a < 0x80 && b < 0x80 && dif < 0) {
             f |= Flags.PV.rawValue
         }
         f |= Flags.N.rawValue
-        if diff < 0 {
+        if dif < 0 {
             f |= Flags.C.rawValue
         }
         registers[F] = f
@@ -2891,23 +2892,23 @@ public struct Z80
     {
         let a = registers[A]
         let c = registers[F] & Flags.C.rawValue
-        let diff = Short(a) - Short(b) - Short(c)
-        registers[A] = Byte(truncatingIfNeeded: diff)
+        let dif = Short(a) - Short(b) - Short(c)
+        registers[A] = Byte(truncatingIfNeeded: dif)
         var f = registers[F] & ~Flags.All.rawValue
-        if (diff & 0x80) > 0 {
+        if (dif & 0x80) > 0 {
             f |= Flags.S.rawValue
         }
-        if (diff & 0xFF) == 0 {
+        if (dif & 0xFF) == 0 {
             f |= Flags.Z.rawValue
         }
         if (a & 0x0F) < (b & 0x0F) + c {
             f |= Flags.H.rawValue
         }
-        if (a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0) {
+        if (a >= 0x80 && b >= 0x80 && dif > 0) || (a < 0x80 && b < 0x80 && dif < 0) {
             f |= Flags.PV.rawValue
         }
         f |= Flags.N.rawValue
-        if diff > 0xFF {
+        if dif > 0xFF {
             f |= Flags.C.rawValue
         }
         registers[F] = f
@@ -2971,22 +2972,22 @@ public struct Z80
     private mutating func Cmp(_ b: Byte)
     {
         let a = registers[A]
-        let diff = a &- b
+        let dif = a &- b
         var f = registers[F] & ~Flags.All.rawValue
-        if (diff & 0x80) > 0 {
+        if (dif & 0x80) > 0 {
             f |= Flags.S.rawValue
         }
-        if diff == 0 {
+        if dif == 0 {
             f |= Flags.Z.rawValue
         }
         if (a & 0x0F) < (b & 0x0F) {
             f |= Flags.H.rawValue
         }
-        if (a > 0x80 && b > 0x80 && SByte(truncatingIfNeeded: diff) > 0) || (a < 0x80 && b < 0x80 && SByte(truncatingIfNeeded: diff) < 0) {
+        if (a > 0x80 && b > 0x80 && SByte(truncatingIfNeeded: dif) > 0) || (a < 0x80 && b < 0x80 && SByte(truncatingIfNeeded: dif) < 0) {
             f |= Flags.PV.rawValue
         }
         f |= Flags.N.rawValue
-        if diff > 0xFF {
+        if dif > 0xFF {
             f |= Flags.C.rawValue
         }
         registers[F] = f
@@ -3018,12 +3019,12 @@ public struct Z80
 
     private mutating func Dec(_ b: Byte) -> Byte
     {
-        let diff = UShort(b) - UShort(1)
+        let dif = UShort(b) - UShort(1)
         var f = registers[F] & ~Flags.All.rawValue
-        if (diff & 0x80) > 0 {
+        if (dif & 0x80) > 0 {
             f |= Flags.S.rawValue
         }
-        if diff == 0 {
+        if dif == 0 {
             f |= Flags.Z.rawValue
         }
         if (b & 0x0F) == 0 {
@@ -3034,7 +3035,7 @@ public struct Z80
         }
         f |= Flags.N.rawValue
         registers[F] = f
-        return Byte(truncatingIfNeeded: diff)
+        return Byte(truncatingIfNeeded: dif)
     }
 
     private static func Parity(_ val: Byte) -> Bool
@@ -3140,7 +3141,7 @@ public struct Z80
     private mutating func Wait(_ tStates: Int)
     {
         registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
-        let tTime = Double(tStates) / 4_000_000 // 4MHz
+        let tTime = Double(tStates) / Double(cfreq)
         let epoch = Date().timeIntervalSinceReferenceDate - clock
         let sleep = tTime - epoch
         if sleep > 0
