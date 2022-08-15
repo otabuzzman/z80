@@ -83,7 +83,7 @@ public struct Z80
             Halt = false
             return
         }
-        if IFF1 && ports.MI
+        if IFF1 && ports.INT
         {
             IFF1 = false
             IFF2 = false
@@ -104,7 +104,7 @@ public struct Z80
                     registers[PC + 1] = instruction & 0x38
                     Wait(17)
 #if DEBUG
-                    print("MI 0")
+                    print("IM 0")
 #endif
                     Halt = false
                     return
@@ -119,7 +119,7 @@ public struct Z80
                     registers[PC] = 0x00
                     registers[PC + 1] = 0x38
 #if DEBUG
-                    print("MI 1")
+                    print("IM 1")
 #endif
                     Wait(17)
                     Halt = false
@@ -138,7 +138,7 @@ public struct Z80
                     addr += 1
                     registers[PC + 1] = mem[addr]
 #if DEBUG
-                    print("MI 2")
+                    print("IM 2")
 #endif
                     Wait(17)
                     Halt = false

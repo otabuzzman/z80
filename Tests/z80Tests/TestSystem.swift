@@ -163,14 +163,14 @@ final class TestSystem
     {
         if maskable
         {
-            testPorts.MI = true
             testPorts.NMI = false
+            testPorts.INT = true
             testPorts.data = data
         }
         else
         {
-            testPorts.MI = false
             testPorts.NMI = true
+            testPorts.INT = false
             testPorts.data = data
         }
     }

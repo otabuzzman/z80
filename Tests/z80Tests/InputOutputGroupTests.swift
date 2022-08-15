@@ -27,10 +27,10 @@ final class InputOutputTests: XCTestCase {
     func test_MIO()
     {
         [
+            (val: Byte(42), port: UShort(0x17FF), res: Byte(42)),
             (val: Byte(42), port: UShort(0x1800), res: Byte(44)),
             (val: Byte(42), port: UShort(0x19FF), res: Byte(44)),
             (val: Byte(42), port: UShort(0x1A00), res: Byte(42)),
-            (val: Byte(42), port: UShort(0x17FF), res: Byte(42)),
         ].forEach { testCase in
             tearDown()
             setUp()

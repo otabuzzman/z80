@@ -65,7 +65,7 @@ final class SamplePorts: IPorts
     }
 
     var NMI: Bool { false }
-    var MI: Bool { false }
+    var INT: Bool { false }
     var data: Byte { 0x00 }
 }
 

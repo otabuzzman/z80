@@ -4,7 +4,7 @@ public protocol IPorts
     func wrPort(_ port: UShort, _ data: Byte)
 
     var NMI: Bool { get }
-    var MI: Bool { get }
+    var INT: Bool { get }
     var data: Byte { get }
 }
 
