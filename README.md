@@ -71,11 +71,11 @@ extension Z80 {
 
         while (!z80.Halt)
         {
-            z80.Parse()
+            z80.parse()
         }
 
         // dump CPU state
-        print(z80.DumpState())
+        print(z80.dumpState())
     }
 }
 ```
