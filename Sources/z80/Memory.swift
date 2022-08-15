@@ -1,27 +1,27 @@
 public class Memory
 {
-    private(set) var memory: [Byte]
+    private(set) var mem: [Byte]
     private(set) var start: UShort
 
     public init(_ ram: [Byte], _ start: UShort)
     {
-        memory = ram
+        mem = ram
         self.start = start
     }
 
     public func clear() {
-        for addr in 0..<memory.count {
-            memory[addr] = 0
+        for addr in 0..<mem.count {
+            mem[addr] = 0
         }
     }
 
-    public subscript(address: UShort) -> Byte {
+    public subscript(addr: UShort) -> Byte {
         get {
-            memory[Int(address)]
+            mem[Int(addr)]
         }
         set(newValue) {
-            if address >= start {
-                memory[Int(address)] = newValue
+            if addr >= start {
+                mem[Int(addr)] = newValue
             }
         }
     }

@@ -18,24 +18,24 @@
         Write(0x76)
     }
 
-    public mutating func Write(_ value: Int)
+    public mutating func Write(_ val: Int)
     {
-        Write(Byte(truncatingIfNeeded: value))
+        Write(Byte(truncatingIfNeeded: val))
     }
 
-    public mutating func Write(_ value: UShort)
+    public mutating func Write(_ val: UShort)
     {
-        Write(Byte(truncatingIfNeeded: value))
+        Write(Byte(truncatingIfNeeded: val))
     }
 
-    public mutating func Write(_ value: SByte)
+    public mutating func Write(_ val: SByte)
     {
-        Write(Byte(truncatingIfNeeded: value))
+        Write(Byte(truncatingIfNeeded: val))
     }
 
-    public mutating func Write(_ value: Byte)
+    public mutating func Write(_ val: Byte)
     {
-        mem[addr] = value
+        mem[addr] = val
         addr += 1
     }
 
@@ -44,10 +44,10 @@
         Write(0x00)
     }
 
-    public mutating func LoadRegVal(_ register: Byte, _ value: Byte)
+    public mutating func LoadRegVal(_ register: Byte, _ val: Byte)
     {
         Write(register * 8 + 6)
-        Write(value)
+        Write(val)
     }
 
     public mutating func LoadRegReg(_ register: Byte, _ register2: Byte)
@@ -55,11 +55,11 @@
         Write(register * 8 + register2 + 64)
     }
 
-    public mutating func LoadReg16Val(_ register16: Byte, _ value: UShort)
+    public mutating func LoadReg16Val(_ register16: Byte, _ val: UShort)
     {
         Write(1 + register16 * 16)
-        Write(value & 0xFF)
-        Write(value >> 8)
+        Write(val & 0xFF)
+        Write(val >> 8)
     }
 
     public mutating func LoadRegAtHl(_ register: Byte)
@@ -67,9 +67,9 @@
         Write(70 + register * 8)
     }
 
-    public mutating func Data(_ value: Byte)
+    public mutating func Data(_ val: Byte)
     {
-        Write(value)
+        Write(val)
     }
 
     public mutating func LoadRegAddrIx(_ register: Byte, _ displacement: SByte)
@@ -79,12 +79,12 @@
         Write(displacement)
     }
 
-    public mutating func LoadIxVal(_ value: UShort)
+    public mutating func LoadIxVal(_ val: UShort)
     {
         Write(0xDD)
         Write(33)
-        Write(value & 0xFF)
-        Write(value >> 8)
+        Write(val & 0xFF)
+        Write(val >> 8)
     }
 
     public mutating func LoadRegAddrIy(_ register: Byte, _ displacement: SByte)
@@ -94,12 +94,12 @@
         Write(displacement)
     }
 
-    public mutating func LoadIyVal(_ value: UShort)
+    public mutating func LoadIyVal(_ val: UShort)
     {
         Write(0xFD)
         Write(33)
-        Write(value & 0xFF)
-        Write(value >> 8)
+        Write(val & 0xFF)
+        Write(val >> 8)
     }
 
     public mutating func LoadAtHlReg(_ register: Byte)
@@ -121,26 +121,26 @@
         Write(displacement)
     }
 
-    public mutating func LoadAtHlVal(_ value: Byte)
+    public mutating func LoadAtHlVal(_ val: Byte)
     {
         Write(0x36)
-        Write(value)
+        Write(val)
     }
 
-    public mutating func LoadAtIxVal(_ displacement: SByte, _ value: Byte)
+    public mutating func LoadAtIxVal(_ displacement: SByte, _ val: Byte)
     {
         Write(0xDD)
         Write(0x36)
         Write(displacement)
-        Write(value)
+        Write(val)
     }
 
-    public mutating func LoadIyN(_ displacement: SByte, _ value: Byte)
+    public mutating func LoadIyN(_ displacement: SByte, _ val: Byte)
     {
         Write(0xFD)
         Write(0x36)
         Write(displacement)
-        Write(value)
+        Write(val)
     }
 
     public mutating func LoadABc()
@@ -153,11 +153,11 @@
         Write(0x1A)
     }
 
-    public mutating func LoadAAddr(_ address: UShort)
+    public mutating func LoadAAddr(_ addr: UShort)
     {
         Write(0x3A)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
     public mutating func LoadBcA()
@@ -170,11 +170,11 @@
         Write(0x12)
     }
 
-    public mutating func LoadAddrA(_ address: UShort)
+    public mutating func LoadAddrA(_ addr: UShort)
     {
         Write(0x32)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
     public mutating func LoadAI()
@@ -211,66 +211,66 @@
         Write(0xFB)
     }
 
-    public mutating func LoadHlAddr(_ address: UShort)
+    public mutating func LoadHlAddr(_ addr: UShort)
     {
         Write(0x2A)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadReg16Addr(_ register16: Byte, _ address: UShort)
+    public mutating func LoadReg16Addr(_ register16: Byte, _ addr: UShort)
     {
         Write(0xED)
         Write(0x4B + register16 * 16)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadIXAddr(_ address: UShort)
+    public mutating func LoadIXAddr(_ addr: UShort)
     {
         Write(0xDD)
         Write(0x2A)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadIYAddr(_ address: UShort)
+    public mutating func LoadIYAddr(_ addr: UShort)
     {
         Write(0xFD)
         Write(0x2A)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadAddrHl(_ address: UShort)
+    public mutating func LoadAddrHl(_ addr: UShort)
     {
         Write(0x22)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadAddrReg16(_ register16: Byte, _ address: UShort)
+    public mutating func LoadAddrReg16(_ register16: Byte, _ addr: UShort)
     {
         Write(0xED)
         Write(0x43 + register16 * 16)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadAddrIx(_ address: UShort)
+    public mutating func LoadAddrIx(_ addr: UShort)
     {
         Write(0xDD)
         Write(0x22)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func LoadAddrIy(_ address: UShort)
+    public mutating func LoadAddrIy(_ addr: UShort)
     {
         Write(0xFD)
         Write(0x22)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
     public mutating func LoadSpHl()
@@ -409,10 +409,10 @@
         Write(register + 0x80)
     }
 
-    public mutating func AddAVal(_ value: Byte)
+    public mutating func AddAVal(_ val: Byte)
     {
         Write(0xC6)
-        Write(value)
+        Write(val)
     }
 
     public mutating func AddAAddrHl()
@@ -439,10 +439,10 @@
         Write(register + 0x88)
     }
 
-    public mutating func AdcAVal(_ value: Byte)
+    public mutating func AdcAVal(_ val: Byte)
     {
         Write(0xCE)
-        Write(value)
+        Write(val)
     }
 
     public mutating func AdcAAddrHl()
@@ -469,10 +469,10 @@
         Write(register + 0x90)
     }
 
-    public mutating func SubVal(_ value: Byte)
+    public mutating func SubVal(_ val: Byte)
     {
         Write(0xD6)
-        Write(value)
+        Write(val)
     }
 
     public mutating func SubAddrHl()
@@ -499,10 +499,10 @@
         Write(register + 0x98)
     }
 
-    public mutating func SbcAVal(_ value: Byte)
+    public mutating func SbcAVal(_ val: Byte)
     {
         Write(0xDE)
-        Write(value)
+        Write(val)
     }
 
     public mutating func SbcAAddrHl()
@@ -524,15 +524,15 @@
         Write(displacement)
     }
 
-    public mutating func AndReg(_ reg: Byte)
+    public mutating func AndReg(_ register: Byte)
     {
-        Write(reg + 0xA0)
+        Write(register + 0xA0)
     }
 
-    public mutating func AndVal(_ value: Byte)
+    public mutating func AndVal(_ val: Byte)
     {
         Write(0xE6)
-        Write(value)
+        Write(val)
     }
 
     public mutating func AndAddrHl()
@@ -554,15 +554,15 @@
         Write(displacement)
     }
 
-    public mutating func OrReg(_ reg: Byte)
+    public mutating func OrReg(_ register: Byte)
     {
-        Write(reg + 0xB0)
+        Write(register + 0xB0)
     }
 
-    public mutating func OrVal(_ value: Byte)
+    public mutating func OrVal(_ val: Byte)
     {
         Write(0xF6)
-        Write(value)
+        Write(val)
     }
 
     public mutating func OrAddrHl()
@@ -584,15 +584,15 @@
         Write(displacement)
     }
 
-    public mutating func XorReg(_ reg: Byte)
+    public mutating func XorReg(_ register: Byte)
     {
-        Write(reg + 0xA8)
+        Write(register + 0xA8)
     }
 
-    public mutating func XorVal(_ value: Byte)
+    public mutating func XorVal(_ val: Byte)
     {
         Write(0xEE)
-        Write(value)
+        Write(val)
     }
 
     public mutating func XorAddrHl()
@@ -619,10 +619,10 @@
         Write(register + 0xB8)
     }
 
-    public mutating func CpVal(_ value: Byte)
+    public mutating func CpVal(_ val: Byte)
     {
         Write(0xFE)
-        Write(value)
+        Write(val)
     }
 
     public mutating func CpAddrHl()
@@ -1111,11 +1111,11 @@
         Write(0x86 + bit * 8)
     }
 
-    public mutating func Jp(_ address: UShort)
+    public mutating func Jp(_ addr: UShort)
     {
         Write(0xC3)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
     public mutating func Jr(_ displacement: SByte)
@@ -1171,123 +1171,123 @@
         Write(displacement - 2)
     }
 
-    public mutating func JpNz(_ address: UShort)
+    public mutating func JpNz(_ addr: UShort)
     {
         Write(0xC2)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpZ(_ address: UShort)
+    public mutating func JpZ(_ addr: UShort)
     {
         Write(0xCA)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpNc(_ address: UShort)
+    public mutating func JpNc(_ addr: UShort)
     {
         Write(0xD2)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpC(_ address: UShort)
+    public mutating func JpC(_ addr: UShort)
     {
         Write(0xDA)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpPo(_ address: UShort)
+    public mutating func JpPo(_ addr: UShort)
     {
         Write(0xE2)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpPe(_ address: UShort)
+    public mutating func JpPe(_ addr: UShort)
     {
         Write(0xEA)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpP(_ address: UShort)
+    public mutating func JpP(_ addr: UShort)
     {
         Write(0xF2)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func JpM(_ address: UShort)
+    public mutating func JpM(_ addr: UShort)
     {
         Write(0xFA)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func Call(_ address: UShort)
+    public mutating func Call(_ addr: UShort)
     {
         Write(0xCD)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallNz(_ address: UShort)
+    public mutating func CallNz(_ addr: UShort)
     {
         Write(0xC4)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallZ(_ address: UShort)
+    public mutating func CallZ(_ addr: UShort)
     {
         Write(0xCC)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallNc(_ address: UShort)
+    public mutating func CallNc(_ addr: UShort)
     {
         Write(0xD4)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallC(_ address: UShort)
+    public mutating func CallC(_ addr: UShort)
     {
         Write(0xDC)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallPo(_ address: UShort)
+    public mutating func CallPo(_ addr: UShort)
     {
         Write(0xE4)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallPe(_ address: UShort)
+    public mutating func CallPe(_ addr: UShort)
     {
         Write(0xEC)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallP(_ address: UShort)
+    public mutating func CallP(_ addr: UShort)
     {
         Write(0xF4)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
-    public mutating func CallM(_ address: UShort)
+    public mutating func CallM(_ addr: UShort)
     {
         Write(0xFC)
-        Write(address & 0xFF)
-        Write(address >> 8)
+        Write(addr & 0xFF)
+        Write(addr >> 8)
     }
 
     public mutating func Ret()

@@ -17,10 +17,10 @@ extension Z80 {
 
         while (!z80.Halt)
         {
-            z80.Parse()
+            z80.parse()
         }
 
-        print(z80.DumpState())
+        print(z80.dumpState())
         for i in 0..<0x80
         {
             if i % 16 == 0 {
@@ -53,20 +53,20 @@ extension Z80 {
 
 final class SamplePorts: IPorts
 {
-    func ReadPort(_ port: UShort) -> Byte
+    func rdPort(_ port: UShort) -> Byte
     {
         print(String(format: "  \(#function) : IN 0x%04X", port))
         return 0
     }
 
-    func WritePort(_ port: UShort, _ value: Byte)
+    func wrPort(_ port: UShort, _ data: Byte)
     {
-        print(String(format: "  \(#function) : OUT 0x%04X, 0x%02X", port, value))
+        print(String(format: "  \(#function) : OUT 0x%04X, 0x%02X", port, data))
     }
 
     var NMI: Bool { false }
     var MI: Bool { false }
-    var Data: Byte { 0x00 }
+    var data: Byte { 0x00 }
 }
 
 #endif

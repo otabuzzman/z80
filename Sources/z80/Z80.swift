@@ -48,7 +48,7 @@ public struct Z80
         // if (ports == null) throw new ArgumentNullException(nameof(ports))
         self.mem = mem
         self.ports = ports
-        Reset()
+        reset()
     }
 
     private var Bc: UShort { (UShort(registers[B]) << 8) + registers[C] }
@@ -61,7 +61,7 @@ public struct Z80
 
     public var Halt = false
 
-    public mutating func Parse()
+    public mutating func parse()
     {
         if ports.NMI
         {
@@ -92,7 +92,7 @@ public struct Z80
                 case 0:
                     // This is not quite correct, as it only runs a RST xx
                     // Instead, it should also support any other instruction
-                    let instruction = ports.Data
+                    let instruction = ports.data
                     var stack = Sp
                     stack -= 1
                     mem[stack] = Byte(Pc >> 8)
@@ -125,7 +125,7 @@ public struct Z80
                     Halt = false
                     return
                 case 2:
-                    let vector = ports.Data
+                    let vector = ports.data
                     var stack = Sp
                     stack -= 1
                     mem[stack] = Byte(Pc >> 8)
@@ -133,10 +133,10 @@ public struct Z80
                     mem[stack] = Byte(Pc & 0xFF)
                     registers[SP] = Byte(stack >> 8)
                     registers[SP + 1] = Byte(stack & 0xFF)
-                    var address = (UShort(registers[I]) << 8) + vector
-                    registers[PC] = mem[address]
-                    address += 1
-                    registers[PC + 1] = mem[address]
+                    var addr = (UShort(registers[I]) << 8) + vector
+                    registers[PC] = mem[addr]
+                    addr += 1
+                    registers[PC + 1] = mem[addr]
 #if DEBUG
                     print("MI 2")
 #endif
@@ -175,7 +175,7 @@ public struct Z80
             }
             Wait(useHL1 || useHL2 ? 7 : 4)
 #if DEBUG
-            print(String(format: "LD %@, %@", useHL1 ? "(HL)" : Z80.RName(r), useHL2 ? "(HL)" : Z80.RName(lo)))
+            print(String(format: "LD %@, %@", useHL1 ? "(HL)" : Z80.RegName(r), useHL2 ? "(HL)" : Z80.RegName(lo)))
 #endif
             return
         }
@@ -205,7 +205,7 @@ public struct Z80
                 registers[r + 1] = Fetch()
                 registers[r] = Fetch()
 #if DEBUG
-                print(String(format: "LD %@%@, 0x%02X%02X", Z80.RName(r), Z80.RName(Byte(r + 1)), registers[r], registers[r + 1]))
+                print(String(format: "LD %@%@, 0x%02X%02X", Z80.RegName(r), Z80.RegName(Byte(r + 1)), registers[r], registers[r + 1]))
 #endif
                 Wait(10)
                 return
@@ -223,7 +223,7 @@ public struct Z80
                 let n = Fetch()
                 registers[r] = n
 #if DEBUG
-                print(String(format: "LD %@, 0x%02X", Z80.RName(r), n))
+                print(String(format: "LD %@, 0x%02X", Z80.RegName(r), n))
 #endif
                 Wait(7)
                 return
@@ -433,8 +433,8 @@ public struct Z80
                 return
             case 0xEB:
                 // EX DE, HL
-                SwapReg8(D, H)
-                SwapReg8(E, L)
+                SwapReg(D, H)
+                SwapReg(E, L)
 #if DEBUG
                 print("EX DE, HL")
 #endif
@@ -442,8 +442,8 @@ public struct Z80
                 return
             case 0x08:
                 // EX AF, AF'
-                SwapReg8(Ap, A)
-                SwapReg8(Fp, F)
+                SwapReg(Ap, A)
+                SwapReg(Fp, F)
 #if DEBUG
                 print("EX AF, AF'")
 #endif
@@ -451,12 +451,12 @@ public struct Z80
                 return
             case 0xD9:
                 // EXX
-                SwapReg8(B, Bp)
-                SwapReg8(C, Cp)
-                SwapReg8(D, Dp)
-                SwapReg8(E, Ep)
-                SwapReg8(H, Hp)
-                SwapReg8(L, Lp)
+                SwapReg(B, Bp)
+                SwapReg(C, Cp)
+                SwapReg(D, Dp)
+                SwapReg(E, Ep)
+                SwapReg(H, Hp)
+                SwapReg(L, Lp)
 #if DEBUG
                 print("EXX")
 #endif
@@ -481,7 +481,7 @@ public struct Z80
                 // ADD A, r
                 Add(registers[lo])
 #if DEBUG
-                print(String(format: "ADD A, %@", Z80.RName(lo)))
+                print(String(format: "ADD A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -506,7 +506,7 @@ public struct Z80
                 // ADC A, r
                 Adc(registers[lo])
 #if DEBUG
-                print(String(format: "ADC A, %@", Z80.RName(lo)))
+                print(String(format: "ADC A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -531,7 +531,7 @@ public struct Z80
                 // SUB A, r
                 Sub(registers[lo])
 #if DEBUG
-                print(String(format: "SUB A, %@", Z80.RName(lo)))
+                print(String(format: "SUB A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -556,7 +556,7 @@ public struct Z80
                 // SBC A, r
                 Sbc(registers[lo])
 #if DEBUG
-                print(String(format: "SBC A, %@", Z80.RName(lo)))
+                print(String(format: "SBC A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -581,7 +581,7 @@ public struct Z80
                 // AND A, r
                 And(registers[lo])
 #if DEBUG
-                print(String(format: "AND A, %@", Z80.RName(lo)))
+                print(String(format: "AND A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -606,7 +606,7 @@ public struct Z80
                 // OR A, r
                 Or(registers[lo])
 #if DEBUG
-                print(String(format: "OR A, %@", Z80.RName(lo)))
+                print(String(format: "OR A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -631,7 +631,7 @@ public struct Z80
                 // XOR A, r
                 Xor(registers[lo])
 #if DEBUG
-                print(String(format: "XOR A, %@", Z80.RName(lo)))
+                print(String(format: "XOR A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -674,7 +674,7 @@ public struct Z80
                 // CP A, r
                 Cmp(registers[lo])
 #if DEBUG
-                print(String(format: "CP A, %@", Z80.RName(lo)))
+                print(String(format: "CP A, %@", Z80.RegName(lo)))
 #endif
                 Wait(4)
                 return
@@ -699,7 +699,7 @@ public struct Z80
                 // INC r
                 registers[r] = Inc(registers[r])
 #if DEBUG
-                print(String(format: "INC %@", Z80.RName(r)))
+                print(String(format: "INC %@", Z80.RegName(r)))
 #endif
                 Wait(4)
                 return
@@ -715,7 +715,7 @@ public struct Z80
                 // DEC r
                 registers[r] = Dec(registers[r])
 #if DEBUG
-                print(String(format: "DEC %@", Z80.RName(r)))
+                print(String(format: "DEC %@", Z80.RegName(r)))
 #endif
                 Wait(7)
                 return
@@ -731,12 +731,12 @@ public struct Z80
                 // DAA
                 var a = registers[A]
                 let f = registers[F]
-                if (a & 0x0F) > 0x09 || (f & Fl.H.rawValue) > 0
+                if (a & 0x0F) > 0x09 || (f & Flags.H.rawValue) > 0
                 {
                     Add(0x06)
                     a = registers[A]
                 }
-                if (a & 0xF0) > 0x90 || (f & Fl.C.rawValue) > 0
+                if (a & 0xF0) > 0x90 || (f & Flags.C.rawValue) > 0
                 {
                     Add(0x60)
                 }
@@ -748,7 +748,7 @@ public struct Z80
             case 0x2F:
                 // CPL
                 registers[A] ^= 0xFF
-                registers[F] |= Fl.H.rawValue | Fl.N.rawValue
+                registers[F] |= Flags.H.rawValue | Flags.N.rawValue
 #if DEBUG
                 print("CPL")
 #endif
@@ -756,8 +756,8 @@ public struct Z80
                 return
             case 0x3F:
                 // CCF
-                registers[F] &= ~Fl.N.rawValue
-                registers[F] ^= Fl.C.rawValue
+                registers[F] &= ~Flags.N.rawValue
+                registers[F] ^= Flags.C.rawValue
 #if DEBUG
                 print("CCF")
 #endif
@@ -765,8 +765,8 @@ public struct Z80
                 return
             case 0x37:
                 // SCF
-                registers[F] &= ~Fl.N.rawValue
-                registers[F] |= Fl.C.rawValue
+                registers[F] &= ~Flags.N.rawValue
+                registers[F] |= Flags.C.rawValue
 #if DEBUG
                 print("SCF")
 #endif
@@ -877,7 +877,7 @@ public struct Z80
                 let c = (a & 0x80) >> 7
                 a <<= 1
                 registers[A] = a
-                registers[F] &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
+                registers[F] &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 registers[F] |= c
 #if DEBUG
                 print("RLCA")
@@ -889,9 +889,9 @@ public struct Z80
                 let c = (a & 0x80) >> 7
                 a <<= 1
                 var f = registers[F]
-                a |= f & Fl.C.rawValue
+                a |= f & Flags.C.rawValue
                 registers[A] = a
-                f &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
+                f &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 f |= c
                 registers[F] = f
 #if DEBUG
@@ -904,7 +904,7 @@ public struct Z80
                 let c = a & 0x01
                 a >>= 1
                 registers[A] = a
-                registers[F] &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
+                registers[F] &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 registers[F] |= c
 #if DEBUG
                 print("RRCA")
@@ -916,9 +916,9 @@ public struct Z80
                 let c = a & 0x01
                 a >>= 1
                 var f = registers[F]
-                a |= (f & Fl.C.rawValue) << 7
+                a |= (f & Flags.C.rawValue) << 7
                 registers[A] = a
-                f &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
+                f &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 f |= c
                 registers[F] = f
 #if DEBUG
@@ -937,13 +937,13 @@ public struct Z80
                 return
             case 0xC2, 0xCA, 0xD2, 0xDA, 0xE2, 0xEA, 0xF2, 0xFA:
                 let addr = Fetch16()
-                if JumpCondition(r)
+                if JpCondition(is: r)
                 {
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
                 }
 #if DEBUG
-                print(String(format: "JP %@, 0x%04X", Z80.JCName(r), addr))
+                print(String(format: "JP %@, 0x%04X", Z80.JpConditionName(r), addr))
 #endif
                 Wait(10)
                 return
@@ -962,7 +962,7 @@ public struct Z80
                 // order is important here
                 let d = SByte(truncatingIfNeeded: Fetch())
                 let addr = Pc + d
-                if JumpCondition(r & 0x03)
+                if JpCondition(is: r & 0x03)
                 {
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
@@ -973,7 +973,7 @@ public struct Z80
                     Wait(7)
                 }
 #if DEBUG
-                print(String(format: "JR %@, 0x%04X", Z80.JCName(r & 0x03), addr))
+                print(String(format: "JR %@, 0x%04X", Z80.JpConditionName(r & 0x03), addr))
 #endif
                 return
             case 0xE9:
@@ -1024,7 +1024,7 @@ public struct Z80
                 return
             case 0xC4, 0xCC, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC:
                 let addr = Fetch16()
-                if JumpCondition(r)
+                if JpCondition(is: r)
                 {
                     var stack = Sp
                     stack -= 1
@@ -1042,7 +1042,7 @@ public struct Z80
                     Wait(10)
                 }
 #if DEBUG
-                print(String(format: "CALL %@, 0x%04X", Z80.JCName(r), addr))
+                print(String(format: "CALL %@, 0x%04X", Z80.JpConditionName(r), addr))
 #endif
                 return
             case 0xC9:
@@ -1059,7 +1059,7 @@ public struct Z80
                 Wait(10)
                 return
             case 0xC0, 0xC8, 0xD0, 0xD8, 0xE0, 0xE8, 0xF0, 0xF8:
-                if JumpCondition(r)
+                if JpCondition(is: r)
                 {
                     var stack = Sp
                     registers[PC + 1] = mem[stack]
@@ -1075,7 +1075,7 @@ public struct Z80
                     Wait(5)
                 }
 #if DEBUG
-                print(String(format: "RET %@", Z80.JCName(r)))
+                print(String(format: "RET %@", Z80.JpConditionName(r)))
 #endif
                 return
             case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF:
@@ -1095,7 +1095,7 @@ public struct Z80
                 return
             case 0xDB:
                 let port = (UShort(registers[A]) << 8) + Fetch()
-                registers[A] = ports.ReadPort(port)
+                registers[A] = ports.rdPort(port)
 #if DEBUG
                 print(String(format: "IN A, (0x%02X)", port))
 #endif
@@ -1103,7 +1103,7 @@ public struct Z80
                 return
             case 0xD3:
                 let port = (UShort(registers[A]) << 8) + Fetch()
-                ports.WritePort(port, registers[A])
+                ports.wrPort(port, registers[A])
 #if DEBUG
                 print(String(format: "OUT (0x%04X), A", port))
 #endif
@@ -1118,7 +1118,7 @@ public struct Z80
         Halt = true
     }
 
-    private static func JCName(_ condition: Byte) -> String
+    private static func JpConditionName(_ condition: Byte) -> String
     {
         switch condition
         {
@@ -1182,59 +1182,59 @@ public struct Z80
                     case 0:
                         reg |= c
 #if DEBUG
-                        print(String(format: "RLC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "RLC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 1:
                         reg |= c << 7
 #if DEBUG
-                        print(String(format: "RRC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "RRC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 2:
-                        reg |= f & Fl.C.rawValue
+                        reg |= f & Flags.C.rawValue
 #if DEBUG
-                        print(String(format: "RL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "RL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 3:
-                        reg |= (f & Fl.C.rawValue) << 7
+                        reg |= (f & Flags.C.rawValue) << 7
 #if DEBUG
-                        print(String(format: "RR \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "RR \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 4:
 #if DEBUG
-                        print(String(format: "SLA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "SLA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 5:
                         reg |= (reg & 0x40) << 1
 #if DEBUG
-                        print(String(format: "SRA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "SRA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 6:
                         reg |= 1
 #if DEBUG
-                        print(String(format: "SLL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "SLL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     case 7:
 #if DEBUG
-                        print(String(format: "SRL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))"))
+                        print(String(format: "SRL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
 #endif
                         break
                     default:
                         break
                 }
-                f &= ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue | Fl.PV.rawValue | Fl.S.rawValue | Fl.Z.rawValue)
-                f |= reg & Fl.S.rawValue
+                f &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue | Flags.PV.rawValue | Flags.S.rawValue | Flags.Z.rawValue)
+                f |= reg & Flags.S.rawValue
                 if reg == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if Z80.Parity(reg) {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 f |= c
                 registers[F] = f
@@ -1242,21 +1242,21 @@ public struct Z80
             case 1:
                 Bit(r, reg)
 #if DEBUG
-                print(String(format: "BIT %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))", r))
+                print(String(format: "BIT %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))", r))
 #endif
                 Wait(useHL ? 12 : 8)
                 return
             case 2:
                 reg &= ~(0x01 << r)
 #if DEBUG
-                print(String(format: "RES %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))", r))
+                print(String(format: "RES %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))", r))
 #endif
                 Wait(useHL ? 12 : 8)
                 break
             case 3:
                 reg |= 0x01 << r
 #if DEBUG
-                print(String(format: "SET %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RName(lo)) : Z80.RName(lo)))", r))
+                print(String(format: "SET %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))", r))
 #endif
                 Wait(useHL ? 12 : 8)
                 break
@@ -1298,106 +1298,106 @@ public struct Z80
         }
     }
 
-    private mutating func Bit(_ bit: Byte, _ value: Byte)
+    private mutating func Bit(_ bit: Byte, _ val: Byte)
     {
-        var f = registers[F] & ~(Fl.Z.rawValue | Fl.H.rawValue | Fl.N.rawValue)
-        if (value & (0x01 << bit)) == 0 {
-            f |= Fl.Z.rawValue
+        var f = registers[F] & ~(Flags.Z.rawValue | Flags.H.rawValue | Flags.N.rawValue)
+        if (val & (0x01 << bit)) == 0 {
+            f |= Flags.Z.rawValue
         }
-        f |= Fl.H.rawValue
+        f |= Flags.H.rawValue
         registers[F] = f
     }
 
-    private mutating func AddHl(_ value: UShort)
+    private mutating func AddHl(_ val: UShort)
     {
-        let sum = Add(Hl, value)
+        let sum = Add(Hl, val)
         registers[H] = Byte(sum >> 8)
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func AddIx(_ value: UShort)
+    private mutating func AddIx(_ val: UShort)
     {
-        let sum = Add(Ix, value)
+        let sum = Add(Ix, val)
         registers[IX] = Byte(sum >> 8)
         registers[IX + 1] = Byte(sum & 0xFF)
     }
 
-    private mutating func AddIy(_ value: UShort)
+    private mutating func AddIy(_ val: UShort)
     {
-        let sum = Add(Iy, value)
+        let sum = Add(Iy, val)
         registers[IY] = Byte(sum >> 8)
         registers[IY + 1] = Byte(sum & 0xFF)
     }
 
-    private mutating func Add(_ value1: UShort, _ value2: UShort) -> UShort
+    private mutating func Add(_ val1: UShort, _ val2: UShort) -> UShort
     {
-        let sum = Int(value1) + Int(value2)
-        var f = registers[F] & ~(Fl.H.rawValue | Fl.N.rawValue | Fl.C.rawValue)
-        if (value1 & 0x0FFF) + (value2 & 0x0FFF) > 0x0FFF {
-            f |= Fl.H.rawValue
+        let sum = Int(val1) + Int(val2)
+        var f = registers[F] & ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
+        if (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF {
+            f |= Flags.H.rawValue
         }
         if sum > 0xFFFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
         return UShort(truncatingIfNeeded: sum)
     }
 
-    private mutating func AdcHl(_ value: UShort)
+    private mutating func AdcHl(_ val: UShort)
     {
-        let sum = Adc(Hl, value)
+        let sum = Adc(Hl, val)
         registers[H] = Byte(sum >> 8)
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func Adc(_ value1: UShort, _ value2: UShort) -> UShort
+    private mutating func Adc(_ val1: UShort, _ val2: UShort) -> UShort
     {
-        let sum = Int(value1) + Int(value2) + Int((registers[F] & Fl.C.rawValue))
-        var f = registers[F] & ~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)
+        let sum = Int(val1) + Int(val2) + Int((registers[F] & Flags.C.rawValue))
+        var f = registers[F] & ~(Flags.S.rawValue | Flags.Z.rawValue | Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.C.rawValue)
         if sum < 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if sum == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
-        if (value1 & 0x0FFF) + (value2 & 0x0FFF) + Fl.C.rawValue > 0x0FFF {
-            f |= Fl.H.rawValue
+        if (val1 & 0x0FFF) + (val2 & 0x0FFF) + Flags.C.rawValue > 0x0FFF {
+            f |= Flags.H.rawValue
         }
         if sum > 0x7FFF {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
         if sum > 0xFFFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
         return UShort(truncatingIfNeeded: sum)
     }
 
-    private mutating func SbcHl(_ value: UShort)
+    private mutating func SbcHl(_ val: UShort)
     {
-        let sum = Sbc(Hl, value)
+        let sum = Sbc(Hl, val)
         registers[H] = Byte(sum >> 8)
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func Sbc(_ value1: UShort, _ value2: UShort) -> UShort
+    private mutating func Sbc(_ val1: UShort, _ val2: UShort) -> UShort
     {
-        let diff = Int(value1) - Int(value2) - Int(registers[F] & Fl.C.rawValue)
-        var f = registers[F] & ~(Fl.S.rawValue | Fl.Z.rawValue | Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.C.rawValue)
+        let diff = Int(val1) - Int(val2) - Int(registers[F] & Flags.C.rawValue)
+        var f = registers[F] & ~(Flags.S.rawValue | Flags.Z.rawValue | Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.C.rawValue)
         if diff < 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if diff == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
-        if (value1 & 0xFFF) < (value2 & 0xFFF) + (registers[F] & Fl.C.rawValue) {
-            f |= Fl.H.rawValue
+        if (val1 & 0xFFF) < (val2 & 0xFFF) + (registers[F] & Flags.C.rawValue) {
+            f |= Flags.H.rawValue
         }
         if diff > Short.max || diff < Short.min {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        if UShort(truncatingIfNeeded: diff) > value1 {
-            f |= Fl.C.rawValue
+        if UShort(truncatingIfNeeded: diff) > val1 {
+            f |= Flags.C.rawValue
         }
         registers[F] = f
         return UShort(truncatingIfNeeded: diff)
@@ -1432,18 +1432,18 @@ public struct Z80
                 // LD A, I
                 let i = registers[I]
                 registers[A] = i
-                var f = registers[F] & ~(Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.S.rawValue | Fl.Z.rawValue)
+                var f = registers[F] & ~(Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.S.rawValue | Flags.Z.rawValue)
                 if i >= 0x80
                 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 else if (i == 0x00)
                 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if IFF2
                 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -1455,18 +1455,18 @@ public struct Z80
                 // LD A, R
                 let reg = registers[R]
                 registers[A] = reg
-                var f = registers[F] & ~(Fl.H.rawValue | Fl.PV.rawValue | Fl.N.rawValue | Fl.S.rawValue | Fl.Z.rawValue)
+                var f = registers[F] & ~(Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.S.rawValue | Flags.Z.rawValue)
                 if reg >= 0x80
                 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 else if (reg == 0x00)
                 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if IFF2
                 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -1587,7 +1587,7 @@ public struct Z80
                 registers[L] = Byte(hl & 0xFF)
                 var f = registers[F] & 0xE9
                 if bc != 0 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -1643,7 +1643,7 @@ public struct Z80
                 registers[L] = Byte(hl & 0xFF)
                 var f = registers[F] & 0xE9
                 if bc != 0 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -1696,18 +1696,18 @@ public struct Z80
                 registers[L] = Byte(hl & 0xFF)
                 var f = registers[F] & 0x2A
                 if a < b {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if a == b {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if (a & 8) < (b & 8) {
-                    f |= Fl.H.rawValue
+                    f |= Flags.H.rawValue
                 }
                 if bc != 0 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
-                registers[F] = f | Fl.N.rawValue
+                registers[F] = f | Flags.N.rawValue
 #if DEBUG
                 print("CPI")
 #endif
@@ -1729,18 +1729,18 @@ public struct Z80
                 {
                     var f = registers[F] & 0x2A
                     if a < b {
-                        f |= Fl.S.rawValue
+                        f |= Flags.S.rawValue
                     }
                     if a == b {
-                        f |= Fl.Z.rawValue
+                        f |= Flags.Z.rawValue
                     }
                     if (a & 8) < (b & 8) {
-                        f |= Fl.H.rawValue
+                        f |= Flags.H.rawValue
                     }
                     if bc != 0 {
-                        f |= Fl.PV.rawValue
+                        f |= Flags.PV.rawValue
                     }
-                    registers[F] = f | Fl.N.rawValue
+                    registers[F] = f | Flags.N.rawValue
 #if DEBUG
                     print("CPIR")
 #endif
@@ -1768,18 +1768,18 @@ public struct Z80
                 registers[L] = Byte(hl & 0xFF)
                 var f = registers[F] & 0x2A
                 if a < b {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if a == b {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if (a & 8) < (b & 8) {
-                    f |= Fl.H.rawValue
+                    f |= Flags.H.rawValue
                 }
                 if bc != 0 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
-                registers[F] = f | Fl.N.rawValue
+                registers[F] = f | Flags.N.rawValue
 #if DEBUG
                 print("CPD")
 #endif
@@ -1801,18 +1801,18 @@ public struct Z80
                 {
                     var f = registers[F] & 0x2A
                     if a < b {
-                        f |= Fl.S.rawValue
+                        f |= Flags.S.rawValue
                     }
                     if a == b {
-                        f |= Fl.Z.rawValue
+                        f |= Flags.Z.rawValue
                     }
                     if (a & 8) < (b & 8) {
-                        f |= Fl.H.rawValue
+                        f |= Flags.H.rawValue
                     }
                     if bc != 0 {
-                        f |= Fl.PV.rawValue
+                        f |= Flags.PV.rawValue
                     }
-                    registers[F] = f | Fl.N.rawValue
+                    registers[F] = f | Flags.N.rawValue
 #if DEBUG
                     print("CPDR")
 #endif
@@ -1831,22 +1831,22 @@ public struct Z80
                 let a = registers[A]
                 let diff = -Short(truncatingIfNeeded: a)
                 registers[A] = Byte(truncatingIfNeeded: diff)
-                var f = registers[F] & ~Fl.All.rawValue
+                var f = registers[F] & ~Flags.All.rawValue
                 if (Byte(truncatingIfNeeded: diff) & 0x80) > 0 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if diff == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if (a & 0x0F) != 0 {
-                    f |= Fl.H.rawValue
+                    f |= Flags.H.rawValue
                 }
                 if a == 0x80 {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
-                f |= Fl.N.rawValue
+                f |= Flags.N.rawValue
                 if diff != 0 {
-                    f |= Fl.C.rawValue
+                    f |= Flags.C.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -1942,13 +1942,13 @@ public struct Z80
                 registers[A] = a
                 var f = registers[F] & 0x29
                 if (a & 0x80) > 0 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if a == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if Z80.Parity(a) {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -1964,13 +1964,13 @@ public struct Z80
                 registers[A] = a
                 var f = registers[F] & 0x29
                 if (a & 0x80) > 0 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if a == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if Z80.Parity(a) {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
@@ -2003,26 +2003,26 @@ public struct Z80
                 Wait(8)
                 return
             case 0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x78:
-                let a = Byte(ports.ReadPort(Bc))
+                let a = Byte(ports.rdPort(Bc))
                 registers[r] = a
                 var f = registers[F] & 0x29
                 if (a & 0x80) > 0 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if a == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if Z80.Parity(a) {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
-                print(String(format: "IN %@, (BC)", Z80.RName(r)))
+                print(String(format: "IN %@, (BC)", Z80.RegName(r)))
 #endif
                 Wait(8)
                 return
             case 0xA2:
-                let a = ports.ReadPort(Bc)
+                let a = ports.rdPort(Bc)
                 var hl = Hl
                 mem[hl] = a
                 hl += 1
@@ -2030,11 +2030,11 @@ public struct Z80
                 registers[L] = Byte(truncatingIfNeeded: hl)
                 let b = registers[B] - 1
                 registers[B] = b
-                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
+                var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
-                f |= Fl.N.rawValue
+                f |= Flags.N.rawValue
                 registers[F] = f
 #if DEBUG
                 print("INI")
@@ -2042,7 +2042,7 @@ public struct Z80
                 Wait(16)
                 return
             case 0xB2:
-                let a = ports.ReadPort(Bc)
+                let a = ports.rdPort(Bc)
                 var hl = Hl
                 mem[hl] = a
                 hl += 1
@@ -2062,7 +2062,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
+                    registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("INIR")
 #endif
@@ -2070,7 +2070,7 @@ public struct Z80
                 }
                 return
             case 0xAA:
-                let a = ports.ReadPort(Bc)
+                let a = ports.rdPort(Bc)
                 var hl = Hl
                 mem[hl] = a
                 hl -= 1
@@ -2078,11 +2078,11 @@ public struct Z80
                 registers[L] = Byte(truncatingIfNeeded: hl)
                 let b = Byte(registers[B] - 1)
                 registers[B] = b
-                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
+                var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
-                f |= Fl.N.rawValue
+                f |= Flags.N.rawValue
                 registers[F] = f
 #if DEBUG
                 print("IND")
@@ -2090,7 +2090,7 @@ public struct Z80
                 Wait(16)
                 return
             case 0xBA:
-                let a = ports.ReadPort(Bc)
+                let a = ports.rdPort(Bc)
                 var hl = Hl
                 mem[hl] = a
                 hl -= 1
@@ -2110,7 +2110,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
+                    registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("INDR")
 #endif
@@ -2119,20 +2119,20 @@ public struct Z80
                 return
             case 0x41, 0x49, 0x51, 0x59, 0x61, 0x69, 0x79:
                 let a = registers[r]
-                ports.WritePort(Bc, a)
+                ports.wrPort(Bc, a)
                 var f = registers[F] & 0x29
                 if (a & 0x80) > 0 {
-                    f |= Fl.S.rawValue
+                    f |= Flags.S.rawValue
                 }
                 if a == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
                 if Z80.Parity(a) {
-                    f |= Fl.PV.rawValue
+                    f |= Flags.PV.rawValue
                 }
                 registers[F] = f
 #if DEBUG
-                print(String(format: "OUT (BC), %@", Z80.RName(r)))
+                print(String(format: "OUT (BC), %@", Z80.RegName(r)))
 #endif
                 Wait(8)
                 return
@@ -2140,16 +2140,16 @@ public struct Z80
                 var hl = Hl
                 let a = mem[hl]
                 hl += 1
-                ports.WritePort(Bc, a)
+                ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
                 let b = Byte(registers[B] - 1)
                 registers[B] = b
-                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
+                var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
-                f |= Fl.N.rawValue
+                f |= Flags.N.rawValue
                 registers[F] = f
 #if DEBUG
                 print("OUTI")
@@ -2160,7 +2160,7 @@ public struct Z80
                 var hl = Hl
                 let a = mem[hl]
                 hl += 1
-                ports.WritePort(Bc, a)
+                ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
                 let b = Byte(registers[B] - 1)
@@ -2177,7 +2177,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
+                    registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("OUTIR")
 #endif
@@ -2188,16 +2188,16 @@ public struct Z80
                 var hl = Hl
                 let a = mem[hl]
                 hl -= 1
-                ports.WritePort(Bc, a)
+                ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
                 let b = Byte(registers[B] - 1)
                 registers[B] = b
-                var f = registers[F] & ~(Fl.N.rawValue | Fl.Z.rawValue)
+                var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
-                    f |= Fl.Z.rawValue
+                    f |= Flags.Z.rawValue
                 }
-                f |= Fl.N.rawValue
+                f |= Flags.N.rawValue
                 registers[F] = f
 #if DEBUG
                 print("OUTD")
@@ -2208,7 +2208,7 @@ public struct Z80
                 var hl = Hl
                 let a = mem[hl]
                 hl -= 1
-                ports.WritePort(Bc, a)
+                ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
                 let b = Byte(registers[B] - 1)
@@ -2225,7 +2225,7 @@ public struct Z80
                 }
                 else
                 {
-                    registers[F] = (registers[F] | Fl.N.rawValue | Fl.Z.rawValue)
+                    registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("OUTDR")
 #endif
@@ -2269,7 +2269,7 @@ public struct Z80
                 let d = SByte(truncatingIfNeeded: Fetch())
                 registers[r] = mem[Ix + d]
 #if DEBUG
-                print(String(format: "LD %@, (IX+%d)", Z80.RName(r), d))
+                print(String(format: "LD %@, (IX+%d)", Z80.RegName(r), d))
 #endif
                 Wait(19)
                 return
@@ -2278,7 +2278,7 @@ public struct Z80
                 let d = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + d] = registers[lo]
 #if DEBUG
-                print(String(format: "LD (IX+%d), %@", d, Z80.RName(lo)))
+                print(String(format: "LD (IX+%d), %@", d, Z80.RegName(lo)))
 #endif
                 Wait(19)
                 return
@@ -2555,7 +2555,7 @@ public struct Z80
                 let d = SByte(truncatingIfNeeded: Fetch())
                 registers[r] = mem[Iy + d]
 #if DEBUG
-                print(String(format: "LD %@, (IY+%d)", Z80.RName(r), d))
+                print(String(format: "LD %@, (IY+%d)", Z80.RegName(r), d))
 #endif
                 Wait(19)
                 return
@@ -2564,7 +2564,7 @@ public struct Z80
                 let d = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + d] = registers[lo]
 #if DEBUG
-                print(String(format: "LD (IY+%d), %@", d, Z80.RName(lo)))
+                print(String(format: "LD (IY+%d), %@", d, Z80.RegName(lo)))
 #endif
                 Wait(19)
                 return
@@ -2817,21 +2817,21 @@ public struct Z80
         let a = registers[A]
         let sum = UShort(a) + UShort(b)
         registers[A] = Byte(truncatingIfNeeded: sum)
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (sum & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if (sum & 0xFF) == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (a & 0x0F) + (b & 0x0F) > 0x0F {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if (a >= 0x80 && b >= 0x80 && SByte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && SByte(truncatingIfNeeded: sum) < 0) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
         if sum > 0xFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
     }
@@ -2839,25 +2839,25 @@ public struct Z80
     private mutating func Adc(_ b: Byte)
     {
         let a = registers[A]
-        let c = registers[F] & Fl.C.rawValue
+        let c = registers[F] & Flags.C.rawValue
         let sum = UShort(a) + UShort(b) + UShort(c)
         registers[A] = Byte(truncatingIfNeeded: sum)
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (sum & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if (sum & 0xFF) == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (a & 0x0F) + (b & 0x0F) > 0x0F {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if (a >= 0x80 && b >= 0x80 && SByte(truncatingIfNeeded: sum) > 0) || (a < 0x80 && b < 0x80 && SByte(truncatingIfNeeded: sum) < 0) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        f &= ~Fl.N.rawValue
+        f &= ~Flags.N.rawValue
         if sum > 0xFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
     }
@@ -2867,22 +2867,22 @@ public struct Z80
         let a = registers[A]
         let diff = Short(a) - Short(b)
         registers[A] = Byte(truncatingIfNeeded: diff)
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (diff & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if (diff & 0xFF) == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (a & 0x0F) < (b & 0x0F) {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if (a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        f |= Fl.N.rawValue
+        f |= Flags.N.rawValue
         if diff < 0 {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
     }
@@ -2890,25 +2890,25 @@ public struct Z80
     private mutating func Sbc(_ b: Byte)
     {
         let a = registers[A]
-        let c = registers[F] & Fl.C.rawValue
+        let c = registers[F] & Flags.C.rawValue
         let diff = Short(a) - Short(b) - Short(c)
         registers[A] = Byte(truncatingIfNeeded: diff)
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (diff & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if (diff & 0xFF) == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (a & 0x0F) < (b & 0x0F) + c {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if (a >= 0x80 && b >= 0x80 && diff > 0) || (a < 0x80 && b < 0x80 && diff < 0) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        f |= Fl.N.rawValue
+        f |= Flags.N.rawValue
         if diff > 0xFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
     }
@@ -2918,16 +2918,16 @@ public struct Z80
         let a = registers[A]
         let res = a & b
         registers[A] = res
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (res & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if res == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
-        f |= Fl.H.rawValue
+        f |= Flags.H.rawValue
         if Z80.Parity(res) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
         registers[F] = f
     }
@@ -2937,15 +2937,15 @@ public struct Z80
         let a = registers[A]
         let res = a | b
         registers[A] = res
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (res & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if res == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if Z80.Parity(res) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
          registers[F] = f
     }
@@ -2955,15 +2955,15 @@ public struct Z80
         let a = registers[A]
         let res = a ^ b
         registers[A] = res
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (res & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
          if res == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
          if Z80.Parity(res) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
          registers[F] = f
     }
@@ -2972,22 +2972,22 @@ public struct Z80
     {
         let a = registers[A]
         let diff = a &- b
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (diff & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if diff == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (a & 0x0F) < (b & 0x0F) {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if (a > 0x80 && b > 0x80 && SByte(truncatingIfNeeded: diff) > 0) || (a < 0x80 && b < 0x80 && SByte(truncatingIfNeeded: diff) < 0) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        f |= Fl.N.rawValue
+        f |= Flags.N.rawValue
         if diff > 0xFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
     }
@@ -2995,22 +2995,22 @@ public struct Z80
     private mutating func Inc(_ b: Byte) -> Byte
     {
         let sum = UShort(b) + UShort(1)
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (sum & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if sum == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (b & 0x0F) == 0x0F {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if (b < 0x80 && SByte(truncatingIfNeeded: sum) < 0) {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        f |= Fl.N.rawValue
+        f |= Flags.N.rawValue
         if sum > 0xFF {
-            f |= Fl.C.rawValue
+            f |= Flags.C.rawValue
         }
         registers[F] = f
         return Byte(truncatingIfNeeded: sum)
@@ -3019,32 +3019,32 @@ public struct Z80
     private mutating func Dec(_ b: Byte) -> Byte
     {
         let diff = UShort(b) - UShort(1)
-        var f = registers[F] & ~Fl.All.rawValue
+        var f = registers[F] & ~Flags.All.rawValue
         if (diff & 0x80) > 0 {
-            f |= Fl.S.rawValue
+            f |= Flags.S.rawValue
         }
         if diff == 0 {
-            f |= Fl.Z.rawValue
+            f |= Flags.Z.rawValue
         }
         if (b & 0x0F) == 0 {
-            f |= Fl.H.rawValue
+            f |= Flags.H.rawValue
         }
         if b == 0x80 {
-            f |= Fl.PV.rawValue
+            f |= Flags.PV.rawValue
         }
-        f |= Fl.N.rawValue
+        f |= Flags.N.rawValue
         registers[F] = f
         return Byte(truncatingIfNeeded: diff)
     }
 
-    private static func Parity(_ value: Byte) -> Bool
+    private static func Parity(_ val: Byte) -> Bool
     {
-        Z80.Parity(UShort(value))
+        Z80.Parity(UShort(val))
     }
 
-    private static func Parity(_ value: UShort) -> Bool
+    private static func Parity(_ val: UShort) -> Bool
     {
-        var v = value
+        var v = val
         var parity = true
         while v > 0
         {
@@ -3056,22 +3056,22 @@ public struct Z80
         return parity
     }
 
-    private func JumpCondition(_ condition: Byte) -> Bool
+    private func JpCondition(is condition: Byte) -> Bool
     {
-        var mask: Fl
+        var mask: Flags
         switch condition & 0xFE
         {
             case 0:
-                mask = Fl.Z
+                mask = Flags.Z
                 break
             case 2:
-                mask = Fl.C
+                mask = Flags.C
                 break
             case 4:
-                mask = Fl.PV
+                mask = Flags.PV
                 break
             case 6:
-                mask = Fl.S
+                mask = Flags.S
                 break
             default:
                 return false
@@ -3097,7 +3097,7 @@ public struct Z80
         return UShort(Fetch()) + (UShort(Fetch()) << 8)
     }
 
-    public mutating func Reset()
+    public mutating func reset()
     {
         for r in 0..<registers.count {
             registers[r] = 0
@@ -3112,7 +3112,7 @@ public struct Z80
         clock = Date().timeIntervalSinceReferenceDate
     }
 
-    public func GetState() -> [Byte] {
+    public func getState() -> [Byte] {
         let count = registers.count
         var state = Array<Byte>(repeating: 0, count: count + 2)
         for i in 0..<count {
@@ -3123,7 +3123,7 @@ public struct Z80
         return state
     }
 
-    public func DumpState() -> String {
+    public func dumpState() -> String {
         return " BC   DE   HL  SZ-H-PNC A\n"
         + String(format: "%02X%02X %02X%02X %02X%02X %d%d%d%d%d%d%d%d %02X\n", registers[B], registers[C], registers[D], registers[E], registers[H], registers[L],
             (registers[F] & 0x80) >> 7, (registers[F] & 0x40) >> 6, (registers[F] & 0x20) >> 5, (registers[F] & 0x10) >> 4,
@@ -3157,14 +3157,14 @@ public struct Z80
         }
     }
 
-    private mutating func SwapReg8(_ r1: Byte, _ r2: Byte)
+    private mutating func SwapReg(_ r1: Byte, _ r2: Byte)
     {
-        let t = registers[r1]
+        let r = registers[r1]
         registers[r1] = registers[r2]
-        registers[r2] = t
+        registers[r2] = r
     }
 
-    private enum Fl: Byte
+    private enum Flags: Byte
     {
         case C = 0x01
         case N = 0x02
@@ -3177,9 +3177,9 @@ public struct Z80
     }
 
 #if DEBUG
-    private static func RName(_ n: Byte) -> String
+    private static func RegName(_ reg: Byte) -> String
     {
-        switch n
+        switch reg
         {
             case 0:
                 return "B"
@@ -3200,9 +3200,9 @@ public struct Z80
         }
     }
 
-    private static func R16Name(_ n: Byte) -> String
+    private static func Reg16Name(_ reg: Byte) -> String
     {
-        switch n
+        switch reg
         {
             case 0x00:
                 return "BC"

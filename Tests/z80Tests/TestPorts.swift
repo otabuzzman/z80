@@ -4,9 +4,9 @@ final class TestPorts: IPorts
 {
     private(set) var inputs = Array<Byte>(repeating: 0, count: 0x10000)
     private(set) var outputs = Array<Byte>(repeating: 0, count: 0x10000)
-    private(set) var _data: Byte = 0x00
-    private(set) var _mi: Bool = false
     private(set) var _nmi: Bool = false
+    private(set) var _mi: Bool = false
+    private(set) var _data: Byte = 0x00
 
     func SetInput(_ port: UShort, _ value: Byte)
     {
@@ -18,14 +18,14 @@ final class TestPorts: IPorts
         return outputs[port];
     }
 
-    func ReadPort(_ port: UShort) -> Byte
+    func rdPort(_ port: UShort) -> Byte
     {
         return inputs[port];
     }
 
-    func WritePort(_ port: UShort, _ value: Byte)
+    func wrPort(_ port: UShort, _ data: Byte)
     {
-        outputs[port] = value
+        outputs[port] = data
     }
 
     var NMI: Bool
@@ -50,7 +50,7 @@ final class TestPorts: IPorts
         set { _mi = newValue }
     }
 
-    var Data: Byte
+    var data: Byte
     {
         get
         {

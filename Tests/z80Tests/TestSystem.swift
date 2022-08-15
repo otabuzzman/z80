@@ -99,12 +99,12 @@ final class TestSystem
 
         while !z80.Halt && bailout > 0
         {
-            z80.Parse()
+            z80.parse()
             bailout -= 1
             // DumpZ80()
             // DumpRam()
         }
-        z80State = z80.GetState()
+        z80State = z80.getState()
         if !z80.Halt {
             print("Bailout!")
         }
@@ -112,20 +112,20 @@ final class TestSystem
 
     func Step() -> Bool
     {
-        z80.Parse()
-        z80State = z80.GetState()
+        z80.parse()
+        z80State = z80.getState()
         return z80.Halt
     }
 
     func Reset()
     {
         z80State = nil
-        z80.Reset()
+        z80.reset()
     }
 
     func DumpZ80()
     {
-        print(z80.DumpState())
+        print(z80.dumpState())
     }
 
     func DumpRam()
@@ -165,13 +165,13 @@ final class TestSystem
         {
             testPorts.MI = true
             testPorts.NMI = false
-            testPorts.Data = data
+            testPorts.data = data
         }
         else
         {
             testPorts.MI = false
             testPorts.NMI = true
-            testPorts.Data = data
+            testPorts.data = data
         }
     }
 }

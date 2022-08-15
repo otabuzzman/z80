@@ -1,8 +1,8 @@
 public protocol IPorts
 {
-    func ReadPort(_ port: UShort) -> Byte
-    func WritePort(_ port: UShort, _ value: Byte)
+    func rdPort(_ port: UShort) -> Byte
+    func wrPort(_ port: UShort, _ data: Byte)
     var NMI: Bool { get }
     var MI: Bool { get }
-    var Data: Byte { get }
+    var data: Byte { get }
 }
