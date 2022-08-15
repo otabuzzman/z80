@@ -3,6 +3,7 @@
 
 final class InputOutputTests: XCTestCase {
     var mem: Memory!
+    var mio: MPorts!
     var asm: Z80Asm!
     var z80: TestSystem!
 
@@ -10,7 +11,8 @@ final class InputOutputTests: XCTestCase {
         super.setUp()
 
         let ram = Array<Byte>(repeating: 0, count: 0x10000)
-        mem = Memory(ram, 0)
+        mio = TestMPorts(0x1800...0x19FF)
+        mem = Memory(ram, 0, [mio])
         z80 = TestSystem(mem)
         asm = Z80Asm(mem)
 
@@ -20,6 +22,28 @@ final class InputOutputTests: XCTestCase {
 
     override func tearDown() {
         super.tearDown()
+    }
+
+    func test_MIO()
+    {
+        [
+            (val: Byte(42), port: UShort(0x1800), res: Byte(44)),
+            (val: Byte(42), port: UShort(0x19FF), res: Byte(44)),
+            (val: Byte(42), port: UShort(0x1A00), res: Byte(42)),
+            (val: Byte(42), port: UShort(0x17FF), res: Byte(42)),
+        ].forEach { testCase in
+            tearDown()
+            setUp()
+
+            asm.LoadRegVal(7, testCase.val)
+            asm.LoadAddrA(testCase.port)
+            asm.LoadAAddr(testCase.port)
+            asm.Halt()
+
+            z80.Run()
+
+            XCTAssertEqual(testCase.res, z80.A)
+        }
     }
 
     func test_IN_A_n()

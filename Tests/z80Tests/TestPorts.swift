@@ -61,3 +61,25 @@ final class TestPorts: IPorts
         set { _data = newValue }
     }
 }
+
+final class TestMPorts: MPorts
+{
+    private var block: Array<Byte>
+
+    init(_ mmap: ClosedRange<UShort>) {
+        self.mmap = mmap
+        block = Array<Byte>(repeating: 0, count: Int(mmap.upperBound - mmap.lowerBound + 1))
+    }
+
+    func rdPort(_ port: UShort) -> Byte
+    {
+        return block[port - mmap.lowerBound] + 1;
+    }
+
+    func wrPort(_ port: UShort, _ data: Byte)
+    {
+        block[port - mmap.lowerBound] = data + 1
+    }
+
+    var mmap: ClosedRange<UShort>
+}
