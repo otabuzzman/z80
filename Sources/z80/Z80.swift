@@ -3158,11 +3158,11 @@ public struct Z80
         }
     }
 
-    private mutating func SwapReg(_ r1: Byte, _ r2: Byte)
+    private mutating func SwapReg(_ reg: Byte, _ reg2: Byte)
     {
-        let r = registers[r1]
-        registers[r1] = registers[r2]
-        registers[r2] = r
+        let r = registers[reg]
+        registers[reg] = registers[reg2]
+        registers[reg2] = r
     }
 
     private enum Flags: Byte

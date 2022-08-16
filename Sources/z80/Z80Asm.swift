@@ -44,27 +44,27 @@
         Write(0x00)
     }
 
-    public mutating func LoadRegVal(_ register: Byte, _ val: Byte)
+    public mutating func LoadRegVal(_ reg: Byte, _ val: Byte)
     {
-        Write(register * 8 + 6)
+        Write(reg * 8 + 6)
         Write(val)
     }
 
-    public mutating func LoadRegReg(_ register: Byte, _ register2: Byte)
+    public mutating func LoadRegReg(_ reg: Byte, _ reg2: Byte)
     {
-        Write(register * 8 + register2 + 64)
+        Write(reg * 8 + reg2 + 64)
     }
 
-    public mutating func LoadReg16Val(_ register16: Byte, _ val: UShort)
+    public mutating func LoadReg16Val(_ reg: Byte, _ val: UShort)
     {
-        Write(1 + register16 * 16)
+        Write(1 + reg * 16)
         Write(val & 0xFF)
         Write(val >> 8)
     }
 
-    public mutating func LoadRegAtHl(_ register: Byte)
+    public mutating func LoadRegAtHl(_ reg: Byte)
     {
-        Write(70 + register * 8)
+        Write(70 + reg * 8)
     }
 
     public mutating func Data(_ val: Byte)
@@ -72,11 +72,11 @@
         Write(val)
     }
 
-    public mutating func LoadRegAddrIx(_ register: Byte, _ displacement: SByte)
+    public mutating func LoadRegAddrIx(_ reg: Byte, _ d: SByte)
     {
         Write(0xDD)
-        Write(70 + register * 8)
-        Write(displacement)
+        Write(70 + reg * 8)
+        Write(d)
     }
 
     public mutating func LoadIxVal(_ val: UShort)
@@ -87,11 +87,11 @@
         Write(val >> 8)
     }
 
-    public mutating func LoadRegAddrIy(_ register: Byte, _ displacement: SByte)
+    public mutating func LoadRegAddrIy(_ reg: Byte, _ d: SByte)
     {
         Write(0xFD)
-        Write(70 + register * 8)
-        Write(displacement)
+        Write(70 + reg * 8)
+        Write(d)
     }
 
     public mutating func LoadIyVal(_ val: UShort)
@@ -102,23 +102,23 @@
         Write(val >> 8)
     }
 
-    public mutating func LoadAtHlReg(_ register: Byte)
+    public mutating func LoadAtHlReg(_ reg: Byte)
     {
-        Write(register + 0x70)
+        Write(reg + 0x70)
     }
 
-    public mutating func LoadIxReg(_ register: Byte, _ displacement: SByte)
+    public mutating func LoadIxReg(_ reg: Byte, _ d: SByte)
     {
         Write(0xDD)
-        Write(register + 0x70)
-        Write(displacement)
+        Write(reg + 0x70)
+        Write(d)
     }
 
-    public mutating func LoadIyReg(_ register: Byte, _ displacement: SByte)
+    public mutating func LoadIyReg(_ reg: Byte, _ d: SByte)
     {
         Write(0xFD)
-        Write(register + 0x70)
-        Write(displacement)
+        Write(reg + 0x70)
+        Write(d)
     }
 
     public mutating func LoadAtHlVal(_ val: Byte)
@@ -127,19 +127,19 @@
         Write(val)
     }
 
-    public mutating func LoadAtIxVal(_ displacement: SByte, _ val: Byte)
+    public mutating func LoadAtIxVal(_ d: SByte, _ val: Byte)
     {
         Write(0xDD)
         Write(0x36)
-        Write(displacement)
+        Write(d)
         Write(val)
     }
 
-    public mutating func LoadIyN(_ displacement: SByte, _ val: Byte)
+    public mutating func LoadIyN(_ d: SByte, _ val: Byte)
     {
         Write(0xFD)
         Write(0x36)
-        Write(displacement)
+        Write(d)
         Write(val)
     }
 
@@ -218,10 +218,10 @@
         Write(addr >> 8)
     }
 
-    public mutating func LoadReg16Addr(_ register16: Byte, _ addr: UShort)
+    public mutating func LoadReg16Addr(_ reg: Byte, _ addr: UShort)
     {
         Write(0xED)
-        Write(0x4B + register16 * 16)
+        Write(0x4B + reg * 16)
         Write(addr & 0xFF)
         Write(addr >> 8)
     }
@@ -249,10 +249,10 @@
         Write(addr >> 8)
     }
 
-    public mutating func LoadAddrReg16(_ register16: Byte, _ addr: UShort)
+    public mutating func LoadAddrReg16(_ reg: Byte, _ addr: UShort)
     {
         Write(0xED)
-        Write(0x43 + register16 * 16)
+        Write(0x43 + reg * 16)
         Write(addr & 0xFF)
         Write(addr >> 8)
     }
@@ -290,9 +290,9 @@
         Write(0xF9)
     }
 
-    public mutating func PushReg16(_ register16: Byte)
+    public mutating func PushReg16(_ reg: Byte)
     {
-        Write(0xC5 + register16 * 16)
+        Write(0xC5 + reg * 16)
     }
 
     public mutating func PushIx()
@@ -307,9 +307,9 @@
         Write(0xE5)
     }
 
-    public mutating func PopReg16(_ register16: Byte)
+    public mutating func PopReg16(_ reg: Byte)
     {
-        Write(0xC1 + register16 * 16)
+        Write(0xC1 + reg * 16)
     }
 
     public mutating func PopIx()
@@ -404,9 +404,9 @@
         Write(0xB9)
     }
 
-    public mutating func AddAReg(_ register: Byte)
+    public mutating func AddAReg(_ reg: Byte)
     {
-        Write(register + 0x80)
+        Write(reg + 0x80)
     }
 
     public mutating func AddAVal(_ val: Byte)
@@ -420,23 +420,23 @@
         Write(0x86)
     }
 
-    public mutating func AddAAddrIx(_ displacement: SByte)
+    public mutating func AddAAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0x86)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func AddAAddrIy(_ displacement: SByte)
+    public mutating func AddAAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0x86)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func AdcAReg(_ register: Byte)
+    public mutating func AdcAReg(_ reg: Byte)
     {
-        Write(register + 0x88)
+        Write(reg + 0x88)
     }
 
     public mutating func AdcAVal(_ val: Byte)
@@ -450,23 +450,23 @@
         Write(0x8E)
     }
 
-    public mutating func AdcAAddrIx(_ displacement: SByte)
+    public mutating func AdcAAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0x8E)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func AdcAAddrIy(_ displacement: SByte)
+    public mutating func AdcAAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0x8E)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func SubReg(_ register: Byte)
+    public mutating func SubReg(_ reg: Byte)
     {
-        Write(register + 0x90)
+        Write(reg + 0x90)
     }
 
     public mutating func SubVal(_ val: Byte)
@@ -480,23 +480,23 @@
         Write(0x96)
     }
 
-    public mutating func SubAddrIx(_ displacement: SByte)
+    public mutating func SubAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0x96)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func SubAddrIy(_ displacement: SByte)
+    public mutating func SubAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0x96)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func SbcAReg(_ register: Byte)
+    public mutating func SbcAReg(_ reg: Byte)
     {
-        Write(register + 0x98)
+        Write(reg + 0x98)
     }
 
     public mutating func SbcAVal(_ val: Byte)
@@ -510,23 +510,23 @@
         Write(0x9E)
     }
 
-    public mutating func SbcAAddrIx(_ displacement: SByte)
+    public mutating func SbcAAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0x9E)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func SbcAAddrIy(_ displacement: SByte)
+    public mutating func SbcAAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0x9E)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func AndReg(_ register: Byte)
+    public mutating func AndReg(_ reg: Byte)
     {
-        Write(register + 0xA0)
+        Write(reg + 0xA0)
     }
 
     public mutating func AndVal(_ val: Byte)
@@ -540,23 +540,23 @@
         Write(0xA6)
     }
 
-    public mutating func AndAddrIx(_ displacement: SByte)
+    public mutating func AndAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xA6)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func AndAddrIy(_ displacement: SByte)
+    public mutating func AndAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xA6)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func OrReg(_ register: Byte)
+    public mutating func OrReg(_ reg: Byte)
     {
-        Write(register + 0xB0)
+        Write(reg + 0xB0)
     }
 
     public mutating func OrVal(_ val: Byte)
@@ -570,23 +570,23 @@
         Write(0xB6)
     }
 
-    public mutating func OrAddrIx(_ displacement: SByte)
+    public mutating func OrAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xB6)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func OrAddrIy(_ displacement: SByte)
+    public mutating func OrAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xB6)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func XorReg(_ register: Byte)
+    public mutating func XorReg(_ reg: Byte)
     {
-        Write(register + 0xA8)
+        Write(reg + 0xA8)
     }
 
     public mutating func XorVal(_ val: Byte)
@@ -600,23 +600,23 @@
         Write(0xAE)
     }
 
-    public mutating func XorAddrIx(_ displacement: SByte)
+    public mutating func XorAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xAE)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func XorAddrIy(_ displacement: SByte)
+    public mutating func XorAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xAE)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func CpReg(_ register: Byte)
+    public mutating func CpReg(_ reg: Byte)
     {
-        Write(register + 0xB8)
+        Write(reg + 0xB8)
     }
 
     public mutating func CpVal(_ val: Byte)
@@ -630,23 +630,23 @@
         Write(0xBE)
     }
 
-    public mutating func CpAddrIx(_ displacement: SByte)
+    public mutating func CpAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xBE)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func CpAddrIy(_ displacement: SByte)
+    public mutating func CpAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xBE)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func IncReg(_ register: Byte)
+    public mutating func IncReg(_ reg: Byte)
     {
-        Write(0x04 + register * 8)
+        Write(0x04 + reg * 8)
     }
 
     public mutating func IncAddrHl()
@@ -654,23 +654,23 @@
         Write(0x34)
     }
 
-    public mutating func IncAddrIx(_ displacement: SByte)
+    public mutating func IncAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0x34)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func IncAddrIy(_ displacement: SByte)
+    public mutating func IncAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0x34)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func DecReg(_ register: Byte)
+    public mutating func DecReg(_ reg: Byte)
     {
-        Write(0x05 + register * 8)
+        Write(0x05 + reg * 8)
     }
 
     public mutating func DecAddrHl()
@@ -678,18 +678,18 @@
         Write(0x35)
     }
 
-    public mutating func DecAddrIx(_ displacement: SByte)
+    public mutating func DecAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0x35)
-        Write(displacement)
+        Write(d)
     }
 
-    public mutating func DecAddrIy(_ displacement: SByte)
+    public mutating func DecAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0x35)
-        Write(displacement)
+        Write(d)
     }
 
     public mutating func Daa()
@@ -736,38 +736,38 @@
         Write(0x5E)
     }
 
-    public mutating func AddHlReg16(_ register16: Byte)
+    public mutating func AddHlReg16(_ reg: Byte)
     {
-        Write(0x09 + register16 * 16)
+        Write(0x09 + reg * 16)
     }
 
-    public mutating func AdcHlReg16(_ register16: Byte)
-    {
-        Write(0xED)
-        Write(0x4A + register16 * 16)
-    }
-
-    public mutating func SbcHlReg16(_ register16: Byte)
+    public mutating func AdcHlReg16(_ reg: Byte)
     {
         Write(0xED)
-        Write(0x42 + register16 * 16)
+        Write(0x4A + reg * 16)
     }
 
-    public mutating func AddIxReg16(_ register16: Byte)
+    public mutating func SbcHlReg16(_ reg: Byte)
+    {
+        Write(0xED)
+        Write(0x42 + reg * 16)
+    }
+
+    public mutating func AddIxReg16(_ reg: Byte)
     {
         Write(0xDD)
-        Write(0x09 + register16 * 16)
+        Write(0x09 + reg * 16)
     }
 
-    public mutating func AddIyReg16(_ register16: Byte)
+    public mutating func AddIyReg16(_ reg: Byte)
     {
         Write(0xFD)
-        Write(0x09 + register16 * 16)
+        Write(0x09 + reg * 16)
     }
 
-    public mutating func IncReg16(_ register16: Byte)
+    public mutating func IncReg16(_ reg: Byte)
     {
-        Write(0x03 + register16 * 16)
+        Write(0x03 + reg * 16)
     }
 
     public mutating func IncIx()
@@ -782,9 +782,9 @@
         Write(0x23)
     }
 
-    public mutating func DecReg16(_ register16: Byte)
+    public mutating func DecReg16(_ reg: Byte)
     {
-        Write(0x0B + register16 * 16)
+        Write(0x0B + reg * 16)
     }
 
     public mutating func DecIx()
@@ -819,10 +819,10 @@
         Write(0x1F)
     }
 
-    public mutating func RlcReg(_ register: Byte)
+    public mutating func RlcReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register)
+        Write(reg)
     }
 
     public mutating func RlcAddrHl()
@@ -831,26 +831,26 @@
         Write(0x06)
     }
 
-    public mutating func RlcAddrIx(_ displacement: SByte)
+    public mutating func RlcAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x06)
     }
 
-    public mutating func RlcAddrIy(_ displacement: SByte)
+    public mutating func RlcAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x06)
     }
 
-    public mutating func RlReg(_ register: Byte)
+    public mutating func RlReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register + 0x10)
+        Write(reg + 0x10)
     }
 
     public mutating func RlAddrHl()
@@ -859,26 +859,26 @@
         Write(0x16)
     }
 
-    public mutating func RlAddrIx(_ displacement: SByte)
+    public mutating func RlAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x16)
     }
 
-    public mutating func RlAddrIy(_ displacement: SByte)
+    public mutating func RlAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x16)
     }
 
-    public mutating func RrcReg(_ register: Byte)
+    public mutating func RrcReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register + 0x08)
+        Write(reg + 0x08)
     }
 
     public mutating func RrcAddrHl()
@@ -887,26 +887,26 @@
         Write(0x0E)
     }
 
-    public mutating func RrcAddrIx(_ displacement: SByte)
+    public mutating func RrcAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x0E)
     }
 
-    public mutating func RrcAddrIy(_ displacement: SByte)
+    public mutating func RrcAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x0E)
     }
 
-    public mutating func RrReg(_ register: Byte)
+    public mutating func RrReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register + 0x18)
+        Write(reg + 0x18)
     }
 
     public mutating func RrAddrHl()
@@ -915,35 +915,35 @@
         Write(0x1E)
     }
 
-    public mutating func RrAddrIx(_ displacement: SByte)
+    public mutating func RrAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x1E)
     }
 
-    public mutating func RrAddrIy(_ displacement: SByte)
+    public mutating func RrAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x1E)
     }
 
-    public mutating func SlaAddrIy(_ displacement: SByte)
+    public mutating func SlaAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x26)
     }
 
-    public mutating func SlaAddrIx(_ displacement: SByte)
+    public mutating func SlaAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x26)
     }
 
@@ -953,16 +953,16 @@
         Write(0x26)
     }
 
-    public mutating func SlaReg(_ register: Byte)
+    public mutating func SlaReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register + 0x20)
+        Write(reg + 0x20)
     }
 
-    public mutating func SraReg(_ register: Byte)
+    public mutating func SraReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register + 0x28)
+        Write(reg + 0x28)
     }
 
     public mutating func SraAddrHl()
@@ -971,26 +971,26 @@
         Write(0x2E)
     }
 
-    public mutating func SraAddrIx(_ displacement: SByte)
+    public mutating func SraAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x2E)
     }
 
-    public mutating func SraAddrIy(_ displacement: SByte)
+    public mutating func SraAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x2E)
     }
 
-    public mutating func SrlReg(_ register: Byte)
+    public mutating func SrlReg(_ reg: Byte)
     {
         Write(0xCB)
-        Write(register + 0x38)
+        Write(reg + 0x38)
     }
 
     public mutating func SrlAddrHl()
@@ -999,19 +999,19 @@
         Write(0x3E)
     }
 
-    public mutating func SrlAddrIx(_ displacement: SByte)
+    public mutating func SrlAddrIx(_ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x3E)
     }
 
-    public mutating func SrlAddrIy(_ displacement: SByte)
+    public mutating func SrlAddrIy(_ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x3E)
     }
 
@@ -1027,10 +1027,10 @@
         Write(0x67)
     }
 
-    public mutating func BitNReg(_ bit: Byte, _ register: Byte)
+    public mutating func BitNReg(_ bit: Byte, _ reg: Byte)
     {
         Write(0xCB)
-        Write(0x40 + bit * 8 + register)
+        Write(0x40 + bit * 8 + reg)
     }
 
     public mutating func BitNAtHl(_ bit: Byte)
@@ -1039,26 +1039,26 @@
         Write(0x46 + bit * 8)
     }
 
-    public mutating func BitNAtIxd(_ bit: Byte, _ displacement: SByte)
+    public mutating func BitNAtIxd(_ bit: Byte, _ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x46 + bit * 8)
     }
 
-    public mutating func BitNAtIyd(_ bit: Byte, _ displacement: SByte)
+    public mutating func BitNAtIyd(_ bit: Byte, _ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x46 + bit * 8)
     }
 
-    public mutating func SetNReg(_ bit: Byte, _ register: Byte)
+    public mutating func SetNReg(_ bit: Byte, _ reg: Byte)
     {
         Write(0xCB)
-        Write(0xC0 + bit * 8 + register)
+        Write(0xC0 + bit * 8 + reg)
     }
 
     public mutating func SetNAtHl(_ bit: Byte)
@@ -1067,26 +1067,26 @@
         Write(0xC6 + bit * 8)
     }
 
-    public mutating func SetNAtIxd(_ bit: Byte, _ displacement: SByte)
+    public mutating func SetNAtIxd(_ bit: Byte, _ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0xC6 + bit * 8)
     }
 
-    public mutating func SetNAtIyd(_ bit: Byte, _ displacement: SByte)
+    public mutating func SetNAtIyd(_ bit: Byte, _ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0xC6 + bit * 8)
     }
 
-    public mutating func ResNReg(_ bit: Byte, _ register: Byte)
+    public mutating func ResNReg(_ bit: Byte, _ reg: Byte)
     {
         Write(0xCB)
-        Write(0x80 + bit * 8 + register)
+        Write(0x80 + bit * 8 + reg)
     }
 
     public mutating func ResNAtHl(_ bit: Byte)
@@ -1095,19 +1095,19 @@
         Write(0x86 + bit * 8)
     }
 
-    public mutating func ResNAtIxd(_ bit: Byte, _ displacement: SByte)
+    public mutating func ResNAtIxd(_ bit: Byte, _ d: SByte)
     {
         Write(0xDD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x86 + bit * 8)
     }
 
-    public mutating func ResNAtIyd(_ bit: Byte, _ displacement: SByte)
+    public mutating func ResNAtIyd(_ bit: Byte, _ d: SByte)
     {
         Write(0xFD)
         Write(0xCB)
-        Write(displacement)
+        Write(d)
         Write(0x86 + bit * 8)
     }
 
@@ -1118,34 +1118,34 @@
         Write(addr >> 8)
     }
 
-    public mutating func Jr(_ displacement: SByte)
+    public mutating func Jr(_ d: SByte)
     {
         Write(0x18)
-        Write(displacement - 2)
+        Write(d - 2)
     }
 
-    public mutating func JrNz(_ displacement: SByte)
+    public mutating func JrNz(_ d: SByte)
     {
         Write(0x20)
-        Write(displacement - 2)
+        Write(d - 2)
     }
 
-    public mutating func JrZ(_ displacement: SByte)
+    public mutating func JrZ(_ d: SByte)
     {
         Write(0x28)
-        Write(displacement - 2)
+        Write(d - 2)
     }
 
-    public mutating func JrNc(_ displacement: SByte)
+    public mutating func JrNc(_ d: SByte)
     {
         Write(0x30)
-        Write(displacement - 2)
+        Write(d - 2)
     }
 
-    public mutating func JrC(_ displacement: SByte)
+    public mutating func JrC(_ d: SByte)
     {
         Write(0x38)
-        Write(displacement - 2)
+        Write(d - 2)
     }
 
     public mutating func JpHl()
@@ -1165,10 +1165,10 @@
         Write(0xE9)
     }
 
-    public mutating func Djnz(_ displacement: SByte)
+    public mutating func Djnz(_ d: SByte)
     {
         Write(0x10)
-        Write(displacement - 2)
+        Write(d - 2)
     }
 
     public mutating func JpNz(_ addr: UShort)
@@ -1358,10 +1358,10 @@
         Write(port)
     }
 
-    public mutating func InRegBc(_ register: Byte)
+    public mutating func InRegBc(_ reg: Byte)
     {
         Write(0xED)
-        Write(0x40 + register * 8)
+        Write(0x40 + reg * 8)
     }
 
     public mutating func Ini()
@@ -1394,10 +1394,10 @@
         Write(port)
     }
 
-    public mutating func OutBcReg(_ register: Byte)
+    public mutating func OutBcReg(_ reg: Byte)
     {
         Write(0xED)
-        Write(0x41 + register * 8)
+        Write(0x41 + reg * 8)
     }
 
     public mutating func Outi()

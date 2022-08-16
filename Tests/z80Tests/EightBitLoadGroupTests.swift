@@ -32,85 +32,85 @@ final class EightBitLoadGroupTests: XCTestCase {
             Byte(4),
             Byte(5),
             Byte(7),
-        ].forEach { r in
+        ].forEach { reg in
             tearDown()
             setUp()
 
-            asm.LoadRegVal(r, 42)
+            asm.LoadRegVal(reg, 42)
             asm.Halt()
 
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(42, z80.Reg8(r))
+            XCTAssertEqual(42, z80.Reg8(reg))
         }
     }
 
     func test_LD_r1_r2()
     {
         [
-            (r: Byte(0), r2: Byte(0)),
-            (r: Byte(1), r2: Byte(0)),
-            (r: Byte(2), r2: Byte(0)),
-            (r: Byte(3), r2: Byte(0)),
-            (r: Byte(4), r2: Byte(0)),
-            (r: Byte(5), r2: Byte(0)),
-            (r: Byte(7), r2: Byte(0)),
-            (r: Byte(0), r2: Byte(1)),
-            (r: Byte(1), r2: Byte(1)),
-            (r: Byte(2), r2: Byte(1)),
-            (r: Byte(3), r2: Byte(1)),
-            (r: Byte(4), r2: Byte(1)),
-            (r: Byte(5), r2: Byte(1)),
-            (r: Byte(7), r2: Byte(1)),
-            (r: Byte(0), r2: Byte(2)),
-            (r: Byte(1), r2: Byte(2)),
-            (r: Byte(2), r2: Byte(2)),
-            (r: Byte(3), r2: Byte(2)),
-            (r: Byte(4), r2: Byte(2)),
-            (r: Byte(5), r2: Byte(2)),
-            (r: Byte(7), r2: Byte(2)),
-            (r: Byte(0), r2: Byte(3)),
-            (r: Byte(1), r2: Byte(3)),
-            (r: Byte(2), r2: Byte(3)),
-            (r: Byte(3), r2: Byte(3)),
-            (r: Byte(4), r2: Byte(3)),
-            (r: Byte(5), r2: Byte(3)),
-            (r: Byte(7), r2: Byte(3)),
-            (r: Byte(0), r2: Byte(4)),
-            (r: Byte(1), r2: Byte(4)),
-            (r: Byte(2), r2: Byte(4)),
-            (r: Byte(3), r2: Byte(4)),
-            (r: Byte(4), r2: Byte(4)),
-            (r: Byte(5), r2: Byte(4)),
-            (r: Byte(7), r2: Byte(4)),
-            (r: Byte(0), r2: Byte(5)),
-            (r: Byte(1), r2: Byte(5)),
-            (r: Byte(2), r2: Byte(5)),
-            (r: Byte(3), r2: Byte(5)),
-            (r: Byte(4), r2: Byte(5)),
-            (r: Byte(5), r2: Byte(5)),
-            (r: Byte(7), r2: Byte(5)),
-            (r: Byte(0), r2: Byte(7)),
-            (r: Byte(1), r2: Byte(7)),
-            (r: Byte(2), r2: Byte(7)),
-            (r: Byte(3), r2: Byte(7)),
-            (r: Byte(4), r2: Byte(7)),
-            (r: Byte(5), r2: Byte(7)),
-            (r: Byte(7), r2: Byte(7)),
+            (reg: Byte(0), reg2: Byte(0)),
+            (reg: Byte(1), reg2: Byte(0)),
+            (reg: Byte(2), reg2: Byte(0)),
+            (reg: Byte(3), reg2: Byte(0)),
+            (reg: Byte(4), reg2: Byte(0)),
+            (reg: Byte(5), reg2: Byte(0)),
+            (reg: Byte(7), reg2: Byte(0)),
+            (reg: Byte(0), reg2: Byte(1)),
+            (reg: Byte(1), reg2: Byte(1)),
+            (reg: Byte(2), reg2: Byte(1)),
+            (reg: Byte(3), reg2: Byte(1)),
+            (reg: Byte(4), reg2: Byte(1)),
+            (reg: Byte(5), reg2: Byte(1)),
+            (reg: Byte(7), reg2: Byte(1)),
+            (reg: Byte(0), reg2: Byte(2)),
+            (reg: Byte(1), reg2: Byte(2)),
+            (reg: Byte(2), reg2: Byte(2)),
+            (reg: Byte(3), reg2: Byte(2)),
+            (reg: Byte(4), reg2: Byte(2)),
+            (reg: Byte(5), reg2: Byte(2)),
+            (reg: Byte(7), reg2: Byte(2)),
+            (reg: Byte(0), reg2: Byte(3)),
+            (reg: Byte(1), reg2: Byte(3)),
+            (reg: Byte(2), reg2: Byte(3)),
+            (reg: Byte(3), reg2: Byte(3)),
+            (reg: Byte(4), reg2: Byte(3)),
+            (reg: Byte(5), reg2: Byte(3)),
+            (reg: Byte(7), reg2: Byte(3)),
+            (reg: Byte(0), reg2: Byte(4)),
+            (reg: Byte(1), reg2: Byte(4)),
+            (reg: Byte(2), reg2: Byte(4)),
+            (reg: Byte(3), reg2: Byte(4)),
+            (reg: Byte(4), reg2: Byte(4)),
+            (reg: Byte(5), reg2: Byte(4)),
+            (reg: Byte(7), reg2: Byte(4)),
+            (reg: Byte(0), reg2: Byte(5)),
+            (reg: Byte(1), reg2: Byte(5)),
+            (reg: Byte(2), reg2: Byte(5)),
+            (reg: Byte(3), reg2: Byte(5)),
+            (reg: Byte(4), reg2: Byte(5)),
+            (reg: Byte(5), reg2: Byte(5)),
+            (reg: Byte(7), reg2: Byte(5)),
+            (reg: Byte(0), reg2: Byte(7)),
+            (reg: Byte(1), reg2: Byte(7)),
+            (reg: Byte(2), reg2: Byte(7)),
+            (reg: Byte(3), reg2: Byte(7)),
+            (reg: Byte(4), reg2: Byte(7)),
+            (reg: Byte(5), reg2: Byte(7)),
+            (reg: Byte(7), reg2: Byte(7)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadRegVal(testCase.r, 33)
-            asm.LoadRegReg(testCase.r2, testCase.r)
+            asm.LoadRegVal(testCase.reg, 33)
+            asm.LoadRegReg(testCase.reg2, testCase.reg)
             asm.Halt()
 
             z80.Run()
 
             XCTAssertEqual(asm.addr, z80.PC)
-            XCTAssertEqual(33, z80.Reg8(testCase.r))
-            XCTAssertEqual(33, z80.Reg8(testCase.r2))
+            XCTAssertEqual(33, z80.Reg8(testCase.reg))
+            XCTAssertEqual(33, z80.Reg8(testCase.reg2))
         }
     }
 
@@ -124,52 +124,52 @@ final class EightBitLoadGroupTests: XCTestCase {
             Byte(4),
             Byte(5),
             Byte(7),
-        ].forEach { r in
+        ].forEach { reg in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(2, 5)
-            asm.LoadRegAtHl(r)
+            asm.LoadRegAtHl(reg)
             asm.Halt()
             asm.Data(123)
 
             z80.Run()
 
             XCTAssertEqual(asm.addr - UShort(1), z80.PC)
-            XCTAssertEqual(123, z80.Reg8(r))
+            XCTAssertEqual(123, z80.Reg8(reg))
         }
     }
 
     func test_LD_r_at_IX()
     {
         [
-            (r: Byte(0), d: SByte(0)),
-            (r: Byte(1), d: SByte(0)),
-            (r: Byte(2), d: SByte(0)),
-            (r: Byte(3), d: SByte(0)),
-            (r: Byte(4), d: SByte(0)),
-            (r: Byte(5), d: SByte(0)),
-            (r: Byte(7), d: SByte(0)),
-            (r: Byte(0), d: SByte(1)),
-            (r: Byte(1), d: SByte(1)),
-            (r: Byte(2), d: SByte(1)),
-            (r: Byte(3), d: SByte(1)),
-            (r: Byte(4), d: SByte(1)),
-            (r: Byte(5), d: SByte(1)),
-            (r: Byte(7), d: SByte(1)),
-            (r: Byte(0), d: SByte(2)),
-            (r: Byte(1), d: SByte(2)),
-            (r: Byte(2), d: SByte(2)),
-            (r: Byte(3), d: SByte(2)),
-            (r: Byte(4), d: SByte(2)),
-            (r: Byte(5), d: SByte(2)),
-            (r: Byte(7), d: SByte(2)),
+            (reg: Byte(0), d: SByte(0)),
+            (reg: Byte(1), d: SByte(0)),
+            (reg: Byte(2), d: SByte(0)),
+            (reg: Byte(3), d: SByte(0)),
+            (reg: Byte(4), d: SByte(0)),
+            (reg: Byte(5), d: SByte(0)),
+            (reg: Byte(7), d: SByte(0)),
+            (reg: Byte(0), d: SByte(1)),
+            (reg: Byte(1), d: SByte(1)),
+            (reg: Byte(2), d: SByte(1)),
+            (reg: Byte(3), d: SByte(1)),
+            (reg: Byte(4), d: SByte(1)),
+            (reg: Byte(5), d: SByte(1)),
+            (reg: Byte(7), d: SByte(1)),
+            (reg: Byte(0), d: SByte(2)),
+            (reg: Byte(1), d: SByte(2)),
+            (reg: Byte(2), d: SByte(2)),
+            (reg: Byte(3), d: SByte(2)),
+            (reg: Byte(4), d: SByte(2)),
+            (reg: Byte(5), d: SByte(2)),
+            (reg: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadIxVal(8)
-            asm.LoadRegAddrIx(testCase.r, testCase.d)
+            asm.LoadRegAddrIx(testCase.reg, testCase.d)
             asm.Halt()
             asm.Data(123)
             asm.Data(42)
@@ -178,40 +178,40 @@ final class EightBitLoadGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr - UShort(3), z80.PC)
-            XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.r))
+            XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.reg))
         }
     }
 
     func test_LD_r_at_IY()
     {
         [
-            (r: Byte(0), d: SByte(0)),
-            (r: Byte(1), d: SByte(0)),
-            (r: Byte(2), d: SByte(0)),
-            (r: Byte(3), d: SByte(0)),
-            (r: Byte(4), d: SByte(0)),
-            (r: Byte(5), d: SByte(0)),
-            (r: Byte(7), d: SByte(0)),
-            (r: Byte(0), d: SByte(1)),
-            (r: Byte(1), d: SByte(1)),
-            (r: Byte(2), d: SByte(1)),
-            (r: Byte(3), d: SByte(1)),
-            (r: Byte(4), d: SByte(1)),
-            (r: Byte(5), d: SByte(1)),
-            (r: Byte(7), d: SByte(1)),
-            (r: Byte(0), d: SByte(2)),
-            (r: Byte(1), d: SByte(2)),
-            (r: Byte(2), d: SByte(2)),
-            (r: Byte(3), d: SByte(2)),
-            (r: Byte(4), d: SByte(2)),
-            (r: Byte(5), d: SByte(2)),
-            (r: Byte(7), d: SByte(2)),
+            (reg: Byte(0), d: SByte(0)),
+            (reg: Byte(1), d: SByte(0)),
+            (reg: Byte(2), d: SByte(0)),
+            (reg: Byte(3), d: SByte(0)),
+            (reg: Byte(4), d: SByte(0)),
+            (reg: Byte(5), d: SByte(0)),
+            (reg: Byte(7), d: SByte(0)),
+            (reg: Byte(0), d: SByte(1)),
+            (reg: Byte(1), d: SByte(1)),
+            (reg: Byte(2), d: SByte(1)),
+            (reg: Byte(3), d: SByte(1)),
+            (reg: Byte(4), d: SByte(1)),
+            (reg: Byte(5), d: SByte(1)),
+            (reg: Byte(7), d: SByte(1)),
+            (reg: Byte(0), d: SByte(2)),
+            (reg: Byte(1), d: SByte(2)),
+            (reg: Byte(2), d: SByte(2)),
+            (reg: Byte(3), d: SByte(2)),
+            (reg: Byte(4), d: SByte(2)),
+            (reg: Byte(5), d: SByte(2)),
+            (reg: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadIyVal(8)
-            asm.LoadRegAddrIy(testCase.r, testCase.d)
+            asm.LoadRegAddrIy(testCase.reg, testCase.d)
             asm.Halt()
             asm.Data(123)
             asm.Data(42)
@@ -220,7 +220,7 @@ final class EightBitLoadGroupTests: XCTestCase {
             z80.Run()
 
             XCTAssertEqual(asm.addr - UShort(3), z80.PC)
-            XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.r))
+            XCTAssertEqual(mem[z80.PC + testCase.d], z80.Reg8(testCase.reg))
         }
     }
 
@@ -232,13 +232,13 @@ final class EightBitLoadGroupTests: XCTestCase {
             Byte(2),
             Byte(3),
             Byte(7),
-        ].forEach { r in
+        ].forEach { reg in
             tearDown()
             setUp()
 
             asm.LoadReg16Val(2, 8)
-            asm.LoadRegVal(r, 66)
-            asm.LoadAtHlReg(r)
+            asm.LoadRegVal(reg, 66)
+            asm.LoadAtHlReg(reg)
             asm.Nop()
             asm.Halt()
             asm.Data(123)
@@ -253,48 +253,48 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_IX_r()
     {
         [
-            (r: Byte(0), d: SByte(-2)),
-            (r: Byte(1), d: SByte(-2)),
-            (r: Byte(2), d: SByte(-2)),
-            (r: Byte(3), d: SByte(-2)),
-            (r: Byte(4), d: SByte(-2)),
-            (r: Byte(5), d: SByte(-2)),
-            (r: Byte(7), d: SByte(-2)),
-            (r: Byte(0), d: SByte(-1)),
-            (r: Byte(1), d: SByte(-1)),
-            (r: Byte(2), d: SByte(-1)),
-            (r: Byte(3), d: SByte(-1)),
-            (r: Byte(4), d: SByte(-1)),
-            (r: Byte(5), d: SByte(-1)),
-            (r: Byte(7), d: SByte(-1)),
-            (r: Byte(0), d: SByte(0)),
-            (r: Byte(1), d: SByte(0)),
-            (r: Byte(2), d: SByte(0)),
-            (r: Byte(3), d: SByte(0)),
-            (r: Byte(4), d: SByte(0)),
-            (r: Byte(5), d: SByte(0)),
-            (r: Byte(7), d: SByte(0)),
-            (r: Byte(0), d: SByte(1)),
-            (r: Byte(1), d: SByte(1)),
-            (r: Byte(2), d: SByte(1)),
-            (r: Byte(3), d: SByte(1)),
-            (r: Byte(4), d: SByte(1)),
-            (r: Byte(5), d: SByte(1)),
-            (r: Byte(7), d: SByte(1)),
-            (r: Byte(0), d: SByte(2)),
-            (r: Byte(1), d: SByte(2)),
-            (r: Byte(2), d: SByte(2)),
-            (r: Byte(3), d: SByte(2)),
-            (r: Byte(4), d: SByte(2)),
-            (r: Byte(5), d: SByte(2)),
-            (r: Byte(7), d: SByte(2)),
+            (reg: Byte(0), d: SByte(-2)),
+            (reg: Byte(1), d: SByte(-2)),
+            (reg: Byte(2), d: SByte(-2)),
+            (reg: Byte(3), d: SByte(-2)),
+            (reg: Byte(4), d: SByte(-2)),
+            (reg: Byte(5), d: SByte(-2)),
+            (reg: Byte(7), d: SByte(-2)),
+            (reg: Byte(0), d: SByte(-1)),
+            (reg: Byte(1), d: SByte(-1)),
+            (reg: Byte(2), d: SByte(-1)),
+            (reg: Byte(3), d: SByte(-1)),
+            (reg: Byte(4), d: SByte(-1)),
+            (reg: Byte(5), d: SByte(-1)),
+            (reg: Byte(7), d: SByte(-1)),
+            (reg: Byte(0), d: SByte(0)),
+            (reg: Byte(1), d: SByte(0)),
+            (reg: Byte(2), d: SByte(0)),
+            (reg: Byte(3), d: SByte(0)),
+            (reg: Byte(4), d: SByte(0)),
+            (reg: Byte(5), d: SByte(0)),
+            (reg: Byte(7), d: SByte(0)),
+            (reg: Byte(0), d: SByte(1)),
+            (reg: Byte(1), d: SByte(1)),
+            (reg: Byte(2), d: SByte(1)),
+            (reg: Byte(3), d: SByte(1)),
+            (reg: Byte(4), d: SByte(1)),
+            (reg: Byte(5), d: SByte(1)),
+            (reg: Byte(7), d: SByte(1)),
+            (reg: Byte(0), d: SByte(2)),
+            (reg: Byte(1), d: SByte(2)),
+            (reg: Byte(2), d: SByte(2)),
+            (reg: Byte(3), d: SByte(2)),
+            (reg: Byte(4), d: SByte(2)),
+            (reg: Byte(5), d: SByte(2)),
+            (reg: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadIxVal(12)
-            asm.LoadRegVal(testCase.r, 201)
-            asm.LoadIxReg(testCase.r, testCase.d)
+            asm.LoadRegVal(testCase.reg, 201)
+            asm.LoadIxReg(testCase.reg, testCase.d)
             asm.Halt()
             asm.Data(0x11)
             asm.Data(0x22)
@@ -312,48 +312,48 @@ final class EightBitLoadGroupTests: XCTestCase {
     func test_LD_at_IY_r()
     {
         [
-            (r: Byte(0), d: SByte(-2)),
-            (r: Byte(1), d: SByte(-2)),
-            (r: Byte(2), d: SByte(-2)),
-            (r: Byte(3), d: SByte(-2)),
-            (r: Byte(4), d: SByte(-2)),
-            (r: Byte(5), d: SByte(-2)),
-            (r: Byte(7), d: SByte(-2)),
-            (r: Byte(0), d: SByte(-1)),
-            (r: Byte(1), d: SByte(-1)),
-            (r: Byte(2), d: SByte(-1)),
-            (r: Byte(3), d: SByte(-1)),
-            (r: Byte(4), d: SByte(-1)),
-            (r: Byte(5), d: SByte(-1)),
-            (r: Byte(7), d: SByte(-1)),
-            (r: Byte(0), d: SByte(0)),
-            (r: Byte(1), d: SByte(0)),
-            (r: Byte(2), d: SByte(0)),
-            (r: Byte(3), d: SByte(0)),
-            (r: Byte(4), d: SByte(0)),
-            (r: Byte(5), d: SByte(0)),
-            (r: Byte(7), d: SByte(0)),
-            (r: Byte(0), d: SByte(1)),
-            (r: Byte(1), d: SByte(1)),
-            (r: Byte(2), d: SByte(1)),
-            (r: Byte(3), d: SByte(1)),
-            (r: Byte(4), d: SByte(1)),
-            (r: Byte(5), d: SByte(1)),
-            (r: Byte(7), d: SByte(1)),
-            (r: Byte(0), d: SByte(2)),
-            (r: Byte(1), d: SByte(2)),
-            (r: Byte(2), d: SByte(2)),
-            (r: Byte(3), d: SByte(2)),
-            (r: Byte(4), d: SByte(2)),
-            (r: Byte(5), d: SByte(2)),
-            (r: Byte(7), d: SByte(2)),
+            (reg: Byte(0), d: SByte(-2)),
+            (reg: Byte(1), d: SByte(-2)),
+            (reg: Byte(2), d: SByte(-2)),
+            (reg: Byte(3), d: SByte(-2)),
+            (reg: Byte(4), d: SByte(-2)),
+            (reg: Byte(5), d: SByte(-2)),
+            (reg: Byte(7), d: SByte(-2)),
+            (reg: Byte(0), d: SByte(-1)),
+            (reg: Byte(1), d: SByte(-1)),
+            (reg: Byte(2), d: SByte(-1)),
+            (reg: Byte(3), d: SByte(-1)),
+            (reg: Byte(4), d: SByte(-1)),
+            (reg: Byte(5), d: SByte(-1)),
+            (reg: Byte(7), d: SByte(-1)),
+            (reg: Byte(0), d: SByte(0)),
+            (reg: Byte(1), d: SByte(0)),
+            (reg: Byte(2), d: SByte(0)),
+            (reg: Byte(3), d: SByte(0)),
+            (reg: Byte(4), d: SByte(0)),
+            (reg: Byte(5), d: SByte(0)),
+            (reg: Byte(7), d: SByte(0)),
+            (reg: Byte(0), d: SByte(1)),
+            (reg: Byte(1), d: SByte(1)),
+            (reg: Byte(2), d: SByte(1)),
+            (reg: Byte(3), d: SByte(1)),
+            (reg: Byte(4), d: SByte(1)),
+            (reg: Byte(5), d: SByte(1)),
+            (reg: Byte(7), d: SByte(1)),
+            (reg: Byte(0), d: SByte(2)),
+            (reg: Byte(1), d: SByte(2)),
+            (reg: Byte(2), d: SByte(2)),
+            (reg: Byte(3), d: SByte(2)),
+            (reg: Byte(4), d: SByte(2)),
+            (reg: Byte(5), d: SByte(2)),
+            (reg: Byte(7), d: SByte(2)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
             asm.LoadIyVal(12)
-            asm.LoadRegVal(testCase.r, 201)
-            asm.LoadIyReg(testCase.r, testCase.d)
+            asm.LoadRegVal(testCase.reg, 201)
+            asm.LoadIyReg(testCase.reg, testCase.d)
             asm.Halt()
             asm.Data(0x11)
             asm.Data(0x22)

@@ -168,39 +168,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.AddAAddrIx(testCase.disp)
+            asm.AddAAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -222,39 +222,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADD_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.AddAAddrIy(testCase.disp)
+            asm.AddAAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -471,54 +471,54 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -527,11 +527,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.AdcAAddrIx(testCase.disp)
+            asm.AdcAAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -556,54 +556,54 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_ADC_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -612,11 +612,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.AdcAAddrIy(testCase.disp)
+            asm.AdcAAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -770,39 +770,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SUB_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.SubAddrIx(testCase.disp)
+            asm.SubAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -824,39 +824,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SUB_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.SubAddrIy(testCase.disp)
+            asm.SubAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1073,54 +1073,54 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SBC_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1129,11 +1129,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.SbcAAddrIx(testCase.disp)
+            asm.SbcAAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1158,54 +1158,54 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_SBC_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: true),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: true),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1), carry: false),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: true),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: true),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1), carry: false),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1), carry: false),
         ].forEach { testCase in
             tearDown()
             setUp()
@@ -1214,11 +1214,11 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             asm.LoadReg16Val(0, UShort(testCase.carry ? 1 : 0))
             asm.PushReg16(0)
             asm.PopReg16(3)
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.SbcAAddrIy(testCase.disp)
+            asm.SbcAAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1369,39 +1369,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.AndAddrIx(testCase.disp)
+            asm.AndAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1422,39 +1422,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_AND_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.AndAddrIy(testCase.disp)
+            asm.AndAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1601,39 +1601,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.OrAddrIx(testCase.disp)
+            asm.OrAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1654,39 +1654,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_OR_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.OrAddrIy(testCase.disp)
+            asm.OrAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1833,39 +1833,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.XorAddrIx(testCase.disp)
+            asm.XorAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -1886,39 +1886,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_XOR_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.XorAddrIy(testCase.disp)
+            asm.XorAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2068,39 +2068,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_at_IX()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.CpAddrIx(testCase.disp)
+            asm.CpAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2122,39 +2122,39 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_CP_A_at_IY()
     {
         [
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(0)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(0)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(1)),
-            (val: Byte(0x44), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0x44), val2: Byte(0x01), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x11), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x0F), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0xFF), disp: SByte(-1)),
-            (val: Byte(0xF4), val2: Byte(0x01), disp: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(0)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(0)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(1)),
+            (val: Byte(0x44), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0x44), val2: Byte(0x01), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x11), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x0F), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0xFF), d: SByte(-1)),
+            (val: Byte(0xF4), val2: Byte(0x01), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val2)
             asm.LoadRegVal(7, testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.CpAddrIy(testCase.disp)
+            asm.CpAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2247,20 +2247,20 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_INC_at_IX()
     {
         [
-            (val: Byte(0x28), disp: SByte(0)),
-            (val: Byte(0x7F), disp: SByte(0)),
-            (val: Byte(0x28), disp: SByte(1)),
-            (val: Byte(0x7F), disp: SByte(1)),
-            (val: Byte(0x28), disp: SByte(-1)),
-            (val: Byte(0x7F), disp: SByte(-1)),
+            (val: Byte(0x28), d: SByte(0)),
+            (val: Byte(0x7F), d: SByte(0)),
+            (val: Byte(0x28), d: SByte(1)),
+            (val: Byte(0x7F), d: SByte(1)),
+            (val: Byte(0x28), d: SByte(-1)),
+            (val: Byte(0x7F), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.IncAddrIx(testCase.disp)
+            asm.IncAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2269,7 +2269,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             let trueSum = Short(testCase.val) + Short(1)
             let byteSum = Byte(trueSum % 256)
             let sbyteSum = SByte(truncatingIfNeeded: byteSum)
-            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.d])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
@@ -2282,20 +2282,20 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_INC_at_IY()
     {
         [
-            (val: Byte(0x28), disp: SByte(0)),
-            (val: Byte(0x7F), disp: SByte(0)),
-            (val: Byte(0x28), disp: SByte(1)),
-            (val: Byte(0x7F), disp: SByte(1)),
-            (val: Byte(0x28), disp: SByte(-1)),
-            (val: Byte(0x7F), disp: SByte(-1)),
+            (val: Byte(0x28), d: SByte(0)),
+            (val: Byte(0x7F), d: SByte(0)),
+            (val: Byte(0x28), d: SByte(1)),
+            (val: Byte(0x7F), d: SByte(1)),
+            (val: Byte(0x28), d: SByte(-1)),
+            (val: Byte(0x7F), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.IncAddrIy(testCase.disp)
+            asm.IncAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2304,7 +2304,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             let trueSum = Short(testCase.val) + Short(1)
             let byteSum = Byte(trueSum % 256)
             let sbyteSum = SByte(truncatingIfNeeded: byteSum)
-            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.d])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
@@ -2388,20 +2388,20 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_DEC_at_IX()
     {
         [
-            (val: Byte(0x28), disp: SByte(0)),
-            (val: Byte(0x80), disp: SByte(0)),
-            (val: Byte(0x28), disp: SByte(1)),
-            (val: Byte(0x80), disp: SByte(1)),
-            (val: Byte(0x28), disp: SByte(-1)),
-            (val: Byte(0x80), disp: SByte(-1)),
+            (val: Byte(0x28), d: SByte(0)),
+            (val: Byte(0x80), d: SByte(0)),
+            (val: Byte(0x28), d: SByte(1)),
+            (val: Byte(0x80), d: SByte(1)),
+            (val: Byte(0x28), d: SByte(-1)),
+            (val: Byte(0x80), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIxVal(0x0040)
-            asm.DecAddrIx(testCase.disp)
+            asm.DecAddrIx(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2410,7 +2410,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             let trueSum = Short(testCase.val) - Short(1)
             let byteSum = Byte(trueSum % 256)
             let sbyteSum = SByte(truncatingIfNeeded: byteSum)
-            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.d])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
@@ -2423,20 +2423,20 @@ final class EightBitArithmeticGroupTests: XCTestCase {
     func test_DEC_at_IY()
     {
         [
-            (val: Byte(0x28), disp: SByte(0)),
-            (val: Byte(0x80), disp: SByte(0)),
-            (val: Byte(0x28), disp: SByte(1)),
-            (val: Byte(0x80), disp: SByte(1)),
-            (val: Byte(0x28), disp: SByte(-1)),
-            (val: Byte(0x80), disp: SByte(-1)),
+            (val: Byte(0x28), d: SByte(0)),
+            (val: Byte(0x80), d: SByte(0)),
+            (val: Byte(0x28), d: SByte(1)),
+            (val: Byte(0x80), d: SByte(1)),
+            (val: Byte(0x28), d: SByte(-1)),
+            (val: Byte(0x80), d: SByte(-1)),
         ].forEach { testCase in
             tearDown()
             setUp()
 
-            asm.LoadReg16Val(2, UShort(0x0040) + testCase.disp)
+            asm.LoadReg16Val(2, UShort(0x0040) + testCase.d)
             asm.LoadAtHlVal(testCase.val)
             asm.LoadIyVal(0x0040)
-            asm.DecAddrIy(testCase.disp)
+            asm.DecAddrIy(testCase.d)
             asm.Halt()
 
             z80.Run()
@@ -2445,7 +2445,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             let trueSum = Short(testCase.val) - Short(1)
             let byteSum = Byte(trueSum % 256)
             let sbyteSum = SByte(truncatingIfNeeded: byteSum)
-            XCTAssertEqual(byteSum, mem[0x0040 + testCase.disp])
+            XCTAssertEqual(byteSum, mem[0x0040 + testCase.d])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
             XCTAssertEqual((0x0F & testCase.val) == 0, z80.FlagH, "Flag H contained the wrong value")
