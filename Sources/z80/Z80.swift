@@ -66,13 +66,13 @@ public struct Z80
     {
         if ports.NMI
         {
-            var stack = Sp
-            stack -= 1
-            mem[stack] = Byte(Pc >> 8)
-            stack -= 1
-            mem[stack] = Byte(Pc & 0xFF)
-            registers[SP] = Byte(stack >> 8)
-            registers[SP + 1] = Byte(stack & 0xFF)
+            var addr = Sp
+            addr = addr &- 1
+            mem[addr] = Byte(Pc >> 8)
+            addr = addr &- 1
+            mem[addr] = Byte(Pc & 0xFF)
+            registers[SP] = Byte(addr >> 8)
+            registers[SP + 1] = Byte(addr & 0xFF)
             registers[PC] = 0x00
             registers[PC + 1] = 0x66
             IFF1 = IFF2
@@ -94,13 +94,13 @@ public struct Z80
                     // This is not quite correct, as it only runs a RST xx
                     // Instead, it should also support any other instruction
                     let instruction = ports.data
-                    var stack = Sp
-                    stack -= 1
-                    mem[stack] = Byte(Pc >> 8)
-                    stack -= 1
-                    mem[stack] = Byte(Pc & 0xFF)
-                    registers[SP] = Byte(stack >> 8)
-                    registers[SP + 1] = Byte(stack & 0xFF)
+                    var addr = Sp
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc >> 8)
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc & 0xFF)
+                    registers[SP] = Byte(addr >> 8)
+                    registers[SP + 1] = Byte(addr & 0xFF)
                     registers[PC] = 0x00
                     registers[PC + 1] = instruction & 0x38
                     Wait(17)
@@ -110,13 +110,13 @@ public struct Z80
                     Halt = false
                     return
                 case 1:
-                    var stack = Sp
-                    stack -= 1
-                    mem[stack] = Byte(Pc >> 8)
-                    stack -= 1
-                    mem[stack] = Byte(Pc & 0xFF)
-                    registers[SP] = Byte(stack >> 8)
-                    registers[SP + 1] = Byte(stack & 0xFF)
+                    var addr = Sp
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc >> 8)
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc & 0xFF)
+                    registers[SP] = Byte(addr >> 8)
+                    registers[SP + 1] = Byte(addr & 0xFF)
                     registers[PC] = 0x00
                     registers[PC + 1] = 0x38
 #if DEBUG
@@ -127,17 +127,17 @@ public struct Z80
                     return
                 case 2:
                     let vector = ports.data
-                    var stack = Sp
-                    stack -= 1
-                    mem[stack] = Byte(Pc >> 8)
-                    stack -= 1
-                    mem[stack] = Byte(Pc & 0xFF)
-                    registers[SP] = Byte(stack >> 8)
-                    registers[SP + 1] = Byte(stack & 0xFF)
-                    var addr = (UShort(registers[I]) << 8) + vector
-                    registers[PC] = mem[addr]
-                    addr += 1
-                    registers[PC + 1] = mem[addr]
+                    var addr = Sp
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc >> 8)
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc & 0xFF)
+                    registers[SP] = Byte(addr >> 8)
+                    registers[SP + 1] = Byte(addr & 0xFF)
+                    var dest = (UShort(registers[I]) << 8) + vector
+                    registers[PC] = mem[dest]
+                    dest = dest &+ 1
+                    registers[PC + 1] = mem[dest]
 #if DEBUG
                     print("IM 2")
 #endif
@@ -291,10 +291,10 @@ public struct Z80
                 // LD HL, (nn) 
                 var addr = Fetch16()
                 registers[L] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[H] = mem[addr]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD HL, (0x%04X)", addr))
 #endif
                 Wait(16)
@@ -303,10 +303,10 @@ public struct Z80
                 // LD (nn), HL
                 var addr = Fetch16()
                 mem[addr] = registers[L]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[H]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD (0x%04X), HL", addr))
 #endif
                 Wait(16)
@@ -323,9 +323,9 @@ public struct Z80
             case 0xC5:
                 // PUSH BC
                 var addr = Sp
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[B]
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[C]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
@@ -337,9 +337,9 @@ public struct Z80
             case 0xD5:
                 // PUSH DE
                 var addr = Sp
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[D]
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[E]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
@@ -351,9 +351,9 @@ public struct Z80
             case 0xE5:
                 // PUSH HL
                 var addr = Sp
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[H]
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[L]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
@@ -365,9 +365,9 @@ public struct Z80
             case 0xF5:
                 // PUSH AF
                 var addr = Sp
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[A]
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[F]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
@@ -380,9 +380,9 @@ public struct Z80
                 // POP BC
                 var addr = Sp
                 registers[C] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[B] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
@@ -394,9 +394,9 @@ public struct Z80
                 // POP DE
                 var addr = Sp
                 registers[E] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[D] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
@@ -408,9 +408,9 @@ public struct Z80
                 // POP HL
                 var addr = Sp
                 registers[L] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[H] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
@@ -422,9 +422,9 @@ public struct Z80
                 // POP AF
                 var addr = Sp
                 registers[F] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[A] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
@@ -469,7 +469,7 @@ public struct Z80
                 var tmp = registers[L]
                 registers[L] = mem[addr]
                 mem[addr] = tmp
-                addr += 1
+                addr = addr &+ 1
                 tmp = registers[H]
                 registers[H] = mem[addr]
                 mem[addr] = tmp
@@ -802,7 +802,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x03:
-                let val = Bc + 1
+                let val = Bc &+ 1
                 registers[B] = Byte(val >> 8)
                 registers[C] = Byte(val & 0xFF)
 #if DEBUG
@@ -811,7 +811,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x13:
-                let val = De + 1
+                let val = De &+ 1
                 registers[D] = Byte(val >> 8)
                 registers[E] = Byte(val & 0xFF)
 #if DEBUG
@@ -820,7 +820,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x23:
-                let val = Hl + 1
+                let val = Hl &+ 1
                 registers[H] = Byte(val >> 8)
                 registers[L] = Byte(val & 0xFF)
 #if DEBUG
@@ -829,7 +829,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x33:
-                let val = Sp + 1
+                let val = Sp &+ 1
                 registers[SP] = Byte(val >> 8)
                 registers[SP + 1] = Byte(val & 0xFF)
 #if DEBUG
@@ -838,7 +838,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x0B:
-                let val = Bc - 1
+                let val = Bc &- 1
                 registers[B] = Byte(val >> 8)
                 registers[C] = Byte(val & 0xFF)
 #if DEBUG
@@ -847,7 +847,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x1B:
-                let val = De - 1
+                let val = De &- 1
                 registers[D] = Byte(val >> 8)
                 registers[E] = Byte(val & 0xFF)
 #if DEBUG
@@ -856,7 +856,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x2B:
-                let val = Hl - 1
+                let val = Hl &- 1
                 registers[H] = Byte(val >> 8)
                 registers[L] = Byte(val & 0xFF)
 #if DEBUG
@@ -865,7 +865,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x3B:
-                let val = Sp - 1
+                let val = Sp &- 1
                 registers[SP] = Byte(val >> 8)
                 registers[SP + 1] = Byte(val & 0xFF)
 #if DEBUG
@@ -1008,34 +1008,34 @@ public struct Z80
 #endif
                 return
             case 0xCD:
-                let addr = Fetch16()
-                var stack = Sp
-                stack -= 1
-                mem[stack] = Byte(Pc >> 8)
-                stack -= 1
-                mem[stack] = Byte(Pc & 0xFF)
-                registers[SP] = Byte(stack >> 8)
-                registers[SP + 1] = Byte(stack & 0xFF)
-                registers[PC] = Byte(addr >> 8)
-                registers[PC + 1] = Byte(addr & 0xFF)
+                let dest = Fetch16()
+                var addr = Sp
+                addr = addr &- 1
+                mem[addr] = Byte(Pc >> 8)
+                addr = addr &- 1
+                mem[addr] = Byte(Pc & 0xFF)
+                registers[SP] = Byte(addr >> 8)
+                registers[SP + 1] = Byte(addr & 0xFF)
+                registers[PC] = Byte(dest >> 8)
+                registers[PC + 1] = Byte(dest & 0xFF)
 #if DEBUG
-                print(String(format: "CALL 0x%04X", addr))
+                print(String(format: "CALL 0x%04X", dest))
 #endif
                 Wait(17)
                 return
             case 0xC4, 0xCC, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC:
-                let addr = Fetch16()
+                let dest = Fetch16()
                 if JpCondition(is: r)
                 {
-                    var stack = Sp
-                    stack -= 1
-                    mem[stack] = Byte(Pc >> 8)
-                    stack -= 1
-                    mem[stack] = Byte(Pc & 0xFF)
-                    registers[SP] = Byte(stack >> 8)
-                    registers[SP + 1] = Byte(stack & 0xFF)
-                    registers[PC] = Byte(addr >> 8)
-                    registers[PC + 1] = Byte(addr & 0xFF)
+                    var addr = Sp
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc >> 8)
+                    addr = addr &- 1
+                    mem[addr] = Byte(Pc & 0xFF)
+                    registers[SP] = Byte(addr >> 8)
+                    registers[SP + 1] = Byte(addr & 0xFF)
+                    registers[PC] = Byte(dest >> 8)
+                    registers[PC + 1] = Byte(dest & 0xFF)
                     Wait(17)
                 }
                 else
@@ -1043,17 +1043,17 @@ public struct Z80
                     Wait(10)
                 }
 #if DEBUG
-                print(String(format: "CALL %@, 0x%04X", Z80.JpConditionName(r), addr))
+                print(String(format: "CALL %@, 0x%04X", Z80.JpConditionName(r), dest))
 #endif
                 return
             case 0xC9:
-                var stack = Sp
-                registers[PC + 1] = mem[stack]
-                stack += 1
-                registers[PC] = mem[stack]
-                stack += 1
-                registers[SP] = Byte(stack >> 8)
-                registers[SP + 1] = Byte(stack & 0xFF)
+                var addr = Sp
+                registers[PC + 1] = mem[addr]
+                addr = addr &+ 1
+                registers[PC] = mem[addr]
+                addr = addr &+ 1
+                registers[SP] = Byte(addr >> 8)
+                registers[SP + 1] = Byte(addr & 0xFF)
 #if DEBUG
                 print("RET")
 #endif
@@ -1062,13 +1062,13 @@ public struct Z80
             case 0xC0, 0xC8, 0xD0, 0xD8, 0xE0, 0xE8, 0xF0, 0xF8:
                 if JpCondition(is: r)
                 {
-                    var stack = Sp
-                    registers[PC + 1] = mem[stack]
-                    stack += 1
-                    registers[PC] = mem[stack]
-                    stack += 1
-                    registers[SP] = Byte(stack >> 8)
-                    registers[SP + 1] = Byte(stack & 0xFF)
+                    var addr = Sp
+                    registers[PC + 1] = mem[addr]
+                    addr = addr &+ 1
+                    registers[PC] = mem[addr]
+                    addr = addr &+ 1
+                    registers[SP] = Byte(addr >> 8)
+                    registers[SP + 1] = Byte(addr & 0xFF)
                     Wait(11)
                 }
                 else
@@ -1080,13 +1080,13 @@ public struct Z80
 #endif
                 return
             case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF:
-                var stack = Sp
-                stack -= 1
-                mem[stack] = Byte(Pc >> 8)
-                stack -= 1
-                mem[stack] = Byte(Pc & 0xFF)
-                registers[SP] = Byte(stack >> 8)
-                registers[SP + 1] = Byte(stack & 0xFF)
+                var addr = Sp
+                addr = addr &- 1
+                mem[addr] = Byte(Pc >> 8)
+                addr = addr &- 1
+                mem[addr] = Byte(Pc & 0xFF)
+                registers[SP] = Byte(addr >> 8)
+                registers[SP + 1] = Byte(addr & 0xFF)
                 registers[PC] = 0
                 registers[PC + 1] = Byte(mc & 0x38)
 #if DEBUG
@@ -1479,10 +1479,10 @@ public struct Z80
                 // LD BC, (nn)
                 var addr = Fetch16()
                 registers[C] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[B] = mem[addr]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD BC, (0x%04X)", addr))
 #endif
                 Wait(20)
@@ -1491,10 +1491,10 @@ public struct Z80
                 // LD DE, (nn)
                 var addr = Fetch16()
                 registers[E] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[D] = mem[addr]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD DE, (0x%04X)", addr))
 #endif
                 Wait(20)
@@ -1503,10 +1503,10 @@ public struct Z80
                 // LD HL, (nn)
                 var addr = Fetch16()
                 registers[L] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[H] = mem[addr]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD HL, (0x%04X)", addr))
 #endif
                 Wait(20)
@@ -1515,10 +1515,10 @@ public struct Z80
                 // LD SP, (nn)
                 var addr = Fetch16()
                 registers[SP + 1] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP] = mem[addr]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD SP, (0x%04X)", addr))
 #endif
                 Wait(20)
@@ -1527,10 +1527,10 @@ public struct Z80
                 // LD (nn), BC
                 var addr = Fetch16()
                 mem[addr] = registers[C]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[B]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD (0x%04X), BC", addr))
 #endif
                 Wait(20)
@@ -1539,10 +1539,10 @@ public struct Z80
                 // LD (nn), DE
                 var addr = Fetch16()
                 mem[addr] = registers[E]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[D]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD (0x%04X), DE", addr))
 #endif
                 Wait(20)
@@ -1551,10 +1551,10 @@ public struct Z80
                 // LD (nn), HL
                 var addr = Fetch16()
                 mem[addr] = registers[L]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[H]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD (0x%04X), HL", addr))
 #endif
                 Wait(20)
@@ -1563,10 +1563,10 @@ public struct Z80
                 // LD (nn), SP
                 var addr = Fetch16()
                 mem[addr] = registers[SP + 1]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[SP]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD (0x%04X), SP", addr))
 #endif
                 Wait(20)
@@ -1614,11 +1614,11 @@ public struct Z80
                 registers[F] = registers[F] & 0xE9
                 if bc != 0
                 {
-                    var pc = (UShort(registers[PC]) << 8) + registers[PC + 1]
+                    var addr = (UShort(registers[PC]) << 8) + registers[PC + 1]
                     // jumps back to itself
-                    pc -= 2
-                    registers[PC] = Byte(pc >> 8)
-                    registers[PC + 1] = Byte(pc & 0xFF)
+                    addr -= 2
+                    registers[PC] = Byte(addr >> 8)
+                    registers[PC + 1] = Byte(addr & 0xFF)
                     Wait(21)
                     return
                 }
@@ -1670,11 +1670,11 @@ public struct Z80
                 registers[F] = registers[F] & 0xE9
                 if bc != 0
                 {
-                    var pc = (UShort(registers[PC]) << 8) + registers[PC + 1]
+                    var addr = (UShort(registers[PC]) << 8) + registers[PC + 1]
                     // jumps back to itself
-                    pc -= 2
-                    registers[PC] = Byte(pc >> 8)
-                    registers[PC + 1] = Byte(pc & 0xFF)
+                    addr -= 2
+                    registers[PC] = Byte(addr >> 8)
+                    registers[PC + 1] = Byte(addr & 0xFF)
                     Wait(21)
                     return
                 }
@@ -1748,11 +1748,11 @@ public struct Z80
                     Wait(16)
                     return
                 }
-                var pc = (UShort(registers[PC]) << 8) + registers[PC + 1]
+                var addr = (UShort(registers[PC]) << 8) + registers[PC + 1]
                 // jumps back to itself
-                pc -= 2
-                registers[PC] = Byte(pc >> 8)
-                registers[PC + 1] = Byte(pc & 0xFF)
+                addr -= 2
+                registers[PC] = Byte(addr >> 8)
+                registers[PC + 1] = Byte(addr & 0xFF)
                 Wait(21)
                 return
             case 0xA9:
@@ -1820,11 +1820,11 @@ public struct Z80
                     Wait(21)
                     return
                 }
-                var pc = (UShort(registers[PC]) << 8) + registers[PC + 1]
+                var addr = (UShort(registers[PC]) << 8) + registers[PC + 1]
                 // jumps back to itself
-                pc -= 2
-                registers[PC] = Byte(pc >> 8)
-                registers[PC + 1] = Byte(pc & 0xFF)
+                addr -= 2
+                registers[PC] = Byte(addr >> 8)
+                registers[PC + 1] = Byte(addr & 0xFF)
                 Wait(21)
                 return
             case 0x44, 0x54, 0x64, 0x74, 0x4C, 0x5C, 0x6C, 0x7C:
@@ -1980,13 +1980,13 @@ public struct Z80
                 Wait(18)
                 return
             case 0x45, 0x4D, 0x55, 0x5D, 0x65, 0x6D, 0x75, 0x7D:
-                var stack = Sp
-                registers[PC + 1] = mem[stack]
-                stack += 1
-                registers[PC] = mem[stack]
-                stack += 1
-                registers[SP] = Byte(stack >> 8)
-                registers[SP + 1] = Byte(stack & 0xFF)
+                var addr = Sp
+                registers[PC + 1] = mem[addr]
+                addr = addr &+ 1
+                registers[PC] = mem[addr]
+                addr = addr &+ 1
+                registers[SP] = Byte(addr >> 8)
+                registers[SP + 1] = Byte(addr & 0xFF)
                 IFF1 = IFF2
 #if DEBUG
                 if mc == 0x4D {
@@ -2053,9 +2053,9 @@ public struct Z80
                 registers[B] = b
                 if b != 0
                 {
-                    let pc = Pc - 2
-                    registers[PC] = Byte(pc >> 8)
-                    registers[PC + 1] = Byte(pc & 0xFF)
+                    let addr = Pc - 2
+                    registers[PC] = Byte(addr >> 8)
+                    registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(INIR)")
 #endif
@@ -2101,9 +2101,9 @@ public struct Z80
                 registers[B] = b
                 if b != 0
                 {
-                    let pc = Pc - 2
-                    registers[PC] = Byte(pc >> 8)
-                    registers[PC + 1] = Byte(pc & 0xFF)
+                    let addr = Pc - 2
+                    registers[PC] = Byte(addr >> 8)
+                    registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(INDR)")
 #endif
@@ -2168,9 +2168,9 @@ public struct Z80
                 registers[B] = b
                 if b != 0
                 {
-                    let pc = Pc - 2
-                    registers[PC] = Byte(pc >> 8)
-                    registers[PC + 1] = Byte(pc & 0xFF)
+                    let addr = Pc - 2
+                    registers[PC] = Byte(addr >> 8)
+                    registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(OUTIR)")
 #endif
@@ -2216,9 +2216,9 @@ public struct Z80
                 registers[B] = b
                 if b != 0
                 {
-                    let pc = Pc - 2
-                    registers[PC] = Byte(pc >> 8)
-                    registers[PC + 1] = Byte(pc & 0xFF)
+                    let addr = Pc - 2
+                    registers[PC] = Byte(addr >> 8)
+                    registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(OUTDR)")
 #endif
@@ -2297,7 +2297,7 @@ public struct Z80
                 // LD IX, (nn)
                 var addr = Fetch16()
                 registers[IX + 1] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[IX] = mem[addr]
 #if DEBUG
                 print(String(format: "LD IX, (0x%04X)", addr))
@@ -2308,7 +2308,7 @@ public struct Z80
                 // LD (nn), IX
                 var addr = Fetch16()
                 mem[addr] = registers[IX + 1]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[IX]
 #if DEBUG
                 print(String(format: "LD (0x%04X), IX", addr))
@@ -2327,9 +2327,9 @@ public struct Z80
             case 0xE5:
                 // PUSH IX
                 var addr = Sp
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[IX]
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[IX + 1]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
@@ -2342,9 +2342,9 @@ public struct Z80
                 // POP IX
                 var addr = Sp
                 registers[IX + 1] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[IX] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
@@ -2354,15 +2354,15 @@ public struct Z80
                 return
             case 0xE3:
                 // EX (SP), IX
-                let h = registers[IX]
-                let l = registers[IX + 1]
+                let hi = registers[IX]
+                let lo = registers[IX + 1]
                 var addr = Sp
                 registers[IX + 1] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[IX] = mem[addr]
-                mem[addr] = h
-                addr -= 1
-                mem[addr] = l
+                mem[addr] = hi
+                addr = addr &- 1
+                mem[addr] = lo
 #if DEBUG
                 print("EX (SP), IX")
 #endif
@@ -2493,7 +2493,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x23:
-                let val = Ix + 1
+                let val = Ix &+ 1
                 registers[IX] = Byte(val >> 8)
                 registers[IX + 1] = Byte(val & 0xFF)
 #if DEBUG
@@ -2502,7 +2502,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x2B:
-                let val = Ix - 1
+                let val = Ix &- 1
                 registers[IX] = Byte(val >> 8)
                 registers[IX + 1] = Byte(val & 0xFF)
 #if DEBUG
@@ -2583,10 +2583,10 @@ public struct Z80
                 // LD IY, (nn)
                 var addr = Fetch16()
                 registers[IY + 1] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[IY] = mem[addr]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD IY, (0x%04X)", addr))
 #endif
                 Wait(20)
@@ -2595,10 +2595,10 @@ public struct Z80
                 // LD (nn), IY
                 var addr = Fetch16()
                 mem[addr] = registers[IY + 1]
-                addr += 1
+                addr = addr &+ 1
                 mem[addr] = registers[IY]
 #if DEBUG
-                addr -= 1
+                addr = addr &- 1
                 print(String(format: "LD (0x%04X), IY", addr))
 #endif
                 Wait(20)
@@ -2615,9 +2615,9 @@ public struct Z80
             case 0xE5:
                 // PUSH IY
                 var addr = Sp
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[IY]
-                addr -= 1
+                addr = addr &- 1
                 mem[addr] = registers[IY + 1]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
@@ -2630,9 +2630,9 @@ public struct Z80
                 // POP IY
                 var addr = Sp
                 registers[IY + 1] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[IY] = mem[addr]
-                addr += 1
+                addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
@@ -2642,14 +2642,14 @@ public struct Z80
                 return
             case 0xE3:
                 // EX (SP), IY
-                let h = registers[IY]
-                let l = registers[IY + 1]
+                let hi = registers[IY]
+                let lo = registers[IY + 1]
                 var addr = Sp
                 registers[IY + 1] = mem[addr]
-                mem[addr] = l
-                addr += 1
+                mem[addr] = lo
+                addr = addr &+ 1
                 registers[IY] = mem[addr]
-                mem[addr] = h
+                mem[addr] = hi
 #if DEBUG
                 print("EX (SP), IY")
 #endif
@@ -2778,7 +2778,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x23:
-                let val = Iy + 1
+                let val = Iy &+ 1
                 registers[IY] = Byte(val >> 8)
                 registers[IY + 1] = Byte(val & 0xFF)
 #if DEBUG
@@ -2787,7 +2787,7 @@ public struct Z80
                 Wait(4)
                 return
             case 0x2B:
-                let val = Iy - 1
+                let val = Iy &- 1
                 registers[IY] = Byte(val >> 8)
                 registers[IY + 1] = Byte(val & 0xFF)
 #if DEBUG
@@ -3019,7 +3019,7 @@ public struct Z80
 
     private mutating func Dec(_ b: Byte) -> Byte
     {
-        let dif = UShort(b) - UShort(1)
+        let dif = Short(b) - Short(1)
         var f = registers[F] & ~Flags.All.rawValue
         if (dif & 0x80) > 0 {
             f |= Flags.S.rawValue
@@ -3082,14 +3082,14 @@ public struct Z80
 
     private mutating func Fetch() -> Byte
     {
-        var pc = Pc
-        let ret = mem[pc]
+        var addr = Pc
+        let ret = mem[addr]
 #if DEBUG
-        print(String(format: "  %04X %02X ", pc, ret))
+        print(String(format: "  %04X %02X ", addr, ret))
 #endif
-        pc += 1
-        registers[PC] = Byte(pc >> 8)
-        registers[PC + 1] = Byte(pc & 0xFF)
+        addr = addr &+ 1
+        registers[PC] = Byte(addr >> 8)
+        registers[PC + 1] = Byte(addr & 0xFF)
         return ret
     }
 
