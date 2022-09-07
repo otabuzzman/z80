@@ -2908,7 +2908,7 @@ public struct Z80
             f |= Flags.PV.rawValue
         }
         f |= Flags.N.rawValue
-        if dif > 0xFF {
+        if dif < 0 {
             f |= Flags.C.rawValue
         }
         registers[F] = f
@@ -2972,7 +2972,7 @@ public struct Z80
     private mutating func Cmp(_ b: Byte)
     {
         let a = registers[A]
-        let dif = a &- b
+        let dif = Short(a) - Short(b)
         var f = registers[F] & ~Flags.All.rawValue
         if (dif & 0x80) > 0 {
             f |= Flags.S.rawValue
@@ -2983,11 +2983,11 @@ public struct Z80
         if (a & 0x0F) < (b & 0x0F) {
             f |= Flags.H.rawValue
         }
-        if (a > 0x80 && b > 0x80 && SByte(truncatingIfNeeded: dif) > 0) || (a < 0x80 && b < 0x80 && SByte(truncatingIfNeeded: dif) < 0) {
+        if (a > 0x80 && b > 0x80 && dif > 0) || (a < 0x80 && b < 0x80 && dif < 0) {
             f |= Flags.PV.rawValue
         }
         f |= Flags.N.rawValue
-        if dif > 0xFF {
+        if dif < 0 {
             f |= Flags.C.rawValue
         }
         registers[F] = f

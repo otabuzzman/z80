@@ -964,7 +964,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -1014,7 +1014,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -1066,7 +1066,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -1151,7 +1151,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -1236,7 +1236,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) + (testCase.carry ? 1 : 0) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -1989,7 +1989,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -2024,7 +2024,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -2061,7 +2061,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -2115,7 +2115,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
@@ -2169,7 +2169,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual((0x0F & testCase.val2) > (0x0F & testCase.val), z80.FlagH, "Flag H contained the wrong value")
             let overflow = ((testCase.val < 0x7F) == (testCase.val2 < 0x7F)) && ((testCase.val < 0x7F) == (sbyteDiff < 0)) // if both operands are positive and result is negative or if both are negative and result is positive
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
-            XCTAssertEqual(trueDiff > 0xFF, z80.FlagC, "Flag C contained the wrong value")
+            XCTAssertEqual(trueDiff < 0, z80.FlagC, "Flag C contained the wrong value")
         }
     }
 
