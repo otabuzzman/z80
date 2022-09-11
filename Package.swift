@@ -40,7 +40,7 @@ let package = Package(
                 "Z80Asm.swift",
                 ],
             swiftSettings: [
-                .define("DEBUG", .when(configuration: .debug)),
+                // .define("DEBUG", .when(configuration: .debug)),
                 ]),
         .testTarget(
             name: "z80Tests",
