@@ -38,9 +38,10 @@ let package = Package(
                 "Memory.swift",
                 "Z80.swift",
                 "Z80Asm.swift",
+                "Z80Mne.swift",
                 ],
             swiftSettings: [
-                // .define("DEBUG", .when(configuration: .debug)),
+                .define("DEBUG", .when(configuration: .debug)),
                 ]),
         .testTarget(
             name: "z80Tests",

@@ -6,6 +6,23 @@ public typealias SByte = Int8
 public typealias Short = Int16
 public typealias UShort = UInt16
 
+public enum Prefix: Int {
+    case None = 0
+    case DD
+    case FD
+    case ED
+    case CB
+    case DDCB
+    case FDCB
+}
+
+public enum NmiInt {
+    case Nmi
+    case Int0
+    case Int1
+    case Int2
+}
+
 public struct Z80
 {
     private let B: Byte = 0
@@ -44,17 +61,31 @@ public struct Z80
 
     private(set) var ports: IPorts!
 
-    public init(_ mem: Memory, _ ports: IPorts, _ cfreq: UInt = 4_000_000)
+    private var traceMemory: ((_ addr: UShort, _ data: Byte) -> ())?
+    private var traceOpcode: ((_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ())?
+    private var traceTiming: ((_ sleep: Double, _ cfreq: UInt) -> ())?
+    private var traceNmiInt: ((_ interrupt: NmiInt, _ addr: UShort, _ instruction: Byte) -> ())?
+
+    public init(_ mem: Memory, _ ports: IPorts, _ cfreq: UInt = 4_000_000, traceMemory: ((_ addr: UShort, _ data: Byte) -> ())? = nil,                 traceOpcode: ((_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ())? = nil, traceTiming: ((_ sleep: Double, _ cfreq: UInt) -> ())? = nil, traceNmiInt: ((_ interrupt: NmiInt, _ addr: UShort, _ instruction: Byte) -> ())? = nil)
     {
         self.mem = mem
         self.ports = ports
         self.cfreq = cfreq
+
+        self.traceMemory = traceMemory
+        self.traceOpcode = traceOpcode
+        self.traceTiming = traceTiming
+        self.traceNmiInt = traceNmiInt
+
         reset()
     }
 
     private var Bc: UShort { (UShort(registers[B]) << 8) + registers[C] }
     private var De: UShort { (UShort(registers[D]) << 8) + registers[E] }
     private var Hl: UShort { (UShort(registers[H]) << 8) + registers[L] }
+    private var BCp: UShort { (UShort(registers[Bp]) << 8) + registers[Cp] }
+    private var DEp: UShort { (UShort(registers[Dp]) << 8) + registers[Ep] }
+    private var HLp: UShort { (UShort(registers[Hp]) << 8) + registers[Lp] }
     private var Sp: UShort { (UShort(registers[SP]) << 8) + registers[SP + 1] }
     private var Ix: UShort { (UShort(registers[IX]) << 8) + registers[IX + 1] }
     private var Iy: UShort { (UShort(registers[IY]) << 8) + registers[IY + 1] }
@@ -79,6 +110,7 @@ public struct Z80
             IFF1 = false
 #if DEBUG
             print("NMI")
+            traceNmiInt?(.Nmi, Pc, 0)
 #endif
             Wait(17)
             Halt = false
@@ -106,6 +138,7 @@ public struct Z80
                     Wait(17)
 #if DEBUG
                     print("IM 0")
+                    traceNmiInt?(.Int0, 0, instruction)
 #endif
                     Halt = false
                     return
@@ -121,6 +154,7 @@ public struct Z80
                     registers[PC + 1] = 0x38
 #if DEBUG
                     print("IM 1")
+                    traceNmiInt?(.Int1, Pc, 0)
 #endif
                     Wait(17)
                     Halt = false
@@ -140,6 +174,7 @@ public struct Z80
                     registers[PC + 1] = mem[dest]
 #if DEBUG
                     print("IM 2")
+                    traceNmiInt?(.Int2, dest, 0)
 #endif
                     Wait(17)
                     Halt = false
@@ -152,35 +187,40 @@ public struct Z80
         if Halt {
             return
         }
-        let mc = Fetch()
-        let hi = mc >> 6
-        let lo = mc & 0x07
-        let r = (mc >> 3) & 0x07
-        if hi == 1
+        let opcode = Fetch()
+        let xx = opcode >> 6
+        let yyy = (opcode >> 3) & 0x07
+        let zzz = opcode & 0x07
+        var imm: Byte = 0
+        var imm16: UShort = 0
+        var dimm: SByte = 0
+        if xx == 1
         {
-            let useHL1 = r == 6
-            let useHL2 = lo == 6
+            let useHL1 = yyy == 6
+            let useHL2 = zzz == 6
             if useHL2 && useHL1
             {
 #if DEBUG
                 print("HALT")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Halt = true
                 return
             }
-            let reg = useHL2 ? mem[Hl] : registers[lo]
+            let reg = useHL2 ? mem[Hl] : registers[zzz]
             if useHL1 {
                 mem[Hl] = reg
             } else {
-                registers[r] = reg
+                registers[yyy] = reg
             }
             Wait(useHL1 || useHL2 ? 7 : 4)
 #if DEBUG
-            print(String(format: "LD %@, %@", useHL1 ? "(HL)" : Z80.RegName(r), useHL2 ? "(HL)" : Z80.RegName(lo)))
+            print(String(format: "LD %@, %@", useHL1 ? "(HL)" : Z80.RegName(yyy), useHL2 ? "(HL)" : Z80.RegName(zzz)))
+            traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
             return
         }
-        switch mc
+        switch opcode
         {
             case 0xCB:
                 ParseCB()
@@ -198,15 +238,18 @@ public struct Z80
                 // NOP
 #if DEBUG
                 print("NOP")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0x01, 0x11, 0x21:
                 // LD dd, nn
-                registers[r + 1] = Fetch()
-                registers[r] = Fetch()
+                registers[yyy + 1] = Fetch()
+                registers[yyy] = Fetch()
+                imm16 = (UShort(registers[yyy]) << 8) + registers[yyy + 1]
 #if DEBUG
-                print(String(format: "LD %@%@, 0x%02X%02X", Z80.RegName(r), Z80.RegName(Byte(r + 1)), registers[r], registers[r + 1]))
+                print(String(format: "LD %@, 0x%04X", Z80.Reg16Name(yyy), (UShort(registers[yyy]) << 8) + registers[yyy + 1]))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -214,26 +257,30 @@ public struct Z80
                 // LD SP, nn
                 registers[SP + 1] = Fetch()
                 registers[SP] = Fetch()
+                imm16 = Sp
 #if DEBUG
-                print(String(format: "LD SP, 0x%02X%02X", registers[SP], registers[SP + 1]))
+                print(String(format: "LD SP, 0x%04X", Sp))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
             case 0x06, 0x0E, 0x16, 0x1E, 0x26, 0x2E, 0x3E:
                 // LD r, n
-                let n = Fetch()
-                registers[r] = n
+                imm = Fetch()
+                registers[yyy] = imm
 #if DEBUG
-                print(String(format: "LD %@, 0x%02X", Z80.RegName(r), n))
+                print(String(format: "LD %@, 0x%02X", Z80.RegName(yyy), imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x36:
                 // LD (HL), n
-                let n = Fetch()
-                mem[Hl] = n
+                imm = Fetch()
+                mem[Hl] = imm
 #if DEBUG
-                print(String(format: "LD (HL), 0x%02X", n))
+                print(String(format: "LD (HL), 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -242,6 +289,7 @@ public struct Z80
                 registers[A] = mem[Bc]
 #if DEBUG
                 print("LD A, (BC)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -250,15 +298,17 @@ public struct Z80
                 registers[A] = mem[De]
 #if DEBUG
                 print("LD A, (DE)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x3A:
                 // LD A, (nn)
-                let addr = Fetch16()
-                registers[A] = mem[addr]
+                imm16 = Fetch16()
+                registers[A] = mem[imm16]
 #if DEBUG
-                print(String(format: "LD A, (0x%04X)", addr))
+                print(String(format: "LD A, (0x%04X)", imm16))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(13)
                 return
@@ -267,6 +317,7 @@ public struct Z80
                 mem[Bc] = registers[A]
 #if DEBUG
                 print("LD (BC), A")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -275,39 +326,45 @@ public struct Z80
                 mem[De] = registers[A]
 #if DEBUG
                 print("LD (DE), A")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x32:
                 // LD (nn), A 
-                let addr = Fetch16()
-                mem[addr] = registers[A]
+                imm16 = Fetch16()
+                mem[imm16] = registers[A]
 #if DEBUG
-                print(String(format: "LD (0x%04X), A", addr))
+                print(String(format: "LD (0x%04X), A", imm16))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(13)
                 return
             case 0x2A:
                 // LD HL, (nn) 
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[L] = mem[addr]
                 addr = addr &+ 1
                 registers[H] = mem[addr]
 #if DEBUG
                 addr = addr &- 1
                 print(String(format: "LD HL, (0x%04X)", addr))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(16)
                 return
             case 0x22:
                 // LD (nn), HL
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[L]
                 addr = addr &+ 1
                 mem[addr] = registers[H]
 #if DEBUG
                 addr = addr &- 1
                 print(String(format: "LD (0x%04X), HL", addr))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(16)
                 return
@@ -317,6 +374,7 @@ public struct Z80
                 registers[SP] = registers[H]
 #if DEBUG
                 print("LD SP, HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(6)
                 return
@@ -331,6 +389,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("PUSH BC")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(11)
                 return
@@ -345,6 +404,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("PUSH DE")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(11)
                 return
@@ -359,6 +419,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("PUSH HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(11)
                 return
@@ -373,6 +434,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("PUSH AF")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(11)
                 return
@@ -387,6 +449,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("POP BC")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -401,6 +464,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("POP DE")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -415,6 +479,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("POP HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -429,6 +494,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("POP AF")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -438,6 +504,7 @@ public struct Z80
                 SwapReg(E, L)
 #if DEBUG
                 print("EX DE, HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -447,6 +514,7 @@ public struct Z80
                 SwapReg(Fp, F)
 #if DEBUG
                 print("EX AF, AF'")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -460,6 +528,7 @@ public struct Z80
                 SwapReg(L, Lp)
 #if DEBUG
                 print("EXX")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -475,23 +544,26 @@ public struct Z80
                 mem[addr] = tmp
 #if DEBUG
                 print("EX (SP), HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x87:
                 // ADD A, r
-                Add(registers[lo])
+                Add(registers[zzz])
 #if DEBUG
-                print(String(format: "ADD A, %@", Z80.RegName(lo)))
+                print(String(format: "ADD A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xC6:
                 // ADD A, n
-                let b = Fetch()
-                Add(b)
+                imm = Fetch()
+                Add(imm)
 #if DEBUG
-                print(String(format: "ADD A, 0x%02X", b))
+                print(String(format: "ADD A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -500,23 +572,26 @@ public struct Z80
                 Add(mem[Hl])
 #if DEBUG
                 print("ADD A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8F:
                 // ADC A, r
-                Adc(registers[lo])
+                Adc(registers[zzz])
 #if DEBUG
-                print(String(format: "ADC A, %@", Z80.RegName(lo)))
+                print(String(format: "ADC A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xCE:
                 // ADC A, n
-                let b = Fetch()
-                Adc(b)
+                imm = Fetch()
+                Adc(imm)
 #if DEBUG
-                print(String(format: "ADC A, 0x%02X", b))
+                print(String(format: "ADC A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -525,23 +600,26 @@ public struct Z80
                 Adc(mem[Hl])
 #if DEBUG
                 print("ADC A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x97:
                 // SUB A, r
-                Sub(registers[lo])
+                Sub(registers[zzz])
 #if DEBUG
-                print(String(format: "SUB A, %@", Z80.RegName(lo)))
+                print(String(format: "SUB A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xD6:
                 // SUB A, n
-                let b = Fetch()
-                Sub(b)
+                imm = Fetch()
+                Sub(imm)
 #if DEBUG
-                print(String(format: "SUB A, 0x%02X", b))
+                print(String(format: "SUB A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -550,23 +628,26 @@ public struct Z80
                 Sub(mem[Hl])
 #if DEBUG
                 print("SUB A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9F:
                 // SBC A, r
-                Sbc(registers[lo])
+                Sbc(registers[zzz])
 #if DEBUG
-                print(String(format: "SBC A, %@", Z80.RegName(lo)))
+                print(String(format: "SBC A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xDE:
                 // SBC A, n
-                let b = Fetch()
-                Sbc(b)
+                imm = Fetch()
+                Sbc(imm)
 #if DEBUG
-                print(String(format: "SBC A, 0x%02X", b))
+                print(String(format: "SBC A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -575,23 +656,26 @@ public struct Z80
                 Sbc(mem[Hl])
 #if DEBUG
                 print("SBC A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA7:
                 // AND A, r
-                And(registers[lo])
+                And(registers[zzz])
 #if DEBUG
-                print(String(format: "AND A, %@", Z80.RegName(lo)))
+                print(String(format: "AND A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xE6:
                 // AND A, n
-                let b = Fetch()
-                And(b)
+                imm = Fetch()
+                And(imm)
 #if DEBUG
-                print(String(format: "AND A, 0x%02X", b))
+                print(String(format: "AND A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -600,23 +684,26 @@ public struct Z80
                 And(mem[Hl])
 #if DEBUG
                 print("AND A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB7:
                 // OR A, r
-                Or(registers[lo])
+                Or(registers[zzz])
 #if DEBUG
-                print(String(format: "OR A, %@", Z80.RegName(lo)))
+                print(String(format: "OR A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xF6:
                 // OR A, n
-                let b = Fetch()
-                Or(b)
+                imm = Fetch()
+                Or(imm)
 #if DEBUG
-                print(String(format: "OR A, 0x%02X", b))
+                print(String(format: "OR A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -625,23 +712,26 @@ public struct Z80
                 Or(mem[Hl])
 #if DEBUG
                 print("OR A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAF:
                 // XOR A, r
-                Xor(registers[lo])
+                Xor(registers[zzz])
 #if DEBUG
-                print(String(format: "XOR A, %@", Z80.RegName(lo)))
+                print(String(format: "XOR A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xEE:
                 // XOR A, n
-                let b = Fetch()
-                Xor(b)
+                imm = Fetch()
+                Xor(imm)
 #if DEBUG
-                print(String(format: "XOR A, 0x%02X", b))
+                print(String(format: "XOR A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -650,6 +740,7 @@ public struct Z80
                 Xor(mem[Hl])
 #if DEBUG
                 print("XOR A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -659,6 +750,7 @@ public struct Z80
                 IFF2 = false
 #if DEBUG
                 print("DI")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -668,23 +760,26 @@ public struct Z80
                 IFF2 = true
 #if DEBUG
                 print("EI")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBF:
                 // CP A, r
-                Cmp(registers[lo])
+                Cmp(registers[zzz])
 #if DEBUG
-                print(String(format: "CP A, %@", Z80.RegName(lo)))
+                print(String(format: "CP A, %@", Z80.RegName(zzz)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xFE:
                 // CP A, n
-                let b = Fetch()
-                Cmp(b)
+                imm = Fetch()
+                Cmp(imm)
 #if DEBUG
-                print(String(format: "CP A, 0x%02X", b))
+                print(String(format: "CP A, 0x%02X", imm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -693,14 +788,16 @@ public struct Z80
                 Cmp(mem[Hl])
 #if DEBUG
                 print("CP A, (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x04, 0x0C, 0x14, 0x1C, 0x24, 0x2C, 0x3C:
                 // INC r
-                registers[r] = Inc(registers[r])
+                registers[yyy] = Inc(registers[yyy])
 #if DEBUG
-                print(String(format: "INC %@", Z80.RegName(r)))
+                print(String(format: "INC %@", Z80.RegName(yyy)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -709,14 +806,16 @@ public struct Z80
                 mem[Hl] = Inc(mem[Hl])
 #if DEBUG
                 print("INC (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x05, 0x0D, 0x15, 0x1D, 0x25, 0x2D, 0x3D:
                 // DEC r
-                registers[r] = Dec(registers[r])
+                registers[yyy] = Dec(registers[yyy])
 #if DEBUG
-                print(String(format: "DEC %@", Z80.RegName(r)))
+                print(String(format: "DEC %@", Z80.RegName(yyy)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -725,6 +824,7 @@ public struct Z80
                 mem[Hl] = Dec(mem[Hl])
 #if DEBUG
                 print("DEC (HL)")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -743,6 +843,7 @@ public struct Z80
                 }
 #if DEBUG
                 print("DAA")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -752,6 +853,7 @@ public struct Z80
                 registers[F] |= Flags.H.rawValue | Flags.N.rawValue
 #if DEBUG
                 print("CPL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -761,6 +863,7 @@ public struct Z80
                 registers[F] ^= Flags.C.rawValue
 #if DEBUG
                 print("CCF")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -770,6 +873,7 @@ public struct Z80
                 registers[F] |= Flags.C.rawValue
 #if DEBUG
                 print("SCF")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -777,6 +881,7 @@ public struct Z80
                 AddHl(Bc)
 #if DEBUG
                 print("ADD HL, BC")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -784,6 +889,7 @@ public struct Z80
                 AddHl(De)
 #if DEBUG
                 print("ADD HL, DE")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -791,6 +897,7 @@ public struct Z80
                 AddHl(Hl)
 #if DEBUG
                 print("ADD HL, HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -798,6 +905,7 @@ public struct Z80
                 AddHl(Sp)
 #if DEBUG
                 print("ADD HL, SP")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -807,6 +915,7 @@ public struct Z80
                 registers[C] = Byte(val & 0xFF)
 #if DEBUG
                 print("INC BC")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -816,6 +925,7 @@ public struct Z80
                 registers[E] = Byte(val & 0xFF)
 #if DEBUG
                 print("INC DE")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -825,6 +935,7 @@ public struct Z80
                 registers[L] = Byte(val & 0xFF)
 #if DEBUG
                 print("INC HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -834,6 +945,7 @@ public struct Z80
                 registers[SP + 1] = Byte(val & 0xFF)
 #if DEBUG
                 print("INC SP")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -843,6 +955,7 @@ public struct Z80
                 registers[C] = Byte(val & 0xFF)
 #if DEBUG
                 print("DEC BC")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -852,6 +965,7 @@ public struct Z80
                 registers[E] = Byte(val & 0xFF)
 #if DEBUG
                 print("DEC DE")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -861,6 +975,7 @@ public struct Z80
                 registers[L] = Byte(val & 0xFF)
 #if DEBUG
                 print("DEC HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -870,6 +985,7 @@ public struct Z80
                 registers[SP + 1] = Byte(val & 0xFF)
 #if DEBUG
                 print("DEC SP")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -882,6 +998,7 @@ public struct Z80
                 registers[F] |= c
 #if DEBUG
                 print("RLCA")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -897,6 +1014,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("RLA")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -909,6 +1027,7 @@ public struct Z80
                 registers[F] |= c
 #if DEBUG
                 print("RRCA")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -924,46 +1043,50 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("RRA")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0xC3:
-                let addr = Fetch16()
-                registers[PC] = Byte(addr >> 8)
-                registers[PC + 1] = Byte(addr & 0xFF)
+                imm16 = Fetch16()
+                registers[PC] = Byte(imm16 >> 8)
+                registers[PC + 1] = Byte(imm16 & 0xFF)
 #if DEBUG
-                print(String(format: "JP 0x%04X", addr))
+                print(String(format: "JP 0x%04X", imm16))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
             case 0xC2, 0xCA, 0xD2, 0xDA, 0xE2, 0xEA, 0xF2, 0xFA:
-                let addr = Fetch16()
-                if JpCondition(is: r)
+                imm16 = Fetch16()
+                if JpCondition(is: yyy)
                 {
-                    registers[PC] = Byte(addr >> 8)
-                    registers[PC + 1] = Byte(addr & 0xFF)
+                    registers[PC] = Byte(imm16 >> 8)
+                    registers[PC + 1] = Byte(imm16 & 0xFF)
                 }
 #if DEBUG
-                print(String(format: "JP %@, 0x%04X", Z80.JpConditionName(r), addr))
+                print(String(format: "JP %@, 0x%04X", Z80.JpConditionName(yyy), imm16))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
             case 0x18:
                 // order is important here
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let addr = Pc + d
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let addr = Pc + dimm
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
-                print(String(format: "JR 0x%04X", addr))
+                print(String(format: "JR %+d", dimm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(12)
                 return
             case 0x20, 0x28, 0x30, 0x38:
                 // order is important here
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let addr = Pc + d
-                if JpCondition(is: r & 0x03)
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let addr = Pc + dimm
+                if JpCondition(is: yyy & 0x03)
                 {
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
@@ -974,7 +1097,8 @@ public struct Z80
                     Wait(7)
                 }
 #if DEBUG
-                print(String(format: "JR %@, 0x%04X", Z80.JpConditionName(r & 0x03), addr))
+                print(String(format: "JR %@, %+d", Z80.JpConditionName(yyy & 0x03), dimm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 return
             case 0xE9:
@@ -983,13 +1107,14 @@ public struct Z80
                 registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                 print("JP HL")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
             case 0x10:
                 // order is important here
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let addr = Pc + d
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let addr = Pc + dimm
                 var b = registers[B]
                 b -= 1
                 registers[B] = b
@@ -1004,11 +1129,12 @@ public struct Z80
                     Wait(8)
                 }
 #if DEBUG
-                print(String(format: "DJNZ 0x%04X", addr))
+                print(String(format: "DJNZ %+d", dimm))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 return
             case 0xCD:
-                let dest = Fetch16()
+                imm16 = Fetch16()
                 var addr = Sp
                 addr = addr &- 1
                 mem[addr] = Byte(Pc >> 8)
@@ -1016,16 +1142,17 @@ public struct Z80
                 mem[addr] = Byte(Pc & 0xFF)
                 registers[SP] = Byte(addr >> 8)
                 registers[SP + 1] = Byte(addr & 0xFF)
-                registers[PC] = Byte(dest >> 8)
-                registers[PC + 1] = Byte(dest & 0xFF)
+                registers[PC] = Byte(imm16 >> 8)
+                registers[PC + 1] = Byte(imm16 & 0xFF)
 #if DEBUG
-                print(String(format: "CALL 0x%04X", dest))
+                print(String(format: "CALL 0x%04X", imm16))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(17)
                 return
             case 0xC4, 0xCC, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC:
-                let dest = Fetch16()
-                if JpCondition(is: r)
+                imm16 = Fetch16()
+                if JpCondition(is: yyy)
                 {
                     var addr = Sp
                     addr = addr &- 1
@@ -1034,8 +1161,8 @@ public struct Z80
                     mem[addr] = Byte(Pc & 0xFF)
                     registers[SP] = Byte(addr >> 8)
                     registers[SP + 1] = Byte(addr & 0xFF)
-                    registers[PC] = Byte(dest >> 8)
-                    registers[PC + 1] = Byte(dest & 0xFF)
+                    registers[PC] = Byte(imm16 >> 8)
+                    registers[PC + 1] = Byte(imm16 & 0xFF)
                     Wait(17)
                 }
                 else
@@ -1043,7 +1170,8 @@ public struct Z80
                     Wait(10)
                 }
 #if DEBUG
-                print(String(format: "CALL %@, 0x%04X", Z80.JpConditionName(r), dest))
+                print(String(format: "CALL %@, 0x%04X", Z80.JpConditionName(yyy), imm16))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 return
             case 0xC9:
@@ -1056,11 +1184,12 @@ public struct Z80
                 registers[SP + 1] = Byte(addr & 0xFF)
 #if DEBUG
                 print("RET")
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
             case 0xC0, 0xC8, 0xD0, 0xD8, 0xE0, 0xE8, 0xF0, 0xF8:
-                if JpCondition(is: r)
+                if JpCondition(is: yyy)
                 {
                     var addr = Sp
                     registers[PC + 1] = mem[addr]
@@ -1076,7 +1205,8 @@ public struct Z80
                     Wait(5)
                 }
 #if DEBUG
-                print(String(format: "RET %@", Z80.JpConditionName(r)))
+                print(String(format: "RET %@", Z80.JpConditionName(yyy)))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 return
             case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF:
@@ -1088,25 +1218,30 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[PC] = 0
-                registers[PC + 1] = Byte(mc & 0x38)
+                registers[PC + 1] = Byte(opcode & 0x38)
 #if DEBUG
-                print(String(format: "RST 0x%04X", mc & 0x38))
+                print(String(format: "RST 0x%04X", opcode & 0x38))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(17)
                 return
             case 0xDB:
-                let port = (UShort(registers[A]) << 8) + Fetch()
+                imm = Fetch()
+                let port = (UShort(registers[A]) << 8) + imm
                 registers[A] = ports.rdPort(port)
 #if DEBUG
-                print(String(format: "IN A, (0x%02X)", port))
+                print(String(format: "IN A, (0x%04X)", port))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(11)
                 return
             case 0xD3:
-                let port = (UShort(registers[A]) << 8) + Fetch()
+                imm = Fetch()
+                let port = (UShort(registers[A]) << 8) + imm
                 ports.wrPort(port, registers[A])
 #if DEBUG
                 print(String(format: "OUT (0x%04X), A", port))
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
                 Wait(11)
                 return
@@ -1114,7 +1249,8 @@ public struct Z80
                 break
         }
 #if DEBUG
-        print(String(format: "Invalid Opcode %2X: %02X %02X %02X", mc, hi, lo, r))
+        print(String(format: "Invalid Opcode %2X: %02X %02X %02X", opcode, xx, zzz, yyy))
+        traceOpcode?(.None, opcode, imm, imm16, dimm)
 #endif
         Halt = true
     }
@@ -1147,27 +1283,27 @@ public struct Z80
 
     private mutating func ParseCB(_ mode: Byte = 0)
     {
-        var d: SByte = 0
+        var dimm: SByte = 0
         if mode != 0
         {
-            d = SByte(truncatingIfNeeded: Fetch())
+            dimm = SByte(truncatingIfNeeded: Fetch())
         }
         if Halt {
             return
         }
-        let mc = Fetch()
-        let hi = mc >> 6
-        let lo = mc & 0x07
-        let r = (mc >> 3) & 0x07
-        let useHL = lo == 6
+        let opcode = Fetch()
+        let xx = opcode >> 6
+        let yyy = (opcode >> 3) & 0x07
+        let zzz = opcode & 0x07
+        let useHL = zzz == 6
         let useIX = mode == 0xDD
         let useIY = mode == 0xFD
-        var reg = useHL ? useIX ? mem[Ix + d] : useIY ? mem[Iy + d] : mem[Hl] : registers[lo]
-        switch hi
+        var reg = useHL ? useIX ? mem[Ix + dimm] : useIY ? mem[Iy + dimm] : mem[Hl] : registers[zzz]
+        switch xx
         {
             case 0:
                 var c: Byte
-                if (r & 1) == 1
+                if (yyy & 1) == 1
                 {
                     c = reg & 0x01
                     reg >>= 1
@@ -1178,52 +1314,52 @@ public struct Z80
                     reg <<= 1
                 }
                 var f = registers[F]
-                switch r
+                switch yyy
                 {
                     case 0:
                         reg |= c
 #if DEBUG
-                        print(String(format: "RLC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "RLC \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 1:
                         reg |= c << 7
 #if DEBUG
-                        print(String(format: "RRC \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "RRC \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 2:
                         reg |= f & Flags.C.rawValue
 #if DEBUG
-                        print(String(format: "RL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "RL \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 3:
                         reg |= (f & Flags.C.rawValue) << 7
 #if DEBUG
-                        print(String(format: "RR \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "RR \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 4:
 #if DEBUG
-                        print(String(format: "SLA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "SLA \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 5:
                         reg |= (reg & 0x40) << 1
 #if DEBUG
-                        print(String(format: "SRA \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "SRA \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 6:
                         reg |= 1
 #if DEBUG
-                        print(String(format: "SLL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "SLL \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     case 7:
 #if DEBUG
-                        print(String(format: "SRL \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))"))
+                        print(String(format: "SRL \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))"))
 #endif
                         break
                     default:
@@ -1241,23 +1377,24 @@ public struct Z80
                 registers[F] = f
                 break
             case 1:
-                Bit(r, reg)
+                Bit(yyy, reg)
 #if DEBUG
-                print(String(format: "BIT %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))", r))
+                print(String(format: "BIT %d, \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))", yyy))
 #endif
                 Wait(useHL ? 12 : 8)
+                traceOpcode?(useIX ? .DDCB : useIY ? .FDCB : .CB, opcode, 0, 0, dimm)
                 return
             case 2:
-                reg &= ~(0x01 << r)
+                reg &= ~(0x01 << yyy)
 #if DEBUG
-                print(String(format: "RES %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))", r))
+                print(String(format: "RES %d, \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))", yyy))
 #endif
                 Wait(useHL ? 12 : 8)
                 break
             case 3:
-                reg |= 0x01 << r
+                reg |= 0x01 << yyy
 #if DEBUG
-                print(String(format: "SET %d, \(useHL ? (useIX ? String(format: "(IX%+d)", d) : useIY ? String(format: "(IY%+d)", d) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", d, Z80.RegName(lo)) : useIY ? String(format: "(IY%+d), %@", d, Z80.RegName(lo)) : Z80.RegName(lo)))", r))
+                print(String(format: "SET %d, \(useHL ? (useIX ? String(format: "(IX%+d)", dimm) : useIY ? String(format: "(IY%+d)", dimm) : "(HL)") : (useIX ? String(format: "(IX%+d), %@", dimm, Z80.RegName(zzz)) : useIY ? String(format: "(IY%+d), %@", dimm, Z80.RegName(zzz)) : Z80.RegName(zzz)))", yyy))
 #endif
                 Wait(useHL ? 12 : 8)
                 break
@@ -1268,12 +1405,12 @@ public struct Z80
         {
             if useIX
             {
-                mem[Ix + d] = reg
+                mem[Ix + dimm] = reg
                 Wait(23)
             }
-            else if (useIY)
+            else if useIY
             {
-                mem[Iy + d] = reg
+                mem[Iy + dimm] = reg
                 Wait(23)
             }
             else
@@ -1286,17 +1423,18 @@ public struct Z80
         {
             if useIX
             {
-                mem[Ix + d] = reg
+                mem[Ix + dimm] = reg
                 Wait(23)
             }
-            else if (useIY)
+            else if useIY
             {
-                mem[Iy + d] = reg
+                mem[Iy + dimm] = reg
                 Wait(23)
             }
-            registers[lo] = reg
+            registers[zzz] = reg
             Wait(8)
         }
+        traceOpcode?(useIX ? .DDCB : useIY ? .FDCB : .CB, opcode, 0, 0, dimm)
     }
 
     private mutating func Bit(_ bit: Byte, _ val: Byte)
@@ -1409,15 +1547,17 @@ public struct Z80
         if Halt {
             return
         }
-        let mc = Fetch()
-        let r = (mc >> 3) & 0x07
-        switch mc
+        let opcode = Fetch()
+        let yyy = (opcode >> 3) & 0x07
+        var imm16: UShort = 0
+        switch opcode
         {
             case 0x47:
                 // LD I, A
                 registers[I] = registers[A]
 #if DEBUG
                 print("LD I, A")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(9)
                 return
@@ -1426,6 +1566,7 @@ public struct Z80
                 registers[R] = registers[A]
 #if DEBUG
                 print("LD R, A")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(9)
                 return
@@ -1438,7 +1579,7 @@ public struct Z80
                 {
                     f |= Flags.S.rawValue
                 }
-                else if (i == 0x00)
+                else if i == 0x00
                 {
                     f |= Flags.Z.rawValue
                 }
@@ -1449,6 +1590,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("LD A, I")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(9)
                 return
@@ -1461,7 +1603,7 @@ public struct Z80
                 {
                     f |= Flags.S.rawValue
                 }
-                else if (reg == 0x00)
+                else if reg == 0x00
                 {
                     f |= Flags.Z.rawValue
                 }
@@ -1472,102 +1614,111 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("LD A, R")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 //Wait(9)
                 return
             case 0x4B:
                 // LD BC, (nn)
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[C] = mem[addr]
                 addr = addr &+ 1
                 registers[B] = mem[addr]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD BC, (0x%04X)", addr))
+                print(String(format: "LD BC, (0x%04X)", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x5B:
                 // LD DE, (nn)
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[E] = mem[addr]
                 addr = addr &+ 1
                 registers[D] = mem[addr]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD DE, (0x%04X)", addr))
+                print(String(format: "LD DE, (0x%04X)", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x6B:
                 // LD HL, (nn)
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[L] = mem[addr]
                 addr = addr &+ 1
                 registers[H] = mem[addr]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD HL, (0x%04X)", addr))
+                print(String(format: "LD HL, (0x%04X)", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x7B:
                 // LD SP, (nn)
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[SP + 1] = mem[addr]
                 addr = addr &+ 1
                 registers[SP] = mem[addr]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD SP, (0x%04X)", addr))
+                print(String(format: "LD SP, (0x%04X)", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x43:
                 // LD (nn), BC
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[C]
                 addr = addr &+ 1
                 mem[addr] = registers[B]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD (0x%04X), BC", addr))
+                print(String(format: "LD (0x%04X), BC", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x53:
                 // LD (nn), DE
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[E]
                 addr = addr &+ 1
                 mem[addr] = registers[D]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD (0x%04X), DE", addr))
+                print(String(format: "LD (0x%04X), DE", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x63:
                 // LD (nn), HL
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[L]
                 addr = addr &+ 1
                 mem[addr] = registers[H]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD (0x%04X), HL", addr))
+                print(String(format: "LD (0x%04X), HL", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
             case 0x73:
                 // LD (nn), SP
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[SP + 1]
                 addr = addr &+ 1
                 mem[addr] = registers[SP]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD (0x%04X), SP", addr))
+                print(String(format: "LD (0x%04X), SP", imm16))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(20)
                 return
@@ -1593,6 +1744,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("LDI")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -1624,6 +1776,7 @@ public struct Z80
                 }
 #if DEBUG
                 print("LDIR")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -1649,6 +1802,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("LDD")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -1680,6 +1834,7 @@ public struct Z80
                 }
 #if DEBUG
                 print("LDDR")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -1711,6 +1866,7 @@ public struct Z80
                 registers[F] = f | Flags.N.rawValue
 #if DEBUG
                 print("CPI")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -1744,6 +1900,7 @@ public struct Z80
                     registers[F] = f | Flags.N.rawValue
 #if DEBUG
                     print("CPIR")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(16)
                     return
@@ -1783,6 +1940,7 @@ public struct Z80
                 registers[F] = f | Flags.N.rawValue
 #if DEBUG
                 print("CPD")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -1816,6 +1974,7 @@ public struct Z80
                     registers[F] = f | Flags.N.rawValue
 #if DEBUG
                     print("CPDR")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(21)
                     return
@@ -1852,6 +2011,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("NEG")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
@@ -1860,6 +2020,7 @@ public struct Z80
                 IM = 0
 #if DEBUG
                 print("IM 0")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
@@ -1868,6 +2029,7 @@ public struct Z80
                 IM = 1
 #if DEBUG
                 print("IM 1")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
@@ -1876,6 +2038,7 @@ public struct Z80
                 IM = 2
 #if DEBUG
                 print("IM 2")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
@@ -1883,6 +2046,7 @@ public struct Z80
                 AdcHl(Bc)
 #if DEBUG
                 print("ADC HL, BC")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1890,6 +2054,7 @@ public struct Z80
                 AdcHl(De)
 #if DEBUG
                 print("ADC HL, DE")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1897,6 +2062,7 @@ public struct Z80
                 AdcHl(Hl)
 #if DEBUG
                 print("ADC HL, HL")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1904,6 +2070,7 @@ public struct Z80
                 AdcHl(Sp)
 #if DEBUG
                 print("ADC HL, SP")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1911,6 +2078,7 @@ public struct Z80
                 SbcHl(Bc)
 #if DEBUG
                 print("SBC HL, BC")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1918,6 +2086,7 @@ public struct Z80
                 SbcHl(De)
 #if DEBUG
                 print("SBC HL, DE")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1925,6 +2094,7 @@ public struct Z80
                 SbcHl(Hl)
 #if DEBUG
                 print("SBC HL, HL")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1932,6 +2102,7 @@ public struct Z80
                 SbcHl(Sp)
 #if DEBUG
                 print("SBC HL, SP")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(15)
                 return
@@ -1954,6 +2125,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("RLD")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(18)
                 return
@@ -1976,6 +2148,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("RRD")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(18)
                 return
@@ -1989,23 +2162,25 @@ public struct Z80
                 registers[SP + 1] = Byte(addr & 0xFF)
                 IFF1 = IFF2
 #if DEBUG
-                if mc == 0x4D {
+                if opcode == 0x4D {
                     print("RETN")
                 } else {
                     print("RETI")
                 }
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(10)
                 return
             case 0x77, 0x7F:
 #if DEBUG
                 print("NOP")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
             case 0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x78:
-                let a = Byte(ports.rdPort(Bc))
-                registers[r] = a
+                let a = ports.rdPort(Bc)
+                registers[yyy] = a
                 var f = registers[F] & 0x29
                 if (a & 0x80) > 0 {
                     f |= Flags.S.rawValue
@@ -2018,7 +2193,8 @@ public struct Z80
                 }
                 registers[F] = f
 #if DEBUG
-                print(String(format: "IN %@, (BC)", Z80.RegName(r)))
+                print(String(format: "IN %@, (BC)", Z80.RegName(yyy)))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
@@ -2039,6 +2215,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("INI")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -2049,7 +2226,7 @@ public struct Z80
                 hl += 1
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 if b != 0
                 {
@@ -2058,6 +2235,7 @@ public struct Z80
                     registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(INIR)")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(21)
                 }
@@ -2066,6 +2244,7 @@ public struct Z80
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("INIR")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(16)
                 }
@@ -2077,7 +2256,7 @@ public struct Z80
                 hl -= 1
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
@@ -2087,6 +2266,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("IND")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -2097,7 +2277,7 @@ public struct Z80
                 hl -= 1
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 if b != 0
                 {
@@ -2106,6 +2286,7 @@ public struct Z80
                     registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(INDR)")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(21)
                 }
@@ -2114,12 +2295,13 @@ public struct Z80
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("INDR")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(16)
                 }
                 return
             case 0x41, 0x49, 0x51, 0x59, 0x61, 0x69, 0x79:
-                let a = registers[r]
+                let a = registers[yyy]
                 ports.wrPort(Bc, a)
                 var f = registers[F] & 0x29
                 if (a & 0x80) > 0 {
@@ -2133,7 +2315,8 @@ public struct Z80
                 }
                 registers[F] = f
 #if DEBUG
-                print(String(format: "OUT (BC), %@", Z80.RegName(r)))
+                print(String(format: "OUT (BC), %@", Z80.RegName(yyy)))
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(8)
                 return
@@ -2144,7 +2327,7 @@ public struct Z80
                 ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
@@ -2154,6 +2337,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("OUTI")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -2164,7 +2348,7 @@ public struct Z80
                 ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 if b != 0
                 {
@@ -2173,6 +2357,7 @@ public struct Z80
                     registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(OUTIR)")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(21)
                 }
@@ -2181,6 +2366,7 @@ public struct Z80
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("OUTIR")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(16)
                 }
@@ -2192,7 +2378,7 @@ public struct Z80
                 ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 var f = registers[F] & ~(Flags.N.rawValue | Flags.Z.rawValue)
                 if b == 0 {
@@ -2202,6 +2388,7 @@ public struct Z80
                 registers[F] = f
 #if DEBUG
                 print("OUTD")
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                 Wait(16)
                 return
@@ -2212,7 +2399,7 @@ public struct Z80
                 ports.wrPort(Bc, a)
                 registers[H] = Byte(hl >> 8)
                 registers[L] = Byte(truncatingIfNeeded: hl)
-                let b = Byte(registers[B] - 1)
+                let b = registers[B] - 1
                 registers[B] = b
                 if b != 0
                 {
@@ -2221,6 +2408,7 @@ public struct Z80
                     registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                     print("(OUTDR)")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(21)
                 }
@@ -2229,6 +2417,7 @@ public struct Z80
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
 #if DEBUG
                     print("OUTDR")
+                    traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
                     Wait(16)
                 }
@@ -2237,7 +2426,8 @@ public struct Z80
                 break
         }
 #if DEBUG
-        print(String(format: "Invalid Opcode ED %02X: %02X", mc, r))
+        print(String(format: "Invalid Opcode ED %02X: %02X", opcode, yyy))
+        traceOpcode?(.ED, opcode, 0, imm16, 0)
 #endif
         Halt = true
     }
@@ -2247,11 +2437,14 @@ public struct Z80
         if Halt {
             return
         }
-        let mc = Fetch()
-        let hi = mc >> 6
-        let lo = mc & 0x07
-        let r = (mc >> 3) & 0x07
-        switch mc
+        let opcode = Fetch()
+        let xx = opcode >> 6
+        let yyy = (opcode >> 3) & 0x07
+        let zzz = opcode & 0x07
+        var imm: Byte = 0
+        var imm16: UShort = 0
+        var dimm: SByte = 0
+        switch opcode
         {
             case 0xCB:
                 ParseCB(0xDD)
@@ -2260,58 +2453,67 @@ public struct Z80
                 // LD IX, nn
                 registers[IX + 1] = Fetch()
                 registers[IX] = Fetch()
+                imm16 = Ix
 #if DEBUG
-                print(String(format: "LD IX, 0x%04X", Ix))
+                print(String(format: "LD IX, 0x%04X", imm16))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(14)
                 return
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                registers[r] = mem[Ix + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                registers[yyy] = mem[Ix + dimm]
 #if DEBUG
-                print(String(format: "LD %@, (IX+%d)", Z80.RegName(r), d))
+                print(String(format: "LD %@, (IX%+d)", Z80.RegName(yyy), dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IX+d), r
-                let d = SByte(truncatingIfNeeded: Fetch())
-                mem[Ix + d] = registers[lo]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                mem[Ix + dimm] = registers[zzz]
 #if DEBUG
-                print(String(format: "LD (IX+%d), %@", d, Z80.RegName(lo)))
+                print(String(format: "LD (IX%+d), %@", dimm, Z80.RegName(zzz)))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x36:
                 // LD (IX+d), n
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let n = Fetch()
-                mem[Ix + d] = n
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                imm = Fetch()
+                mem[Ix + dimm] = imm
 #if DEBUG
-                print(String(format: "LD (IX+%d), %d", d, n))
+                print(String(format: "LD (IX%+d), %d", dimm, imm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x2A:
                 // LD IX, (nn)
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[IX + 1] = mem[addr]
                 addr = addr &+ 1
                 registers[IX] = mem[addr]
 #if DEBUG
-                print(String(format: "LD IX, (0x%04X)", addr))
+                print(String(format: "LD IX, (0x%04X)", imm16))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(20)
                 return
             case 0x22:
                 // LD (nn), IX
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[IX + 1]
                 addr = addr &+ 1
                 mem[addr] = registers[IX]
 #if DEBUG
-                print(String(format: "LD (0x%04X), IX", addr))
+                print(String(format: "LD (0x%04X), IX", imm16))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(20)
                 return
@@ -2321,6 +2523,7 @@ public struct Z80
                 registers[SP + 1] = registers[IX + 1]
 #if DEBUG
                 print("LD SP, IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -2335,6 +2538,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("PUSH IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(15)
                 return
@@ -2349,6 +2553,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("POP IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(14)
                 return
@@ -2365,102 +2570,113 @@ public struct Z80
                 mem[addr] = lo
 #if DEBUG
                 print("EX (SP), IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(24)
                 return
             case 0x86:
                 // ADD A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                Add(mem[Ix + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                Add(mem[Ix + dimm])
 #if DEBUG
-                print(String(format: "ADD A, (IX+%d)", d))
+                print(String(format: "ADD A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x8E:
                 // ADC A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
+                dimm = SByte(truncatingIfNeeded: Fetch())
                 // let a = registers[A]
-                Adc(mem[Ix + d])
+                Adc(mem[Ix + dimm])
 #if DEBUG
-                print(String(format: "ADC A, (IX+%d)", d))
+                print(String(format: "ADC A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x96:
                 // SUB A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Ix + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Ix + dimm]
                 Sub(b)
 #if DEBUG
-                print(String(format: "SUB A, (IX+%d)", d))
+                print(String(format: "SUB A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x9E:
                 // SBC A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                Sbc(mem[Ix + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                Sbc(mem[Ix + dimm])
 #if DEBUG
-                print(String(format: "SBC A, (IX+%d)", d))
+                print(String(format: "SBC A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xA6:
                 // AND A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Ix + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Ix + dimm]
                 And(b)
 #if DEBUG
-                print(String(format: "AND A, (IX+%d)", d))
+                print(String(format: "AND A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xB6:
                 // OR A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Ix + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Ix + dimm]
                 Or(b)
 #if DEBUG
-                print(String(format: "OR A, (IX+%d)", d))
+                print(String(format: "OR A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xAE:
                 // OR A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Ix + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Ix + dimm]
                 Xor(b)
 #if DEBUG
-                print(String(format: "XOR A, (IX+%d)", d))
+                print(String(format: "XOR A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xBE:
                 // CP A, (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Ix + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Ix + dimm]
                 Cmp(b)
 #if DEBUG
-                print(String(format: "CP A, (IX+%d)", d))
+                print(String(format: "CP A, (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x34:
                 // INC (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                mem[Ix + d] = Inc(mem[Ix + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                mem[Ix + dimm] = Inc(mem[Ix + dimm])
 #if DEBUG
-                print(String(format: "INC (IX+%d)", d))
+                print(String(format: "INC (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x35:
                 // DEC (IX+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                mem[Ix + d] = Dec(mem[Ix + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                mem[Ix + dimm] = Dec(mem[Ix + dimm])
 #if DEBUG
-                print(String(format: "DEC (IX+%d)", d))
+                print(String(format: "DEC (IX%+d)", dimm))
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -2468,6 +2684,7 @@ public struct Z80
                 AddIx(Bc)
 #if DEBUG
                 print("ADD IX, BC")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2475,6 +2692,7 @@ public struct Z80
                 AddIx(De)
 #if DEBUG
                 print("ADD IX, DE")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2482,6 +2700,7 @@ public struct Z80
                 AddIx(Ix)
 #if DEBUG
                 print("ADD IX, IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2489,6 +2708,7 @@ public struct Z80
                 AddIx(Sp)
 #if DEBUG
                 print("ADD IX, SP")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2498,6 +2718,7 @@ public struct Z80
                 registers[IX + 1] = Byte(val & 0xFF)
 #if DEBUG
                 print("INC IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2507,6 +2728,7 @@ public struct Z80
                 registers[IX + 1] = Byte(val & 0xFF)
 #if DEBUG
                 print("DEC IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2516,6 +2738,7 @@ public struct Z80
                 registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                 print("JP IX")
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
                 Wait(8)
                 return
@@ -2523,7 +2746,8 @@ public struct Z80
                 break
         }
 #if DEBUG
-        print(String(format: "Invalid Opcode DD %02X: %02X %02X %02X", mc, hi, lo, r))
+        print(String(format: "Invalid Opcode DD %02X: %02X %02X %02X", opcode, xx, zzz, yyy))
+        traceOpcode?(.DD, opcode, imm, imm16, dimm)
 #endif
         Halt = true
     }
@@ -2533,11 +2757,14 @@ public struct Z80
         if Halt {
             return
         }
-        let mc = Fetch()
-        let hi = mc >> 6
-        let lo = mc & 0x07
-        let r = (mc >> 3) & 0x07
-        switch mc
+        let opcode = Fetch()
+        let xx = opcode >> 6
+        let yyy = (opcode >> 3) & 0x07
+        let zzz = opcode & 0x07
+        var imm: Byte = 0
+        var imm16: UShort = 0
+        var dimm: SByte = 0
+        switch opcode
         {
             case 0xCB:
                 ParseCB(0xFD)
@@ -2546,60 +2773,67 @@ public struct Z80
                 // LD IY, nn
                 registers[IY + 1] = Fetch()
                 registers[IY] = Fetch()
+                imm16 = Iy
 #if DEBUG
-                print(String(format: "LD IY, 0x%04X", Iy))
+                print(String(format: "LD IY, 0x%04X", imm16))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(14)
                 return
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                registers[r] = mem[Iy + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                registers[yyy] = mem[Iy + dimm]
 #if DEBUG
-                print(String(format: "LD %@, (IY+%d)", Z80.RegName(r), d))
+                print(String(format: "LD %@, (IY%+d)", Z80.RegName(yyy), dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IY+d), r
-                let d = SByte(truncatingIfNeeded: Fetch())
-                mem[Iy + d] = registers[lo]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                mem[Iy + dimm] = registers[zzz]
 #if DEBUG
-                print(String(format: "LD (IY+%d), %@", d, Z80.RegName(lo)))
+                print(String(format: "LD (IY%+d), %@", dimm, Z80.RegName(zzz)))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x36:
                 // LD (IY+d), n
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let n = Fetch()
-                mem[Iy + d] = n
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                imm = Fetch()
+                mem[Iy + dimm] = imm
 #if DEBUG
-                print(String(format: "LD (IY+%d), %d", d, n))
+                print(String(format: "LD (IY%+d), %d", dimm, imm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x2A:
                 // LD IY, (nn)
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 registers[IY + 1] = mem[addr]
                 addr = addr &+ 1
                 registers[IY] = mem[addr]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD IY, (0x%04X)", addr))
+                print(String(format: "LD IY, (0x%04X)", imm16))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(20)
                 return
             case 0x22:
                 // LD (nn), IY
-                var addr = Fetch16()
+                imm16 = Fetch16()
+                var addr = imm16
                 mem[addr] = registers[IY + 1]
                 addr = addr &+ 1
                 mem[addr] = registers[IY]
 #if DEBUG
-                addr = addr &- 1
-                print(String(format: "LD (0x%04X), IY", addr))
+                print(String(format: "LD (0x%04X), IY", imm16))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(20)
                 return
@@ -2609,6 +2843,7 @@ public struct Z80
                 registers[SP + 1] = registers[IY + 1]
 #if DEBUG
                 print("LD SP, IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(10)
                 return
@@ -2623,6 +2858,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("PUSH IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(15)
                 return
@@ -2637,6 +2873,7 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
 #if DEBUG
                 print("POP IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(14)
                 return
@@ -2652,100 +2889,111 @@ public struct Z80
                 mem[addr] = hi
 #if DEBUG
                 print("EX (SP), IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(24)
                 return
             case 0x86:
                 // ADD A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                Add(mem[Iy + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                Add(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "ADD A, (IY+%d)", d))
+                print(String(format: "ADD A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x8E:
                 // ADC A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
+                dimm = SByte(truncatingIfNeeded: Fetch())
                 // let a = registers[A]
-                Adc(mem[Iy + d])
+                Adc(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "ADC A, (IY+%d)", d))
+                print(String(format: "ADC A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x96:
                 // SUB A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                Sub(mem[Iy + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                Sub(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "SUB A, (IY+%d)", d))
+                print(String(format: "SUB A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x9E:
                 // SBC A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                Sbc(mem[Iy + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                Sbc(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "SBC A, (IY+%d)", d))
+                print(String(format: "SBC A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xA6:
                 // AND A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Iy + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Iy + dimm]
                 And(b)
 #if DEBUG
-                print(String(format: "AND A, (IY+%d)", d))
+                print(String(format: "AND A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xB6:
                 // OR A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Iy + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Iy + dimm]
                 Or(b)
 #if DEBUG
-                print(String(format: "OR A, (IY+%d)", d))
+                print(String(format: "OR A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xAE:
                 // XOR A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                let b = mem[Iy + d]
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                let b = mem[Iy + dimm]
                 Xor(b)
 #if DEBUG
-                print(String(format: "XOR A, (IY+%d)", d))
+                print(String(format: "XOR A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0xBE:
                 // CP A, (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                Cmp(mem[Iy + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                Cmp(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "CP A, (IY+%d)", d))
+                print(String(format: "CP A, (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(19)
                 return
             case 0x34:
                 // INC (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                mem[Iy + d] = Inc(mem[Iy + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                mem[Iy + dimm] = Inc(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "INC (IY+%d)", d))
+                print(String(format: "INC (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
             case 0x35:
                 // DEC (IY+d)
-                let d = SByte(truncatingIfNeeded: Fetch())
-                mem[Iy + d] = Dec(mem[Iy + d])
+                dimm = SByte(truncatingIfNeeded: Fetch())
+                mem[Iy + dimm] = Dec(mem[Iy + dimm])
 #if DEBUG
-                print(String(format: "DEC (IY+%d)", d))
+                print(String(format: "DEC (IY%+d)", dimm))
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(7)
                 return
@@ -2753,6 +3001,7 @@ public struct Z80
                 AddIy(Bc)
 #if DEBUG
                 print("ADD IY, BC")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2760,6 +3009,7 @@ public struct Z80
                 AddIy(De)
 #if DEBUG
                 print("ADD IY, DE")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2767,6 +3017,7 @@ public struct Z80
                 AddIy(Iy)
 #if DEBUG
                 print("ADD IY, IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2774,6 +3025,7 @@ public struct Z80
                 AddIy(Sp)
 #if DEBUG
                 print("ADD IY, SP")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2783,6 +3035,7 @@ public struct Z80
                 registers[IY + 1] = Byte(val & 0xFF)
 #if DEBUG
                 print("INC IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2792,6 +3045,7 @@ public struct Z80
                 registers[IY + 1] = Byte(val & 0xFF)
 #if DEBUG
                 print("DEC IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(4)
                 return
@@ -2801,6 +3055,7 @@ public struct Z80
                 registers[PC + 1] = Byte(addr & 0xFF)
 #if DEBUG
                 print("JP IY")
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
                 Wait(8)
                 return
@@ -2808,7 +3063,8 @@ public struct Z80
                 break
         }
 #if DEBUG
-        print(String(format: "Invalid Opcode FD %02X: %02X %02X %02X", mc, hi, lo, r))
+        print(String(format: "Invalid Opcode FD %02X: %02X %02X %02X", opcode, xx, zzz, yyy))
+        traceOpcode?(.FD, opcode, imm, imm16, dimm)
 #endif
         Halt = true
     }
@@ -3083,14 +3339,12 @@ public struct Z80
     private mutating func Fetch() -> Byte
     {
         var addr = Pc
-        let ret = mem[addr]
-#if DEBUG
-        print(String(format: "  %04X %02X ", addr, ret))
-#endif
+        let data = mem[addr]
+        traceMemory?(addr, data)
         addr = addr &+ 1
         registers[PC] = Byte(addr >> 8)
         registers[PC + 1] = Byte(addr & 0xFF)
-        return ret
+        return data
     }
 
     private mutating func Fetch16() -> UShort
@@ -3126,16 +3380,20 @@ public struct Z80
 
     public func dumpState() -> String {
         return " BC   DE   HL  SZ-H-PNC A\n"
-        + String(format: "%02X%02X %02X%02X %02X%02X %d%d%d%d%d%d%d%d %02X\n", registers[B], registers[C], registers[D], registers[E], registers[H], registers[L],
-            (registers[F] & 0x80) >> 7, (registers[F] & 0x40) >> 6, (registers[F] & 0x20) >> 5, (registers[F] & 0x10) >> 4,
-            (registers[F] & 0x08) >> 3, (registers[F] & 0x04) >> 2, (registers[F] & 0x02) >> 1, registers[F] & 0x01, registers[A])
-        + String(format: "%02X%02X %02X%02X %02X%02X %d%d%d%d%d%d%d%d %02X\n", registers[Bp], registers[Cp], registers[Dp], registers[Ep], registers[Hp], registers[Lp],
-            (registers[Fp] & 0x80) >> 7, (registers[Fp] & 0x40) >> 6, (registers[Fp] & 0x20) >> 5, (registers[Fp] & 0x10) >> 4,
-            (registers[Fp] & 0x08) >> 3, (registers[Fp] & 0x04) >> 2, (registers[Fp] & 0x02) >> 1, registers[Fp] & 0x01, registers[Ap])
+        + String(format: "%04X %04X %04X %d%d-%d-%d%d%d %02X\n", Bc, De, Hl,
+            (registers[F] & 0x80) >> 7, (registers[F] & 0x40) >> 6, (registers[F] & 0x10) >> 4,
+            (registers[F] & 0x04) >> 2, (registers[F] & 0x02) >> 1, registers[F] & 0x01, registers[A])
+        + String(format: "%04X %04X %04X %d%d-%d-%d%d%d %02X\n", BCp, DEp, HLp,
+            (registers[Fp] & 0x80) >> 7, (registers[Fp] & 0x40) >> 6, (registers[Fp] & 0x10) >> 4,
+            (registers[Fp] & 0x04) >> 2, (registers[Fp] & 0x02) >> 1, registers[Fp] & 0x01, registers[Ap])
         + "I  R   IX   IY   SP   PC\n"
-        + String(format: "%02X %02X %02X%02X %02X%02X %02X%02X %02X%02X\n", registers[I], registers[R],
-            registers[IX], registers[IX + 1], registers[IY], registers[IY + 1],
-            registers[SP], registers[SP + 1], registers[PC], registers[PC + 1])
+        + String(format: "%02X %02X %04X %04X %04X %04X\n", registers[I], registers[R], Ix, Iy, Sp, Pc)
+    }
+
+    public func dumpStateCompact() -> String {
+        return String(format: "A:%02X|SZ-H-PNC:%d%d-%d-%d%d%d|BC:%04X|DE:%04X|HL:%04X|SP:%04X|PC:%04X|IX:%04X|IY:%04X",
+            registers[A], (registers[F] & 0x80) >> 7, (registers[F] & 0x40) >> 6, (registers[F] & 0x10) >> 4,
+            (registers[F] & 0x04) >> 2, (registers[F] & 0x02) >> 1, registers[F] & 0x01, Bc, De, Hl, Sp, Pc, Ix, Iy)
     }
 
     private mutating func Wait(_ tStates: Int)
@@ -3149,11 +3407,13 @@ public struct Z80
             Thread.sleep(forTimeInterval: sleep)
             clock = clock + tTime
         }
-        else if (0 > sleep)
+        else if sleep == 0
         {
-#if DEBUG
-            print(String(format: "Clock expected %.3f but was %.3f microseconds", tTime * 1_000_000, epoch * 1_000_000))
-#endif
+            clock = clock + tTime
+        }
+        else
+        {
+            traceTiming?(sleep, cfreq)
             clock = Date().timeIntervalSinceReferenceDate
         }
     }
@@ -3205,14 +3465,12 @@ public struct Z80
     {
         switch reg
         {
-            case 0x00:
+            case 0:
                 return "BC"
-            case 0x10:
+            case 2:
                 return "DE"
-            case 0x20:
+            case 4:
                 return "HL"
-            case 0x30:
-                return "SP"
             default:
                 return ""
         }

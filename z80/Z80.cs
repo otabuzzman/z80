@@ -1340,7 +1340,7 @@ namespace z80
                         var port = Fetch() + (registers[A] << 8);
                         registers[A] = ports.ReadPort((ushort)port);
 #if (DEBUG)
-                        Log($"IN A, (0x{port:X2})");
+                        Log($"IN A, (0x{port:X4})");
 #endif
                         Wait(11);
                         return;
@@ -1350,7 +1350,7 @@ namespace z80
                         var port = Fetch() + (registers[A] << 8);
                         ports.WritePort((ushort)port, registers[A]);
 #if (DEBUG)
-                        Log($"OUT (0x{port:X2}), A");
+                        Log($"OUT (0x{port:X4}), A");
 #endif
                         Wait(11);
                         return;
@@ -2644,7 +2644,7 @@ namespace z80
                         registers[IX + 1] = mem[addr++];
                         registers[IX] = mem[addr];
 #if (DEBUG)
-                        Log($"LD IX, (0x{addr:X4})*");
+                        Log($"LD IX, (0x{--addr:X4})*");
 #endif
                         Wait(20);
                         return;
@@ -2656,7 +2656,7 @@ namespace z80
                         mem[addr++] = registers[IX + 1];
                         mem[addr] = registers[IX];
 #if (DEBUG)
-                        Log($"LD (0x{addr:X4}), IX");
+                        Log($"LD (0x{--addr:X4}), IX");
 #endif
                         Wait(20);
                         return;

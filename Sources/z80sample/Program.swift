@@ -14,6 +14,30 @@ extension Z80 {
 
         let mem = Memory(ram, 16384)
         var z80 = Z80(mem, ports)
+        { addr, data in
+            print(String(format: "  %04X %02X ", addr, data))
+        }
+        traceOpcode:
+        { prefix, opcode, imm, imm16, dimm in
+            print(Z80Mne.mnemonic(prefix, opcode, imm, imm16, dimm))
+        }
+        traceTiming:
+        { sleep, cfreq in
+            print(String(format: "%d T states late", Int(abs(sleep * Double(cfreq)))))
+        }
+        traceNmiInt:
+        { interrupt, addr, instruction in
+            switch interrupt {
+                case .Nmi:
+                    print(String(format: "NMI addr: 0x%04X", addr))
+                case .Int0:
+                    print(String(format: "IM0 instruction: 0x%02X", instruction))
+                case .Int1:
+                    print(String(format: "IM1 addr: 0x%04X", addr))
+                case .Int2:
+                    print(String(format: "IM2 addr: 0x%04X", addr))
+            }
+        }
 
         while (!z80.Halt)
         {
