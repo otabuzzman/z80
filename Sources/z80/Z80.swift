@@ -34,7 +34,7 @@ public class Counter {
 		self.value = value
 	}
 
-	public func get() {
+	public func get() -> UInt64 {
 		this.lock()
 		defer { this.unlock() }
 		return value
