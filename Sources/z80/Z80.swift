@@ -1257,7 +1257,7 @@ public struct Z80
                 }
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
-                //Wait(9)
+                Wait(9)
                 return
             case 0x4B:
                 // LD BC, (nn)
@@ -2052,7 +2052,6 @@ public struct Z80
             case 0x8E:
                 // ADC A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
-                // let a = registers[A]
                 Adc(mem[Ix + dimm])
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
@@ -2286,7 +2285,6 @@ public struct Z80
             case 0x8E:
                 // ADC A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
-                // let a = registers[A]
                 Adc(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
@@ -2637,7 +2635,7 @@ public struct Z80
             if (v & 1) == 1 {
                 parity = !parity
             }
-            v = (v >> 1)
+            v = v >> 1
         }
         return parity
     }
