@@ -184,21 +184,21 @@ public struct Z80
         var dimm: SByte = 0
         if xx == 1
         {
-            let useHL1 = yyy == 6
-            let useHL2 = zzz == 6
-            if useHL2 && useHL1
+            let dstHL = yyy == 6
+            let srcHL = zzz == 6
+            if srcHL && dstHL
             {
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Halt = true
                 return
             }
-            let reg = useHL2 ? mem[Hl] : registers[zzz]
-            if useHL1 {
+            let reg = srcHL ? mem[Hl] : registers[zzz]
+            if dstHL {
                 mem[Hl] = reg
             } else {
                 registers[yyy] = reg
             }
-            Wait(useHL1 || useHL2 ? 7 : 4)
+            Wait(dstHL || srcHL ? 7 : 4)
             traceOpcode?(.None, opcode, imm, imm16, dimm)
             return
         }
@@ -981,10 +981,10 @@ public struct Z80
         let xx = opcode >> 6
         let yyy = (opcode >> 3) & 0x07
         let zzz = opcode & 0x07
-        let useHL = zzz == 6
+        let srcHL = zzz == 6
         let useIX = mode == 0xDD
         let useIY = mode == 0xFD
-        var reg = useHL ? useIX ? mem[Ix + dimm] : useIY ? mem[Iy + dimm] : mem[Hl] : registers[zzz]
+        var reg = srcHL ? useIX ? mem[Ix + dimm] : useIY ? mem[Iy + dimm] : mem[Hl] : registers[zzz]
         switch xx
         {
             case 0:
@@ -1040,21 +1040,21 @@ public struct Z80
                 break
             case 1:
                 Bit(yyy, reg)
-                Wait(useHL ? 12 : 8)
                 traceOpcode?(useIX ? .DDCB : useIY ? .FDCB : .CB, opcode, 0, 0, dimm)
+                Wait(srcHL ? 12 : 8)
                 return
             case 2:
                 reg &= ~(0x01 << yyy)
-                Wait(useHL ? 12 : 8)
+                Wait(srcHL ? 12 : 8)
                 break
             case 3:
                 reg |= 0x01 << yyy
-                Wait(useHL ? 12 : 8)
+                Wait(srcHL ? 12 : 8)
                 break
             default:
                 break
         }
-        if useHL
+        if srcHL
         {
             if useIX
             {
