@@ -23,6 +23,31 @@ public enum NmiInt {
     case Int2
 }
 
+public class Counter {
+	private var value: UInt64 = 0
+
+	private let this = NSLock()
+
+	public func set(_ value: UInt64) {
+		this.lock()
+		defer { this.unlock() }
+		self.value = value
+	}
+
+	public func get() {
+		this.lock()
+		defer { this.unlock() }
+		return value
+	}
+
+	public func add(_ value: UInt64) -> UInt64 {
+		this.lock()
+		defer { this.unlock() }
+		self.value = self.value &+ value
+		return value
+	}
+}
+
 public struct Z80
 {
     private let B: Byte = 0
@@ -61,12 +86,19 @@ public struct Z80
 
     private(set) var ports: IPorts!
 
-    private var traceMemory: ((_ addr: UShort, _ data: Byte) -> ())?
-    private var traceOpcode: ((_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ())?
-    private var traceTiming: ((_ sleep: Double, _ cfreq: UInt) -> ())?
-    private var traceNmiInt: ((_ interrupt: NmiInt, _ addr: UShort, _ instruction: Byte) -> ())?
+    public typealias TraceMemory = (_ addr: UShort, _ data: Byte) -> ()
+    public typealias TraceOpcode = (_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ()
+    public typealias TraceTiming = (_ sleep: Double, _ cfreq: UInt) -> ()
+    public typealias TraceNmiInt = (_ interrupt: NmiInt, _ addr: UShort, _ instruction: Byte) -> ()
 
-    public init(_ mem: Memory, _ ports: IPorts, _ cfreq: UInt = 4_000_000, traceMemory: ((_ addr: UShort, _ data: Byte) -> ())? = nil,                 traceOpcode: ((_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ())? = nil, traceTiming: ((_ sleep: Double, _ cfreq: UInt) -> ())? = nil, traceNmiInt: ((_ interrupt: NmiInt, _ addr: UShort, _ instruction: Byte) -> ())? = nil)
+    private var traceMemory: TraceMemory?
+    private var traceOpcode: TraceOpcode?
+    private var traceTiming: TraceTiming?
+    private var traceNmiInt: TraceNmiInt?
+
+	private let tStates: Counter?
+
+    public init(_ mem: Memory, _ ports: IPorts, _ cfreq: UInt = 4_000_000, traceMemory: TraceMemory? = nil, traceOpcode: TraceOpcode? = nil, traceTiming: TraceTiming? = nil, traceNmiInt: TraceNmiInt? = nil, _ tStates: Counter? = nil)
     {
         self.mem = mem
         self.ports = ports
@@ -76,6 +108,8 @@ public struct Z80
         self.traceOpcode = traceOpcode
         self.traceTiming = traceTiming
         self.traceNmiInt = traceNmiInt
+
+		self.tStates = tStates
 
         reset()
     }
@@ -2743,6 +2777,7 @@ public struct Z80
             traceTiming?(sleep, cfreq)
             clock = Date().timeIntervalSinceReferenceDate
         }
+		_ = self.tStates?.add(UInt64(tStates))
     }
 
     private mutating func SwapReg(_ reg: Byte, _ reg2: Byte)
