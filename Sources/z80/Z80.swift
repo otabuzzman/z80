@@ -23,31 +23,6 @@ public enum NmiInt {
     case Int2
 }
 
-public class Counter {
-	private var value: UInt64 = 0
-
-	private let this = NSLock()
-
-	public func set(_ value: UInt64) {
-		this.lock()
-		defer { this.unlock() }
-		self.value = value
-	}
-
-	public func get() -> UInt64 {
-		this.lock()
-		defer { this.unlock() }
-		return value
-	}
-
-	public func add(_ value: UInt64) -> UInt64 {
-		this.lock()
-		defer { this.unlock() }
-		self.value = self.value &+ value
-		return value
-	}
-}
-
 public struct Z80
 {
     private let B: Byte = 0
@@ -73,7 +48,8 @@ public struct Z80
     private let SP: Byte = 22
     private let PC: Byte = 24
 
-    private var cfreq: UInt
+    private var CLK: UInt
+    private var tStates: Int = 0
 
     private(set) var mem: Memory!
     private(set) var registers = Array<Byte>(repeating: 0, count: 26)
@@ -88,7 +64,7 @@ public struct Z80
 
     public typealias TraceMemory = (_ addr: UShort, _ data: Byte) -> ()
     public typealias TraceOpcode = (_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ()
-    public typealias TraceTiming = (_ sleep: Double, _ cfreq: UInt) -> ()
+    public typealias TraceTiming = (_ sleep: Double, _ CLK: UInt) -> ()
     public typealias TraceNmiInt = (_ interrupt: NmiInt, _ addr: UShort, _ instruction: Byte) -> ()
 
     private var traceMemory: TraceMemory?
@@ -96,20 +72,16 @@ public struct Z80
     private var traceTiming: TraceTiming?
     private var traceNmiInt: TraceNmiInt?
 
-	private let tStates: Counter?
-
-    public init(_ mem: Memory, _ ports: IPorts, _ cfreq: UInt = 4_000_000, traceMemory: TraceMemory? = nil, traceOpcode: TraceOpcode? = nil, traceTiming: TraceTiming? = nil, traceNmiInt: TraceNmiInt? = nil, _ tStates: Counter? = nil)
+    public init(_ mem: Memory, _ ports: IPorts, _ CLK: UInt = 4_000_000, traceMemory: TraceMemory? = nil, traceOpcode: TraceOpcode? = nil, traceTiming: TraceTiming? = nil, traceNmiInt: TraceNmiInt? = nil)
     {
         self.mem = mem
         self.ports = ports
-        self.cfreq = cfreq
+        self.CLK = CLK
 
         self.traceMemory = traceMemory
         self.traceOpcode = traceOpcode
         self.traceTiming = traceTiming
         self.traceNmiInt = traceNmiInt
-
-		self.tStates = tStates
 
         reset()
     }
@@ -127,8 +99,10 @@ public struct Z80
 
     public var Halt = false
 
-    public mutating func parse()
+    @discardableResult
+    public mutating func parse() -> Int
     {
+        tStates = 0
         if ports.NMI
         {
             var addr = Sp
@@ -145,7 +119,7 @@ public struct Z80
             traceNmiInt?(.Nmi, Pc, 0)
             Wait(17)
             Halt = false
-            return
+            return tStates
         }
         if IFF1 && ports.INT
         {
@@ -166,10 +140,9 @@ public struct Z80
                     registers[SP + 1] = Byte(addr & 0xFF)
                     registers[PC] = 0x00
                     registers[PC + 1] = instruction & 0x38
-                    Wait(17)
                     traceNmiInt?(.Int0, 0, instruction)
+                    Wait(17)
                     Halt = false
-                    return
                 case 1:
                     var addr = Sp
                     addr = addr &- 1
@@ -183,7 +156,6 @@ public struct Z80
                     traceNmiInt?(.Int1, Pc, 0)
                     Wait(17)
                     Halt = false
-                    return
                 case 2:
                     let vector = ports.data
                     var addr = Sp
@@ -200,14 +172,13 @@ public struct Z80
                     traceNmiInt?(.Int2, dest, 0)
                     Wait(17)
                     Halt = false
-                    return
                 default:
                     break
             }
-            return
+            return tStates
         }
         if Halt {
-            return
+            return tStates
         }
         let opcode = Fetch()
         let xx = opcode >> 6
@@ -224,7 +195,7 @@ public struct Z80
             {
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Halt = true
-                return
+                return tStates
             }
             let reg = srcHL ? mem[Hl] : registers[zzz]
             if dstHL {
@@ -234,27 +205,22 @@ public struct Z80
             }
             Wait(dstHL || srcHL ? 7 : 4)
             traceOpcode?(.None, opcode, imm, imm16, dimm)
-            return
+            return tStates
         }
         switch opcode
         {
             case 0xCB:
                 ParseCB()
-                return
             case 0xDD:
                 ParseDD()
-                return
             case 0xED:
                 ParseED()
-                return
             case 0xFD:
                 ParseFD()
-                return
             case 0x00:
                 // NOP
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x01, 0x11, 0x21:
                 // LD dd, nn
                 registers[yyy + 1] = Fetch()
@@ -262,7 +228,6 @@ public struct Z80
                 imm16 = (UShort(registers[yyy]) << 8) + registers[yyy + 1]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0x31:
                 // LD SP, nn
                 registers[SP + 1] = Fetch()
@@ -270,59 +235,50 @@ public struct Z80
                 imm16 = Sp
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0x06, 0x0E, 0x16, 0x1E, 0x26, 0x2E, 0x3E:
                 // LD r, n
                 imm = Fetch()
                 registers[yyy] = imm
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x36:
                 // LD (HL), n
                 imm = Fetch()
                 mem[Hl] = imm
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0x0A:
                 // LD A, (BC)
                 registers[A] = mem[Bc]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x1A:
                 // LD A, (DE)
                 registers[A] = mem[De]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x3A:
                 // LD A, (nn)
                 imm16 = Fetch16()
                 registers[A] = mem[imm16]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(13)
-                return
             case 0x02:
                 // LD (BC), A
                 mem[Bc] = registers[A]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x12:
                 // LD (DE), A
                 mem[De] = registers[A]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x32:
                 // LD (nn), A 
                 imm16 = Fetch16()
                 mem[imm16] = registers[A]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(13)
-                return
             case 0x2A:
                 // LD HL, (nn) 
                 imm16 = Fetch16()
@@ -333,7 +289,6 @@ public struct Z80
                 addr = addr &- 1
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(16)
-                return
             case 0x22:
                 // LD (nn), HL
                 imm16 = Fetch16()
@@ -344,14 +299,12 @@ public struct Z80
                 addr = addr &- 1
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(16)
-                return
             case 0xF9:
                 // LD SP, HL
                 registers[SP + 1] = registers[L]
                 registers[SP] = registers[H]
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(6)
-                return
             case 0xC5:
                 // PUSH BC
                 var addr = Sp
@@ -363,7 +316,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(11)
-                return
             case 0xD5:
                 // PUSH DE
                 var addr = Sp
@@ -375,7 +327,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(11)
-                return
             case 0xE5:
                 // PUSH HL
                 var addr = Sp
@@ -387,7 +338,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(11)
-                return
             case 0xF5:
                 // PUSH AF
                 var addr = Sp
@@ -399,7 +349,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(11)
-                return
             case 0xC1:
                 // POP BC
                 var addr = Sp
@@ -411,7 +360,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xD1:
                 // POP DE
                 var addr = Sp
@@ -423,7 +371,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xE1:
                 // POP HL
                 var addr = Sp
@@ -435,7 +382,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xF1:
                 // POP AF
                 var addr = Sp
@@ -447,21 +393,18 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xEB:
                 // EX DE, HL
                 SwapReg(D, H)
                 SwapReg(E, L)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x08:
                 // EX AF, AF'
                 SwapReg(Ap, A)
                 SwapReg(Fp, F)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xD9:
                 // EXX
                 SwapReg(B, Bp)
@@ -472,7 +415,6 @@ public struct Z80
                 SwapReg(L, Lp)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xE3:
                 // EX (SP), HL
                 var addr = Sp
@@ -485,197 +427,166 @@ public struct Z80
                 mem[addr] = tmp
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x87:
                 // ADD A, r
                 Add(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xC6:
                 // ADD A, n
                 imm = Fetch()
                 Add(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x86:
                 // ADD A, (HL)
                 Add(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8F:
                 // ADC A, r
                 Adc(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xCE:
                 // ADC A, n
                 imm = Fetch()
                 Adc(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x8E:
                 // ADC A, (HL)
                 Adc(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x97:
                 // SUB A, r
                 Sub(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xD6:
                 // SUB A, n
                 imm = Fetch()
                 Sub(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x96:
                 // SUB A, (HL)
                 Sub(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9F:
                 // SBC A, r
                 Sbc(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xDE:
                 // SBC A, n
                 imm = Fetch()
                 Sbc(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x9E:
                 // SBC A, (HL)
                 Sbc(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA7:
                 // AND A, r
                 And(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xE6:
                 // AND A, n
                 imm = Fetch()
                 And(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xA6:
                 // AND A, (HL)
                 And(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB7:
                 // OR A, r
                 Or(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xF6:
                 // OR A, n
                 imm = Fetch()
                 Or(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xB6:
                 // OR A, (HL)
                 Or(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAF:
                 // XOR A, r
                 Xor(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xEE:
                 // XOR A, n
                 imm = Fetch()
                 Xor(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xAE:
                 // XOR A, (HL)
                 Xor(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0xF3:
                 // DI
                 IFF1 = false
                 IFF2 = false
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xFB:
                 // EI
                 IFF1 = true
                 IFF2 = true
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBF:
                 // CP A, r
                 Cmp(registers[zzz])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xFE:
                 // CP A, n
                 imm = Fetch()
                 Cmp(imm)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xBE:
                 // CP A, (HL)
                 Cmp(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x04, 0x0C, 0x14, 0x1C, 0x24, 0x2C, 0x3C:
                 // INC r
                 registers[yyy] = Inc(registers[yyy])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x34:
                 // INC (HL)
                 mem[Hl] = Inc(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x05, 0x0D, 0x15, 0x1D, 0x25, 0x2D, 0x3D:
                 // DEC r
                 registers[yyy] = Dec(registers[yyy])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x35:
                 // DEC (HL)
                 mem[Hl] = Dec(mem[Hl])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x27:
                 // DAA
                 var a = registers[A]
@@ -691,104 +602,88 @@ public struct Z80
                 }
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x2F:
                 // CPL
                 registers[A] ^= 0xFF
                 registers[F] |= Flags.H.rawValue | Flags.N.rawValue
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x3F:
                 // CCF
                 registers[F] &= ~Flags.N.rawValue
                 registers[F] ^= Flags.C.rawValue
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x37:
                 // SCF
                 registers[F] &= ~Flags.N.rawValue
                 registers[F] |= Flags.C.rawValue
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x09:
                 AddHl(Bc)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x19:
                 AddHl(De)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x29:
                 AddHl(Hl)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x39:
                 AddHl(Sp)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x03:
                 let val = Bc &+ 1
                 registers[B] = Byte(val >> 8)
                 registers[C] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x13:
                 let val = De &+ 1
                 registers[D] = Byte(val >> 8)
                 registers[E] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x23:
                 let val = Hl &+ 1
                 registers[H] = Byte(val >> 8)
                 registers[L] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x33:
                 let val = Sp &+ 1
                 registers[SP] = Byte(val >> 8)
                 registers[SP + 1] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x0B:
                 let val = Bc &- 1
                 registers[B] = Byte(val >> 8)
                 registers[C] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x1B:
                 let val = De &- 1
                 registers[D] = Byte(val >> 8)
                 registers[E] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x2B:
                 let val = Hl &- 1
                 registers[H] = Byte(val >> 8)
                 registers[L] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x3B:
                 let val = Sp &- 1
                 registers[SP] = Byte(val >> 8)
                 registers[SP + 1] = Byte(val & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x07:
                 var a = registers[A]
                 let c = (a & 0x80) >> 7
@@ -798,7 +693,6 @@ public struct Z80
                 registers[F] |= c
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x17:
                 var a = registers[A]
                 let c = (a & 0x80) >> 7
@@ -811,7 +705,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x0F:
                 var a = registers[A]
                 let c = a & 0x01
@@ -821,7 +714,6 @@ public struct Z80
                 registers[F] |= c
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x1F:
                 var a = registers[A]
                 let c = a & 0x01
@@ -834,14 +726,12 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xC3:
                 imm16 = Fetch16()
                 registers[PC] = Byte(imm16 >> 8)
                 registers[PC + 1] = Byte(imm16 & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xC2, 0xCA, 0xD2, 0xDA, 0xE2, 0xEA, 0xF2, 0xFA:
                 imm16 = Fetch16()
                 if JpCondition(is: yyy)
@@ -851,7 +741,6 @@ public struct Z80
                 }
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0x18:
                 // order is important here
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -860,7 +749,6 @@ public struct Z80
                 registers[PC + 1] = Byte(addr & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(12)
-                return
             case 0x20, 0x28, 0x30, 0x38:
                 // order is important here
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -876,14 +764,12 @@ public struct Z80
                     Wait(7)
                 }
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
-                return
             case 0xE9:
                 let addr = Hl
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x10:
                 // order is important here
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -902,7 +788,6 @@ public struct Z80
                     Wait(8)
                 }
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
-                return
             case 0xCD:
                 imm16 = Fetch16()
                 var addr = Sp
@@ -916,7 +801,6 @@ public struct Z80
                 registers[PC + 1] = Byte(imm16 & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(17)
-                return
             case 0xC4, 0xCC, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC:
                 imm16 = Fetch16()
                 if JpCondition(is: yyy)
@@ -937,7 +821,6 @@ public struct Z80
                     Wait(10)
                 }
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
-                return
             case 0xC9:
                 var addr = Sp
                 registers[PC + 1] = mem[addr]
@@ -948,7 +831,6 @@ public struct Z80
                 registers[SP + 1] = Byte(addr & 0xFF)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xC0, 0xC8, 0xD0, 0xD8, 0xE0, 0xE8, 0xF0, 0xF8:
                 if JpCondition(is: yyy)
                 {
@@ -966,7 +848,6 @@ public struct Z80
                     Wait(5)
                 }
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
-                return
             case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF:
                 var addr = Sp
                 addr = addr &- 1
@@ -979,26 +860,23 @@ public struct Z80
                 registers[PC + 1] = Byte(opcode & 0x38)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(17)
-                return
             case 0xDB:
                 imm = Fetch()
                 let port = (UShort(registers[A]) << 8) + imm
                 registers[A] = ports.rdPort(port)
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(11)
-                return
             case 0xD3:
                 imm = Fetch()
                 let port = (UShort(registers[A]) << 8) + imm
                 ports.wrPort(port, registers[A])
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Wait(11)
-                return
             default:
-                break
+                traceOpcode?(.None, opcode, imm, imm16, dimm)
+                Halt = true
         }
-        traceOpcode?(.None, opcode, imm, imm16, dimm)
-        Halt = true
+        return tStates
     }
 
     private mutating func ParseCB(_ mode: Byte = 0)
@@ -1023,7 +901,7 @@ public struct Z80
         {
             case 0:
                 var c: Byte
-                if (yyy & 1) == 1
+                if (yyy & 0x01) == 1
                 {
                     c = reg & 0x01
                     reg >>= 1
@@ -1038,24 +916,18 @@ public struct Z80
                 {
                     case 0:
                         reg |= c
-                        break
                     case 1:
                         reg |= c << 7
-                        break
                     case 2:
                         reg |= f & Flags.C.rawValue
-                        break
                     case 3:
                         reg |= (f & Flags.C.rawValue) << 7
-                        break
                     case 4:
                         break
                     case 5:
                         reg |= (reg & 0x40) << 1
-                        break
                     case 6:
                         reg |= 1
-                        break
                     case 7:
                         break
                     default:
@@ -1071,7 +943,6 @@ public struct Z80
                 }
                 f |= c
                 registers[F] = f
-                break
             case 1:
                 Bit(yyy, reg)
                 traceOpcode?(useIX ? .DDCB : useIY ? .FDCB : .CB, opcode, 0, 0, dimm)
@@ -1080,11 +951,9 @@ public struct Z80
             case 2:
                 reg &= ~(0x01 << yyy)
                 Wait(srcHL ? 12 : 8)
-                break
             case 3:
                 reg |= 0x01 << yyy
                 Wait(srcHL ? 12 : 8)
-                break
             default:
                 break
         }
@@ -1244,13 +1113,11 @@ public struct Z80
                 registers[I] = registers[A]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(9)
-                return
             case 0x4F:
                 // LD R, A
                 registers[R] = registers[A]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(9)
-                return
             case 0x57:
                 // LD A, I
                 let i = registers[I]
@@ -1271,7 +1138,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(9)
-                return
             case 0x5F:
                 // LD A, R
                 let reg = registers[R]
@@ -1292,7 +1158,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(9)
-                return
             case 0x4B:
                 // LD BC, (nn)
                 imm16 = Fetch16()
@@ -1302,7 +1167,6 @@ public struct Z80
                 registers[B] = mem[addr]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x5B:
                 // LD DE, (nn)
                 imm16 = Fetch16()
@@ -1312,7 +1176,6 @@ public struct Z80
                 registers[D] = mem[addr]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x6B:
                 // LD HL, (nn)
                 imm16 = Fetch16()
@@ -1322,7 +1185,6 @@ public struct Z80
                 registers[H] = mem[addr]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x7B:
                 // LD SP, (nn)
                 imm16 = Fetch16()
@@ -1332,7 +1194,6 @@ public struct Z80
                 registers[SP] = mem[addr]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x43:
                 // LD (nn), BC
                 imm16 = Fetch16()
@@ -1342,7 +1203,6 @@ public struct Z80
                 mem[addr] = registers[B]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x53:
                 // LD (nn), DE
                 imm16 = Fetch16()
@@ -1352,7 +1212,6 @@ public struct Z80
                 mem[addr] = registers[D]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x63:
                 // LD (nn), HL
                 imm16 = Fetch16()
@@ -1362,7 +1221,6 @@ public struct Z80
                 mem[addr] = registers[H]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0x73:
                 // LD (nn), SP
                 imm16 = Fetch16()
@@ -1372,7 +1230,6 @@ public struct Z80
                 mem[addr] = registers[SP]
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(20)
-                return
             case 0xA0:
                 // LDI
                 var bc = Bc
@@ -1395,7 +1252,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xB0:
                 // LDIR
                 var bc = Bc
@@ -1420,11 +1276,10 @@ public struct Z80
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
                     Wait(21)
-                    return
+                    break
                 }
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xA8:
                 // LDD
                 var bc = Bc
@@ -1447,7 +1302,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xB8:
                 // LDDR
                 var bc = Bc
@@ -1472,11 +1326,10 @@ public struct Z80
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
                     Wait(21)
-                    return
+                    break
                 }
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xA1:
                 // CPI
                 var bc = Bc
@@ -1496,7 +1349,7 @@ public struct Z80
                 if a == b {
                     f |= Flags.Z.rawValue
                 }
-                if (a & 8) < (b & 8) {
+                if (a & 0x08) < (b & 0x08) {
                     f |= Flags.H.rawValue
                 }
                 if bc != 0 {
@@ -1505,7 +1358,6 @@ public struct Z80
                 registers[F] = f | Flags.N.rawValue
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xB1:
                 // CPIR
                 var bc = Bc
@@ -1527,7 +1379,7 @@ public struct Z80
                     if a == b {
                         f |= Flags.Z.rawValue
                     }
-                    if (a & 8) < (b & 8) {
+                    if (a & 0x08) < (b & 0x08) {
                         f |= Flags.H.rawValue
                     }
                     if bc != 0 {
@@ -1536,7 +1388,7 @@ public struct Z80
                     registers[F] = f | Flags.N.rawValue
                     traceOpcode?(.ED, opcode, 0, imm16, 0)
                     Wait(16)
-                    return
+                    break
                 }
                 var addr = (UShort(registers[PC]) << 8) + registers[PC + 1]
                 // jumps back to itself
@@ -1544,7 +1396,6 @@ public struct Z80
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
                 Wait(21)
-                return
             case 0xA9:
                 // CPD
                 var bc = Bc
@@ -1564,7 +1415,7 @@ public struct Z80
                 if a == b {
                     f |= Flags.Z.rawValue
                 }
-                if (a & 8) < (b & 8) {
+                if (a & 0x08) < (b & 0x08) {
                     f |= Flags.H.rawValue
                 }
                 if bc != 0 {
@@ -1573,7 +1424,6 @@ public struct Z80
                 registers[F] = f | Flags.N.rawValue
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xB9:
                 // CPDR
                 var bc = Bc
@@ -1595,7 +1445,7 @@ public struct Z80
                     if a == b {
                         f |= Flags.Z.rawValue
                     }
-                    if (a & 8) < (b & 8) {
+                    if (a & 0x08) < (b & 0x08) {
                         f |= Flags.H.rawValue
                     }
                     if bc != 0 {
@@ -1604,7 +1454,7 @@ public struct Z80
                     registers[F] = f | Flags.N.rawValue
                     traceOpcode?(.ED, opcode, 0, imm16, 0)
                     Wait(21)
-                    return
+                    break
                 }
                 var addr = (UShort(registers[PC]) << 8) + registers[PC + 1]
                 // jumps back to itself
@@ -1612,7 +1462,6 @@ public struct Z80
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
                 Wait(21)
-                return
             case 0x44, 0x54, 0x64, 0x74, 0x4C, 0x5C, 0x6C, 0x7C:
                 // NEG
                 let a = registers[A]
@@ -1638,65 +1487,53 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0x46, 0x66:
                 // IM 0
                 IM = 0
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0x56, 0x76:
                 // IM 1
                 IM = 1
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0x5E, 0x7E:
                 // IM 2
                 IM = 2
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0x4A:
                 AdcHl(Bc)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x5A:
                 AdcHl(De)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x6A:
                 AdcHl(Hl)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x7A:
                 AdcHl(Sp)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x42:
                 SbcHl(Bc)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x52:
                 SbcHl(De)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x62:
                 SbcHl(Hl)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x72:
                 SbcHl(Sp)
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(15)
-                return
             case 0x6F:
                 var a = registers[A]
                 let b = mem[Hl]
@@ -1716,7 +1553,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(18)
-                return
             case 0x67:
                 var a = registers[A]
                 let b = mem[Hl]
@@ -1736,7 +1572,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(18)
-                return
             case 0x45, 0x4D, 0x55, 0x5D, 0x65, 0x6D, 0x75, 0x7D:
                 var addr = Sp
                 registers[PC + 1] = mem[addr]
@@ -1746,16 +1581,11 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 registers[SP + 1] = Byte(addr & 0xFF)
                 IFF1 = IFF2
-                if opcode == 0x4D {
-                } else {
-                }
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(10)
-                return
             case 0x77, 0x7F:
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x78:
                 let a = ports.rdPort(Bc)
                 registers[yyy] = a
@@ -1772,7 +1602,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0xA2:
                 let a = ports.rdPort(Bc)
                 var hl = Hl
@@ -1790,7 +1619,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xB2:
                 let a = ports.rdPort(Bc)
                 var hl = Hl
@@ -1814,7 +1642,6 @@ public struct Z80
                     traceOpcode?(.ED, opcode, 0, imm16, 0)
                     Wait(16)
                 }
-                return
             case 0xAA:
                 let a = ports.rdPort(Bc)
                 var hl = Hl
@@ -1832,7 +1659,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xBA:
                 let a = ports.rdPort(Bc)
                 var hl = Hl
@@ -1856,7 +1682,6 @@ public struct Z80
                     traceOpcode?(.ED, opcode, 0, imm16, 0)
                     Wait(16)
                 }
-                return
             case 0x41, 0x49, 0x51, 0x59, 0x61, 0x69, 0x79:
                 let a = registers[yyy]
                 ports.wrPort(Bc, a)
@@ -1873,7 +1698,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(8)
-                return
             case 0xA3:
                 var hl = Hl
                 let a = mem[hl]
@@ -1891,7 +1715,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xB3:
                 var hl = Hl
                 let a = mem[hl]
@@ -1915,7 +1738,6 @@ public struct Z80
                     traceOpcode?(.ED, opcode, 0, imm16, 0)
                     Wait(16)
                 }
-                return
             case 0xAB:
                 var hl = Hl
                 let a = mem[hl]
@@ -1933,7 +1755,6 @@ public struct Z80
                 registers[F] = f
                 traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Wait(16)
-                return
             case 0xBB:
                 var hl = Hl
                 let a = mem[hl]
@@ -1957,12 +1778,10 @@ public struct Z80
                     traceOpcode?(.ED, opcode, 0, imm16, 0)
                     Wait(16)
                 }
-                return
             default:
-                break
+                traceOpcode?(.ED, opcode, 0, imm16, 0)
+                Halt = true
         }
-        traceOpcode?(.ED, opcode, 0, imm16, 0)
-        Halt = true
     }
 
     private mutating func ParseDD()
@@ -1980,7 +1799,6 @@ public struct Z80
         {
             case 0xCB:
                 ParseCB(0xDD)
-                return
             case 0x21:
                 // LD IX, nn
                 registers[IX + 1] = Fetch()
@@ -1988,21 +1806,18 @@ public struct Z80
                 imm16 = Ix
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(14)
-                return
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 registers[yyy] = mem[Ix + dimm]
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IX+d), r
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + dimm] = registers[zzz]
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x36:
                 // LD (IX+d), n
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2010,7 +1825,6 @@ public struct Z80
                 mem[Ix + dimm] = imm
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x2A:
                 // LD IX, (nn)
                 imm16 = Fetch16()
@@ -2020,7 +1834,6 @@ public struct Z80
                 registers[IX] = mem[addr]
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(20)
-                return
             case 0x22:
                 // LD (nn), IX
                 imm16 = Fetch16()
@@ -2030,14 +1843,12 @@ public struct Z80
                 mem[addr] = registers[IX]
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(20)
-                return
             case 0xF9:
                 // LD SP, IX
                 registers[SP] = registers[IX]
                 registers[SP + 1] = registers[IX + 1]
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xE5:
                 // PUSH IX
                 var addr = Sp
@@ -2049,7 +1860,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(15)
-                return
             case 0xE1:
                 // POP IX
                 var addr = Sp
@@ -2061,7 +1871,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(14)
-                return
             case 0xE3:
                 // EX (SP), IX
                 let hi = registers[IX]
@@ -2075,21 +1884,18 @@ public struct Z80
                 mem[addr] = lo
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(24)
-                return
             case 0x86:
                 // ADD A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Add(mem[Ix + dimm])
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x8E:
                 // ADC A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Adc(mem[Ix + dimm])
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x96:
                 // SUB A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2097,14 +1903,12 @@ public struct Z80
                 Sub(b)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x9E:
                 // SBC A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Sbc(mem[Ix + dimm])
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xA6:
                 // AND A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2112,7 +1916,6 @@ public struct Z80
                 And(b)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xB6:
                 // OR A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2120,7 +1923,6 @@ public struct Z80
                 Or(b)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xAE:
                 // OR A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2128,7 +1930,6 @@ public struct Z80
                 Xor(b)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xBE:
                 // CP A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2136,67 +1937,56 @@ public struct Z80
                 Cmp(b)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x34:
                 // INC (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + dimm] = Inc(mem[Ix + dimm])
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x35:
                 // DEC (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + dimm] = Dec(mem[Ix + dimm])
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x09:
                 AddIx(Bc)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x19:
                 AddIx(De)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x29:
                 AddIx(Ix)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x39:
                 AddIx(Sp)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x23:
                 let val = Ix &+ 1
                 registers[IX] = Byte(val >> 8)
                 registers[IX + 1] = Byte(val & 0xFF)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x2B:
                 let val = Ix &- 1
                 registers[IX] = Byte(val >> 8)
                 registers[IX + 1] = Byte(val & 0xFF)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xE9:
                 let addr = Ix
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
                 traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Wait(8)
-                return
             default:
-                break
+                traceOpcode?(.DD, opcode, imm, imm16, dimm)
+                Halt = true
         }
-        traceOpcode?(.DD, opcode, imm, imm16, dimm)
-        Halt = true
     }
 
     private mutating func ParseFD()
@@ -2214,7 +2004,6 @@ public struct Z80
         {
             case 0xCB:
                 ParseCB(0xFD)
-                return
             case 0x21:
                 // LD IY, nn
                 registers[IY + 1] = Fetch()
@@ -2222,21 +2011,18 @@ public struct Z80
                 imm16 = Iy
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(14)
-                return
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 registers[yyy] = mem[Iy + dimm]
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IY+d), r
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + dimm] = registers[zzz]
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x36:
                 // LD (IY+d), n
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2244,7 +2030,6 @@ public struct Z80
                 mem[Iy + dimm] = imm
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x2A:
                 // LD IY, (nn)
                 imm16 = Fetch16()
@@ -2254,7 +2039,6 @@ public struct Z80
                 registers[IY] = mem[addr]
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(20)
-                return
             case 0x22:
                 // LD (nn), IY
                 imm16 = Fetch16()
@@ -2264,14 +2048,12 @@ public struct Z80
                 mem[addr] = registers[IY]
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(20)
-                return
             case 0xF9:
                 // LD SP, IY
                 registers[SP] = registers[IY]
                 registers[SP + 1] = registers[IY + 1]
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(10)
-                return
             case 0xE5:
                 // PUSH IY
                 var addr = Sp
@@ -2283,7 +2065,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(15)
-                return
             case 0xE1:
                 // POP IY
                 var addr = Sp
@@ -2295,7 +2076,6 @@ public struct Z80
                 registers[SP] = Byte(addr >> 8)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(14)
-                return
             case 0xE3:
                 // EX (SP), IY
                 let hi = registers[IY]
@@ -2308,35 +2088,30 @@ public struct Z80
                 mem[addr] = hi
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(24)
-                return
             case 0x86:
                 // ADD A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Add(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x8E:
                 // ADC A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Adc(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x96:
                 // SUB A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Sub(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x9E:
                 // SBC A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Sbc(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xA6:
                 // AND A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2344,7 +2119,6 @@ public struct Z80
                 And(b)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xB6:
                 // OR A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2352,7 +2126,6 @@ public struct Z80
                 Or(b)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xAE:
                 // XOR A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
@@ -2360,74 +2133,62 @@ public struct Z80
                 Xor(b)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0xBE:
                 // CP A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Cmp(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(19)
-                return
             case 0x34:
                 // INC (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + dimm] = Inc(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x35:
                 // DEC (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + dimm] = Dec(mem[Iy + dimm])
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(7)
-                return
             case 0x09:
                 AddIy(Bc)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x19:
                 AddIy(De)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x29:
                 AddIy(Iy)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x39:
                 AddIy(Sp)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x23:
                 let val = Iy &+ 1
                 registers[IY] = Byte(val >> 8)
                 registers[IY + 1] = Byte(val & 0xFF)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0x2B:
                 let val = Iy &- 1
                 registers[IY] = Byte(val >> 8)
                 registers[IY + 1] = Byte(val & 0xFF)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(4)
-                return
             case 0xE9:
                 let addr = Iy
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
                 traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Wait(8)
-                return
             default:
-                break
+                traceOpcode?(.FD, opcode, imm, imm16, dimm)
+                Halt = true
         }
-        traceOpcode?(.FD, opcode, imm, imm16, dimm)
-        Halt = true
     }
 
     private mutating func Add(_ b: Byte)
@@ -2666,7 +2427,7 @@ public struct Z80
         var parity = true
         while v > 0
         {
-            if (v & 1) == 1 {
+            if (v & 0x01) == 1 {
                 parity = !parity
             }
             v = v >> 1
@@ -2681,20 +2442,16 @@ public struct Z80
         {
             case 0:
                 mask = Flags.Z
-                break
             case 2:
                 mask = Flags.C
-                break
             case 4:
                 mask = Flags.PV
-                break
             case 6:
                 mask = Flags.S
-                break
             default:
                 return false
         }
-        return ((registers[F] & mask.rawValue) > 0) == ((condition & 1) == 1)
+        return ((registers[F] & mask.rawValue) > 0) == ((condition & 0x01) > 0)
     }
 
     private mutating func Fetch() -> Byte
@@ -2760,7 +2517,7 @@ public struct Z80
     private mutating func Wait(_ tStates: Int)
     {
         registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
-        let tTime = Double(tStates) / Double(cfreq)
+        let tTime = Double(tStates) / Double(CLK)
         let epoch = Date().timeIntervalSinceReferenceDate - clock
         let sleep = tTime - epoch
         if sleep > 0
@@ -2774,10 +2531,10 @@ public struct Z80
         }
         else
         {
-            traceTiming?(sleep, cfreq)
+            traceTiming?(sleep, CLK)
             clock = Date().timeIntervalSinceReferenceDate
         }
-		_ = self.tStates?.add(UInt64(tStates))
+        self.tStates = tStates
     }
 
     private mutating func SwapReg(_ reg: Byte, _ reg2: Byte)

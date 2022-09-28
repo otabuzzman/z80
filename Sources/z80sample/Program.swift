@@ -22,8 +22,8 @@ extension Z80 {
             print(Z80Mne.mnemonic(prefix, opcode, imm, imm16, dimm))
         }
         traceTiming:
-        { sleep, cfreq in
-            print(String(format: "%d T states late", Int(abs(sleep * Double(cfreq)))))
+        { sleep, CLK in
+            print(String(format: "%d T states late", Int(abs(sleep * Double(CLK)))))
         }
         traceNmiInt:
         { interrupt, addr, instruction in
