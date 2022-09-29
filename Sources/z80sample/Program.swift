@@ -29,13 +29,13 @@ extension Z80 {
         { interrupt, addr, instruction in
             switch interrupt {
                 case .Nmi:
-                    print(String(format: "NMI addr: 0x%04X", addr))
+                    print(String(format: "NMI PC: 0x%04X", addr))
                 case .Int0:
                     print(String(format: "IM0 instruction: 0x%02X", instruction))
                 case .Int1:
-                    print(String(format: "IM1 addr: 0x%04X", addr))
+                    print(String(format: "IM1 PC: 0x%04X", addr))
                 case .Int2:
-                    print(String(format: "IM2 addr: 0x%04X", addr))
+                    print(String(format: "IM2 PC: 0x%04X", addr))
             }
         }
 
