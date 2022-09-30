@@ -130,7 +130,7 @@ public struct Z80
                 case 0:
                     // This is not quite correct, as it only runs a RST xx
                     // Instead, it should also support any other instruction
-                    let instruction = ports.data & 0x38
+                    let instruction = ports.data
                     var addr = Sp
                     addr = addr &- 1
                     mem[addr] = Byte(Pc >> 8)
@@ -139,7 +139,7 @@ public struct Z80
                     registers[SP] = Byte(addr >> 8)
                     registers[SP + 1] = Byte(addr & 0xFF)
                     registers[PC] = 0x00
-                    registers[PC + 1] = instruction
+                    registers[PC + 1] = instruction & 0x38
                     traceNmiInt?(.Int0, 0, instruction)
                     Wait(17)
                     Halt = false
