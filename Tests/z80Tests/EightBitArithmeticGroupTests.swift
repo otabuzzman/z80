@@ -2207,7 +2207,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(byteSum, z80.Reg8(testCase.reg))
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(z80.Reg8(testCase.reg) == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
-            XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(Byte(1) + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
@@ -2237,7 +2237,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(byteSum, mem[0x0040])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(mem[0x0040] == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
-            XCTAssertEqual(1 + (0x0F & val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(Byte(1) + (0x0F & val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
@@ -2272,7 +2272,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.d])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
-            XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(Byte(1) + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")
@@ -2307,7 +2307,7 @@ final class EightBitArithmeticGroupTests: XCTestCase {
             XCTAssertEqual(byteSum, mem[0x0040 + testCase.d])
             XCTAssertEqual(sbyteSum < 0, z80.FlagS, "Flag S contained the wrong value")
             XCTAssertEqual(byteSum == 0x00, z80.FlagZ, "Flag Z contained the wrong value")
-            XCTAssertEqual(1 + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
+            XCTAssertEqual(Byte(1) + (0x0F & testCase.val) > 0x0F, z80.FlagH, "Flag H contained the wrong value")
             let overflow = testCase.val == 0x7F
             XCTAssertEqual(overflow, z80.FlagP, "Flag P contained the wrong value")
             XCTAssertEqual(UShort(truncatingIfNeeded: trueSum) > 0xFF, z80.FlagC, "Flag C contained the wrong value")

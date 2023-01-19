@@ -40,9 +40,9 @@ while (!myZ80.Halt)
 Console.WriteLine(myZ80.DumpState());
 ```
 
-### Run test suite in VS2019
+### Run test suite in VS2022
 
-- Update project to use NUnit 3
+- Update project to use .NET 4.8 and NUnit 3
 - Open terminal and CWD into `z80.Tests` folder
 - Exec `nunit3-console bin\Debug\z80.Tests.dll` command
 
