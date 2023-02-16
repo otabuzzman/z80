@@ -13,7 +13,7 @@ extension Z80 {
         let ports = SamplePorts()
 
         let mem = Memory(ram, 16384)
-        var z80 = Z80(mem, ports)
+        let z80 = Z80(mem, ports)
         { addr, data in
             print(String(format: "  %04X %02X ", addr, data))
         }

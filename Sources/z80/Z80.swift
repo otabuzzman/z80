@@ -23,7 +23,7 @@ public enum NmiInt {
     case Int2
 }
 
-public struct Z80
+public class Z80
 {
     private let B: Byte = 0
     private let C: Byte = 1
@@ -91,7 +91,7 @@ public struct Z80
     public var Halt = false
 
     @discardableResult
-    public mutating func parse() -> Int
+    public func parse() -> Int
     {
         var tStates: Int = 0
         if ports.NMI
@@ -871,7 +871,7 @@ public struct Z80
         return tStates
     }
 
-    private mutating func ParseCB(_ mode: Byte = 0) -> Int
+    private func ParseCB(_ mode: Byte = 0) -> Int
     {
         var tStates: Int = 0
         var dimm: SByte = 0
@@ -987,7 +987,7 @@ public struct Z80
         return tStates
     }
 
-    private mutating func Bit(_ bit: Byte, _ val: Byte)
+    private func Bit(_ bit: Byte, _ val: Byte)
     {
         var f = registers[F] & ~(Flags.Z.rawValue | Flags.H.rawValue | Flags.N.rawValue)
         if (val & (0x01 << bit)) == 0 {
@@ -997,28 +997,28 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func AddHl(_ val: UShort)
+    private func AddHl(_ val: UShort)
     {
         let sum = Add(Hl, val)
         registers[H] = Byte(sum >> 8)
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func AddIx(_ val: UShort)
+    private func AddIx(_ val: UShort)
     {
         let sum = Add(Ix, val)
         registers[IX] = Byte(sum >> 8)
         registers[IX + 1] = Byte(sum & 0xFF)
     }
 
-    private mutating func AddIy(_ val: UShort)
+    private func AddIy(_ val: UShort)
     {
         let sum = Add(Iy, val)
         registers[IY] = Byte(sum >> 8)
         registers[IY + 1] = Byte(sum & 0xFF)
     }
 
-    private mutating func Add(_ a: UShort, _ b: UShort) -> UShort
+    private func Add(_ a: UShort, _ b: UShort) -> UShort
     {
         let sum = Int(a) + Int(b)
         var f = registers[F] & ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
@@ -1032,14 +1032,14 @@ public struct Z80
         return UShort(truncatingIfNeeded: sum)
     }
 
-    private mutating func AdcHl(_ val: UShort)
+    private func AdcHl(_ val: UShort)
     {
         let sum = Adc(Hl, val)
         registers[H] = Byte(sum >> 8)
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func Adc(_ a: UShort, _ b: UShort) -> UShort
+    private func Adc(_ a: UShort, _ b: UShort) -> UShort
     {
         let sum = Int(a) + Int(b) + Int((registers[F] & Flags.C.rawValue))
         var f = registers[F] & ~(Flags.S.rawValue | Flags.Z.rawValue | Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.C.rawValue)
@@ -1062,14 +1062,14 @@ public struct Z80
         return UShort(truncatingIfNeeded: sum)
     }
 
-    private mutating func SbcHl(_ val: UShort)
+    private func SbcHl(_ val: UShort)
     {
         let sum = Sbc(Hl, val)
         registers[H] = Byte(sum >> 8)
         registers[L] = Byte(sum & 0xFF)
     }
 
-    private mutating func Sbc(_ a: UShort, _ b: UShort) -> UShort
+    private func Sbc(_ a: UShort, _ b: UShort) -> UShort
     {
         let dif = Int(a) - Int(b) - Int(registers[F] & Flags.C.rawValue)
         var f = registers[F] & ~(Flags.S.rawValue | Flags.Z.rawValue | Flags.H.rawValue | Flags.PV.rawValue | Flags.N.rawValue | Flags.C.rawValue)
@@ -1092,7 +1092,7 @@ public struct Z80
         return UShort(truncatingIfNeeded: dif)
     }
 
-    private mutating func ParseED() -> Int
+    private func ParseED() -> Int
     {
         var tStates: Int = 0
         if Halt {
@@ -1780,7 +1780,7 @@ public struct Z80
         return tStates
     }
 
-    private mutating func ParseDD() -> Int
+    private func ParseDD() -> Int
     {
         var tStates: Int = 0
         if Halt {
@@ -1987,7 +1987,7 @@ public struct Z80
         return tStates
     }
 
-    private mutating func ParseFD() -> Int
+    private func ParseFD() -> Int
     {
         var tStates: Int = 0
         if Halt {
@@ -2191,7 +2191,7 @@ public struct Z80
         return tStates
     }
 
-    private mutating func Add(_ b: Byte)
+    private func Add(_ b: Byte)
     {
         let a = registers[A]
         let sum = UShort(a) + UShort(b)
@@ -2215,7 +2215,7 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func Adc(_ b: Byte)
+    private func Adc(_ b: Byte)
     {
         let a = registers[A]
         let c = registers[F] & Flags.C.rawValue
@@ -2241,7 +2241,7 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func Sub(_ b: Byte)
+    private func Sub(_ b: Byte)
     {
         let a = registers[A]
         let dif = Short(a) - Short(b)
@@ -2266,7 +2266,7 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func Sbc(_ b: Byte)
+    private func Sbc(_ b: Byte)
     {
         let a = registers[A]
         let c = registers[F] & Flags.C.rawValue
@@ -2292,7 +2292,7 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func And(_ b: Byte)
+    private func And(_ b: Byte)
     {
         let a = registers[A]
         let res = a & b
@@ -2311,7 +2311,7 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func Or(_ b: Byte)
+    private func Or(_ b: Byte)
     {
         let a = registers[A]
         let res = a | b
@@ -2329,7 +2329,7 @@ public struct Z80
          registers[F] = f
     }
 
-    private mutating func Xor(_ b: Byte)
+    private func Xor(_ b: Byte)
     {
         let a = registers[A]
         let res = a ^ b
@@ -2347,7 +2347,7 @@ public struct Z80
          registers[F] = f
     }
 
-    private mutating func Cmp(_ b: Byte)
+    private func Cmp(_ b: Byte)
     {
         let a = registers[A]
         let dif = Short(a) - Short(b)
@@ -2371,7 +2371,7 @@ public struct Z80
         registers[F] = f
     }
 
-    private mutating func Inc(_ b: Byte) -> Byte
+    private func Inc(_ b: Byte) -> Byte
     {
         let sum = UShort(b) + UShort(1)
         var f = registers[F] & ~Flags.All.rawValue
@@ -2395,7 +2395,7 @@ public struct Z80
         return Byte(truncatingIfNeeded: sum)
     }
 
-    private mutating func Dec(_ b: Byte) -> Byte
+    private func Dec(_ b: Byte) -> Byte
     {
         let dif = Short(b) - Short(1)
         var f = registers[F] & ~Flags.All.rawValue
@@ -2454,7 +2454,7 @@ public struct Z80
         return ((registers[F] & mask.rawValue) > 0) == ((condition & 0x01) > 0)
     }
 
-    private mutating func Fetch() -> Byte
+    private func Fetch() -> Byte
     {
         var addr = Pc
         let data = mem[addr]
@@ -2465,12 +2465,12 @@ public struct Z80
         return data
     }
 
-    private mutating func Fetch16() -> UShort
+    private func Fetch16() -> UShort
     {
         return UShort(Fetch()) + (UShort(Fetch()) << 8)
     }
 
-    public mutating func reset()
+    public func reset()
     {
         for r in 0..<registers.count {
             registers[r] = 0
@@ -2513,7 +2513,7 @@ public struct Z80
             (registers[F] & 0x04) >> 2, (registers[F] & 0x02) >> 1, registers[F] & 0x01, Bc, De, Hl, Sp, Pc, Ix, Iy)
     }
 
-    private mutating func SwapReg(_ reg: Byte, _ reg2: Byte)
+    private func SwapReg(_ reg: Byte, _ reg2: Byte)
     {
         let r = registers[reg]
         registers[reg] = registers[reg2]
