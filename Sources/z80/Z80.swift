@@ -23,7 +23,7 @@ public enum NmiInt {
     case Int2
 }
 
-public class Z80
+open class Z80
 {
     private let B: Byte = 0
     private let C: Byte = 1
@@ -91,7 +91,7 @@ public class Z80
     public var Halt = false
 
     @discardableResult
-    public func parse() -> Int
+    open func parse() -> Int
     {
         var tStates: Int = 0
         if ports.NMI
