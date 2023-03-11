@@ -194,81 +194,78 @@ open class Z80
             } else {
                 registers[yyy] = reg
             }
-            tStates = dstHL || srcHL ? 7 : 4
             traceOpcode?(.None, opcode, imm, imm16, dimm)
+            tStates = dstHL || srcHL ? 7 : 4
             return tStates
         }
         switch opcode
         {
             case 0xCB:
                 tStates = ParseCB()
+                registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
+                return tStates
             case 0xDD:
                 tStates = ParseDD()
+                registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
+                return tStates
             case 0xED:
                 tStates = ParseED()
+                registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
+                return tStates
             case 0xFD:
                 tStates = ParseFD()
+                registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
+                return tStates
             case 0x00:
                 // NOP
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x01, 0x11, 0x21:
                 // LD dd, nn
                 registers[yyy + 1] = Fetch()
                 registers[yyy] = Fetch()
                 imm16 = (UShort(registers[yyy]) << 8) + registers[yyy + 1]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0x31:
                 // LD SP, nn
                 registers[SP + 1] = Fetch()
                 registers[SP] = Fetch()
                 imm16 = Sp
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0x06, 0x0E, 0x16, 0x1E, 0x26, 0x2E, 0x3E:
                 // LD r, n
                 imm = Fetch()
                 registers[yyy] = imm
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x36:
                 // LD (HL), n
                 imm = Fetch()
                 mem[Hl] = imm
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0x0A:
                 // LD A, (BC)
                 registers[A] = mem[Bc]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x1A:
                 // LD A, (DE)
                 registers[A] = mem[De]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x3A:
                 // LD A, (nn)
                 imm16 = Fetch16()
                 registers[A] = mem[imm16]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 13
             case 0x02:
                 // LD (BC), A
                 mem[Bc] = registers[A]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x12:
                 // LD (DE), A
                 mem[De] = registers[A]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x32:
                 // LD (nn), A 
                 imm16 = Fetch16()
                 mem[imm16] = registers[A]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 13
             case 0x2A:
                 // LD HL, (nn) 
@@ -278,7 +275,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[H] = mem[addr]
                 addr = addr &- 1
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 16
             case 0x22:
                 // LD (nn), HL
@@ -288,13 +284,11 @@ open class Z80
                 addr = addr &+ 1
                 mem[addr] = registers[H]
                 addr = addr &- 1
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 16
             case 0xF9:
                 // LD SP, HL
                 registers[SP + 1] = registers[L]
                 registers[SP] = registers[H]
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 6
             case 0xC5:
                 // PUSH BC
@@ -305,7 +299,6 @@ open class Z80
                 mem[addr] = registers[C]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 11
             case 0xD5:
                 // PUSH DE
@@ -316,7 +309,6 @@ open class Z80
                 mem[addr] = registers[E]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 11
             case 0xE5:
                 // PUSH HL
@@ -327,7 +319,6 @@ open class Z80
                 mem[addr] = registers[L]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 11
             case 0xF5:
                 // PUSH AF
@@ -338,7 +329,6 @@ open class Z80
                 mem[addr] = registers[F]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 11
             case 0xC1:
                 // POP BC
@@ -349,7 +339,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xD1:
                 // POP DE
@@ -360,7 +349,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xE1:
                 // POP HL
@@ -371,7 +359,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xF1:
                 // POP AF
@@ -382,19 +369,16 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xEB:
                 // EX DE, HL
                 SwapReg(D, H)
                 SwapReg(E, L)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x08:
                 // EX AF, AF'
                 SwapReg(Ap, A)
                 SwapReg(Fp, F)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xD9:
                 // EXX
@@ -404,7 +388,6 @@ open class Z80
                 SwapReg(E, Ep)
                 SwapReg(H, Hp)
                 SwapReg(L, Lp)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xE3:
                 // EX (SP), HL
@@ -416,167 +399,136 @@ open class Z80
                 tmp = registers[H]
                 registers[H] = mem[addr]
                 mem[addr] = tmp
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x87:
                 // ADD A, r
                 Add(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xC6:
                 // ADD A, n
                 imm = Fetch()
                 Add(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x86:
                 // ADD A, (HL)
                 Add(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8F:
                 // ADC A, r
                 Adc(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xCE:
                 // ADC A, n
                 imm = Fetch()
                 Adc(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x8E:
                 // ADC A, (HL)
                 Adc(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x97:
                 // SUB A, r
                 Sub(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xD6:
                 // SUB A, n
                 imm = Fetch()
                 Sub(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x96:
                 // SUB A, (HL)
                 Sub(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9F:
                 // SBC A, r
                 Sbc(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xDE:
                 // SBC A, n
                 imm = Fetch()
                 Sbc(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x9E:
                 // SBC A, (HL)
                 Sbc(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA7:
                 // AND A, r
                 And(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xE6:
                 // AND A, n
                 imm = Fetch()
                 And(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xA6:
                 // AND A, (HL)
                 And(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB7:
                 // OR A, r
                 Or(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xF6:
                 // OR A, n
                 imm = Fetch()
                 Or(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xB6:
                 // OR A, (HL)
                 Or(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAF:
                 // XOR A, r
                 Xor(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xEE:
                 // XOR A, n
                 imm = Fetch()
                 Xor(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xAE:
                 // XOR A, (HL)
                 Xor(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0xF3:
                 // DI
                 IFF1 = false
                 IFF2 = false
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xFB:
                 // EI
                 IFF1 = true
                 IFF2 = true
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBF:
                 // CP A, r
                 Cmp(registers[zzz])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xFE:
                 // CP A, n
                 imm = Fetch()
                 Cmp(imm)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xBE:
                 // CP A, (HL)
                 Cmp(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x04, 0x0C, 0x14, 0x1C, 0x24, 0x2C, 0x3C:
                 // INC r
                 registers[yyy] = Inc(registers[yyy])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x34:
                 // INC (HL)
                 mem[Hl] = Inc(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x05, 0x0D, 0x15, 0x1D, 0x25, 0x2D, 0x3D:
                 // DEC r
                 registers[yyy] = Dec(registers[yyy])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x35:
                 // DEC (HL)
                 mem[Hl] = Dec(mem[Hl])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x27:
                 // DAA
@@ -591,89 +543,73 @@ open class Z80
                 {
                     Add(0x60)
                 }
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x2F:
                 // CPL
                 registers[A] ^= 0xFF
                 registers[F] |= Flags.H.rawValue | Flags.N.rawValue
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x3F:
                 // CCF
                 registers[F] &= ~Flags.N.rawValue
                 registers[F] ^= Flags.C.rawValue
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x37:
                 // SCF
                 registers[F] &= ~Flags.N.rawValue
                 registers[F] |= Flags.C.rawValue
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x09:
                 AddHl(Bc)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x19:
                 AddHl(De)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x29:
                 AddHl(Hl)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x39:
                 AddHl(Sp)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x03:
                 let val = Bc &+ 1
                 registers[B] = Byte(val >> 8)
                 registers[C] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x13:
                 let val = De &+ 1
                 registers[D] = Byte(val >> 8)
                 registers[E] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x23:
                 let val = Hl &+ 1
                 registers[H] = Byte(val >> 8)
                 registers[L] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x33:
                 let val = Sp &+ 1
                 registers[SP] = Byte(val >> 8)
                 registers[SP + 1] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x0B:
                 let val = Bc &- 1
                 registers[B] = Byte(val >> 8)
                 registers[C] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x1B:
                 let val = De &- 1
                 registers[D] = Byte(val >> 8)
                 registers[E] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x2B:
                 let val = Hl &- 1
                 registers[H] = Byte(val >> 8)
                 registers[L] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x3B:
                 let val = Sp &- 1
                 registers[SP] = Byte(val >> 8)
                 registers[SP + 1] = Byte(val & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x07:
                 var a = registers[A]
@@ -682,7 +618,6 @@ open class Z80
                 registers[A] = a
                 registers[F] &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 registers[F] |= c
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x17:
                 var a = registers[A]
@@ -694,7 +629,6 @@ open class Z80
                 f &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 f |= c
                 registers[F] = f
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x0F:
                 var a = registers[A]
@@ -703,7 +637,6 @@ open class Z80
                 registers[A] = a
                 registers[F] &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 registers[F] |= c
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x1F:
                 var a = registers[A]
@@ -715,13 +648,11 @@ open class Z80
                 f &= ~(Flags.H.rawValue | Flags.N.rawValue | Flags.C.rawValue)
                 f |= c
                 registers[F] = f
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xC3:
                 imm16 = Fetch16()
                 registers[PC] = Byte(imm16 >> 8)
                 registers[PC + 1] = Byte(imm16 & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xC2, 0xCA, 0xD2, 0xDA, 0xE2, 0xEA, 0xF2, 0xFA:
                 imm16 = Fetch16()
@@ -730,7 +661,6 @@ open class Z80
                     registers[PC] = Byte(imm16 >> 8)
                     registers[PC + 1] = Byte(imm16 & 0xFF)
                 }
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0x18:
                 // order is important here
@@ -738,7 +668,6 @@ open class Z80
                 let addr = Pc + dimm
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 12
             case 0x20, 0x28, 0x30, 0x38:
                 // order is important here
@@ -754,12 +683,10 @@ open class Z80
                 {
                     tStates = 7
                 }
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
             case 0xE9:
                 let addr = Hl
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x10:
                 // order is important here
@@ -778,7 +705,6 @@ open class Z80
                 {
                     tStates = 8
                 }
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
             case 0xCD:
                 imm16 = Fetch16()
                 var addr = Sp
@@ -790,7 +716,6 @@ open class Z80
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[PC] = Byte(imm16 >> 8)
                 registers[PC + 1] = Byte(imm16 & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 17
             case 0xC4, 0xCC, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC:
                 imm16 = Fetch16()
@@ -811,7 +736,6 @@ open class Z80
                 {
                     tStates = 10
                 }
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
             case 0xC9:
                 var addr = Sp
                 registers[PC + 1] = mem[addr]
@@ -820,7 +744,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP] = Byte(addr >> 8)
                 registers[SP + 1] = Byte(addr & 0xFF)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xC0, 0xC8, 0xD0, 0xD8, 0xE0, 0xE8, 0xF0, 0xF8:
                 if JpCondition(is: yyy)
@@ -838,7 +761,6 @@ open class Z80
                 {
                     tStates = 5
                 }
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
             case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF:
                 var addr = Sp
                 addr = addr &- 1
@@ -849,25 +771,22 @@ open class Z80
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[PC] = 0
                 registers[PC + 1] = Byte(opcode & 0x38)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 17
             case 0xDB:
                 imm = Fetch()
                 let port = (UShort(registers[A]) << 8) + imm
                 registers[A] = ports.rdPort(port)
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 11
             case 0xD3:
                 imm = Fetch()
                 let port = (UShort(registers[A]) << 8) + imm
                 ports.wrPort(port, registers[A])
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 tStates = 11
             default:
-                traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Halt = true
         }
         registers[R] = registers[R] &+ Byte(truncatingIfNeeded: (tStates + 3) / 4)
+        traceOpcode?(.None, opcode, imm, imm16, dimm)
         return tStates
     }
 
@@ -1106,12 +1025,10 @@ open class Z80
             case 0x47:
                 // LD I, A
                 registers[I] = registers[A]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 9
             case 0x4F:
                 // LD R, A
                 registers[R] = registers[A]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 9
             case 0x57:
                 // LD A, I
@@ -1131,7 +1048,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 9
             case 0x5F:
                 // LD A, R
@@ -1151,7 +1067,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 9
             case 0x4B:
                 // LD BC, (nn)
@@ -1160,7 +1075,6 @@ open class Z80
                 registers[C] = mem[addr]
                 addr = addr &+ 1
                 registers[B] = mem[addr]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x5B:
                 // LD DE, (nn)
@@ -1169,7 +1083,6 @@ open class Z80
                 registers[E] = mem[addr]
                 addr = addr &+ 1
                 registers[D] = mem[addr]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x6B:
                 // LD HL, (nn)
@@ -1178,7 +1091,6 @@ open class Z80
                 registers[L] = mem[addr]
                 addr = addr &+ 1
                 registers[H] = mem[addr]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x7B:
                 // LD SP, (nn)
@@ -1187,7 +1099,6 @@ open class Z80
                 registers[SP + 1] = mem[addr]
                 addr = addr &+ 1
                 registers[SP] = mem[addr]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x43:
                 // LD (nn), BC
@@ -1196,7 +1107,6 @@ open class Z80
                 mem[addr] = registers[C]
                 addr = addr &+ 1
                 mem[addr] = registers[B]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x53:
                 // LD (nn), DE
@@ -1205,7 +1115,6 @@ open class Z80
                 mem[addr] = registers[E]
                 addr = addr &+ 1
                 mem[addr] = registers[D]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x63:
                 // LD (nn), HL
@@ -1214,7 +1123,6 @@ open class Z80
                 mem[addr] = registers[L]
                 addr = addr &+ 1
                 mem[addr] = registers[H]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0x73:
                 // LD (nn), SP
@@ -1223,7 +1131,6 @@ open class Z80
                 mem[addr] = registers[SP + 1]
                 addr = addr &+ 1
                 mem[addr] = registers[SP]
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 20
             case 0xA0:
                 // LDI
@@ -1245,7 +1152,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xB0:
                 // LDIR
@@ -1273,7 +1179,6 @@ open class Z80
                     tStates = 21
                     break
                 }
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xA8:
                 // LDD
@@ -1295,7 +1200,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xB8:
                 // LDDR
@@ -1323,7 +1227,6 @@ open class Z80
                     tStates = 21
                     break
                 }
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xA1:
                 // CPI
@@ -1351,7 +1254,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f | Flags.N.rawValue
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xB1:
                 // CPIR
@@ -1381,7 +1283,6 @@ open class Z80
                         f |= Flags.PV.rawValue
                     }
                     registers[F] = f | Flags.N.rawValue
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 16
                     break
                 }
@@ -1417,7 +1318,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f | Flags.N.rawValue
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xB9:
                 // CPDR
@@ -1447,7 +1347,6 @@ open class Z80
                         f |= Flags.PV.rawValue
                     }
                     registers[F] = f | Flags.N.rawValue
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 21
                     break
                 }
@@ -1480,54 +1379,42 @@ open class Z80
                     f |= Flags.C.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0x46, 0x66:
                 // IM 0
                 IM = 0
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0x56, 0x76:
                 // IM 1
                 IM = 1
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0x5E, 0x7E:
                 // IM 2
                 IM = 2
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0x4A:
                 AdcHl(Bc)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x5A:
                 AdcHl(De)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x6A:
                 AdcHl(Hl)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x7A:
                 AdcHl(Sp)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x42:
                 SbcHl(Bc)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x52:
                 SbcHl(De)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x62:
                 SbcHl(Hl)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x72:
                 SbcHl(Sp)
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 15
             case 0x6F:
                 var a = registers[A]
@@ -1546,7 +1433,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 18
             case 0x67:
                 var a = registers[A]
@@ -1565,7 +1451,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 18
             case 0x45, 0x4D, 0x55, 0x5D, 0x65, 0x6D, 0x75, 0x7D:
                 var addr = Sp
@@ -1576,10 +1461,8 @@ open class Z80
                 registers[SP] = Byte(addr >> 8)
                 registers[SP + 1] = Byte(addr & 0xFF)
                 IFF1 = IFF2
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 10
             case 0x77, 0x7F:
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x78:
                 let a = ports.rdPort(Bc)
@@ -1595,7 +1478,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0xA2:
                 let a = ports.rdPort(Bc)
@@ -1612,7 +1494,6 @@ open class Z80
                 }
                 f |= Flags.N.rawValue
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xB2:
                 let a = ports.rdPort(Bc)
@@ -1628,13 +1509,11 @@ open class Z80
                     let addr = Pc - 2
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 21
                 }
                 else
                 {
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 16
                 }
             case 0xAA:
@@ -1652,7 +1531,6 @@ open class Z80
                 }
                 f |= Flags.N.rawValue
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xBA:
                 let a = ports.rdPort(Bc)
@@ -1668,13 +1546,11 @@ open class Z80
                     let addr = Pc - 2
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 21
                 }
                 else
                 {
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 16
                 }
             case 0x41, 0x49, 0x51, 0x59, 0x61, 0x69, 0x79:
@@ -1691,7 +1567,6 @@ open class Z80
                     f |= Flags.PV.rawValue
                 }
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 8
             case 0xA3:
                 var hl = Hl
@@ -1708,7 +1583,6 @@ open class Z80
                 }
                 f |= Flags.N.rawValue
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xB3:
                 var hl = Hl
@@ -1724,13 +1598,11 @@ open class Z80
                     let addr = Pc - 2
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 21
                 }
                 else
                 {
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 16
                 }
             case 0xAB:
@@ -1748,7 +1620,6 @@ open class Z80
                 }
                 f |= Flags.N.rawValue
                 registers[F] = f
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 tStates = 16
             case 0xBB:
                 var hl = Hl
@@ -1764,19 +1635,17 @@ open class Z80
                     let addr = Pc - 2
                     registers[PC] = Byte(addr >> 8)
                     registers[PC + 1] = Byte(addr & 0xFF)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 21
                 }
                 else
                 {
                     registers[F] = (registers[F] | Flags.N.rawValue | Flags.Z.rawValue)
-                    traceOpcode?(.ED, opcode, 0, imm16, 0)
                     tStates = 16
                 }
             default:
-                traceOpcode?(.ED, opcode, 0, imm16, 0)
                 Halt = true
         }
+        traceOpcode?(.ED, opcode, 0, imm16, 0)
         return tStates
     }
 
@@ -1796,31 +1665,28 @@ open class Z80
         {
             case 0xCB:
                 tStates = ParseCB(0xDD)
+                return tStates
             case 0x21:
                 // LD IX, nn
                 registers[IX + 1] = Fetch()
                 registers[IX] = Fetch()
                 imm16 = Ix
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 14
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 registers[yyy] = mem[Ix + dimm]
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IX+d), r
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + dimm] = registers[zzz]
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x36:
                 // LD (IX+d), n
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 imm = Fetch()
                 mem[Ix + dimm] = imm
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x2A:
                 // LD IX, (nn)
@@ -1829,7 +1695,6 @@ open class Z80
                 registers[IX + 1] = mem[addr]
                 addr = addr &+ 1
                 registers[IX] = mem[addr]
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 20
             case 0x22:
                 // LD (nn), IX
@@ -1838,13 +1703,11 @@ open class Z80
                 mem[addr] = registers[IX + 1]
                 addr = addr &+ 1
                 mem[addr] = registers[IX]
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 20
             case 0xF9:
                 // LD SP, IX
                 registers[SP] = registers[IX]
                 registers[SP + 1] = registers[IX + 1]
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xE5:
                 // PUSH IX
@@ -1855,7 +1718,6 @@ open class Z80
                 mem[addr] = registers[IX + 1]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 15
             case 0xE1:
                 // POP IX
@@ -1866,7 +1728,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 14
             case 0xE3:
                 // EX (SP), IX
@@ -1879,111 +1740,93 @@ open class Z80
                 mem[addr] = hi
                 addr = addr &- 1
                 mem[addr] = lo
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 24
             case 0x86:
                 // ADD A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Add(mem[Ix + dimm])
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x8E:
                 // ADC A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Adc(mem[Ix + dimm])
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x96:
                 // SUB A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Ix + dimm]
                 Sub(b)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x9E:
                 // SBC A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Sbc(mem[Ix + dimm])
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xA6:
                 // AND A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Ix + dimm]
                 And(b)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xB6:
                 // OR A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Ix + dimm]
                 Or(b)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xAE:
                 // OR A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Ix + dimm]
                 Xor(b)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xBE:
                 // CP A, (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Ix + dimm]
                 Cmp(b)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x34:
                 // INC (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + dimm] = Inc(mem[Ix + dimm])
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x35:
                 // DEC (IX+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Ix + dimm] = Dec(mem[Ix + dimm])
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x09:
                 AddIx(Bc)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x19:
                 AddIx(De)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x29:
                 AddIx(Ix)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x39:
                 AddIx(Sp)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x23:
                 let val = Ix &+ 1
                 registers[IX] = Byte(val >> 8)
                 registers[IX + 1] = Byte(val & 0xFF)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x2B:
                 let val = Ix &- 1
                 registers[IX] = Byte(val >> 8)
                 registers[IX + 1] = Byte(val & 0xFF)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xE9:
                 let addr = Ix
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 tStates = 8
             default:
-                traceOpcode?(.DD, opcode, imm, imm16, dimm)
                 Halt = true
         }
+        traceOpcode?(.DD, opcode, imm, imm16, dimm)
         return tStates
     }
 
@@ -2003,31 +1846,28 @@ open class Z80
         {
             case 0xCB:
                 tStates = ParseCB(0xFD)
+                return tStates
             case 0x21:
                 // LD IY, nn
                 registers[IY + 1] = Fetch()
                 registers[IY] = Fetch()
                 imm16 = Iy
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 14
             case 0x46, 0x4E, 0x56, 0x5E, 0x66, 0x6E, 0x7E:
                 // LD r, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 registers[yyy] = mem[Iy + dimm]
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x77:
                 // LD (IY+d), r
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + dimm] = registers[zzz]
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x36:
                 // LD (IY+d), n
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 imm = Fetch()
                 mem[Iy + dimm] = imm
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x2A:
                 // LD IY, (nn)
@@ -2036,7 +1876,6 @@ open class Z80
                 registers[IY + 1] = mem[addr]
                 addr = addr &+ 1
                 registers[IY] = mem[addr]
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 20
             case 0x22:
                 // LD (nn), IY
@@ -2045,13 +1884,11 @@ open class Z80
                 mem[addr] = registers[IY + 1]
                 addr = addr &+ 1
                 mem[addr] = registers[IY]
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 20
             case 0xF9:
                 // LD SP, IY
                 registers[SP] = registers[IY]
                 registers[SP + 1] = registers[IY + 1]
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 10
             case 0xE5:
                 // PUSH IY
@@ -2062,7 +1899,6 @@ open class Z80
                 mem[addr] = registers[IY + 1]
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 15
             case 0xE1:
                 // POP IY
@@ -2073,7 +1909,6 @@ open class Z80
                 addr = addr &+ 1
                 registers[SP + 1] = Byte(addr & 0xFF)
                 registers[SP] = Byte(addr >> 8)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 14
             case 0xE3:
                 // EX (SP), IY
@@ -2085,109 +1920,91 @@ open class Z80
                 addr = addr &+ 1
                 registers[IY] = mem[addr]
                 mem[addr] = hi
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 24
             case 0x86:
                 // ADD A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Add(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x8E:
                 // ADC A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Adc(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x96:
                 // SUB A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Sub(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x9E:
                 // SBC A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Sbc(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xA6:
                 // AND A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Iy + dimm]
                 And(b)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xB6:
                 // OR A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Iy + dimm]
                 Or(b)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xAE:
                 // XOR A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 let b = mem[Iy + dimm]
                 Xor(b)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0xBE:
                 // CP A, (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 Cmp(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 19
             case 0x34:
                 // INC (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + dimm] = Inc(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x35:
                 // DEC (IY+d)
                 dimm = SByte(truncatingIfNeeded: Fetch())
                 mem[Iy + dimm] = Dec(mem[Iy + dimm])
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 7
             case 0x09:
                 AddIy(Bc)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x19:
                 AddIy(De)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x29:
                 AddIy(Iy)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x39:
                 AddIy(Sp)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x23:
                 let val = Iy &+ 1
                 registers[IY] = Byte(val >> 8)
                 registers[IY + 1] = Byte(val & 0xFF)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0x2B:
                 let val = Iy &- 1
                 registers[IY] = Byte(val >> 8)
                 registers[IY + 1] = Byte(val & 0xFF)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 4
             case 0xE9:
                 let addr = Iy
                 registers[PC] = Byte(addr >> 8)
                 registers[PC + 1] = Byte(addr & 0xFF)
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 tStates = 8
             default:
-                traceOpcode?(.FD, opcode, imm, imm16, dimm)
                 Halt = true
         }
+        traceOpcode?(.FD, opcode, imm, imm16, dimm)
         return tStates
     }
 
@@ -2479,7 +2296,6 @@ open class Z80
         registers[F] = 0xFF
         registers[SP] = 0xFF
         registers[SP + 1] = 0xFF
-        //A CPU reset forces both the IFF1 and IFF2 to the reset state, which disables interrupts
         IFF1 = false
         IFF2 = false
     }
