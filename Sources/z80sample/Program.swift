@@ -1,18 +1,18 @@
-#if os(Windows)
-
 import Foundation
 import z80
 
 @main
 extension Z80 {
     static func main() {
-        var ram = Array<Byte>(repeating: 0, count: 0x10000)
-        let rom = NSData(contentsOfFile: "z80Sample/48.rom")
-        ram.replaceSubrange(0..<rom!.count, with: rom!)
+        let ram = Array<Byte>(repeating: 0, count: 65536)
+        let mem = Memory(ram, 16384)
+
+        let raw = NSData(contentsOfFile: "z80Sample/48.rom")!
+        let rom = Data(referencing: raw)
+        mem.replaceSubrange(0..<rom.count, with: rom)
 
         let ports = SamplePorts()
 
-        let mem = Memory(ram, 16384)
         let z80 = Z80(mem, ports)
         { addr, data in
             print(String(format: "  %04X %02X ", addr, data))
@@ -88,5 +88,3 @@ final class SamplePorts: IPorts
     var INT: Bool { false }
     var data: Byte { 0x00 }
 }
-
-#endif

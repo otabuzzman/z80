@@ -1,19 +1,19 @@
 public class Memory
 {
-    private(set) var mem: [Byte]
-    private(set) var start: UShort
-    private(set) var ports: [MPorts]?
+    private var bytes: [Byte]
+    private var start: UShort
+    private var ports: [MPorts]?
 
-    public init(_ ram: [Byte], _ start: UShort, _ ports: [MPorts]? = nil)
+    public init(_ bytes: [Byte], _ start: UShort, _ ports: [MPorts]? = nil)
     {
-        mem = ram
+        self.bytes = bytes
         self.start = start
         self.ports = ports
     }
 
     public func clear() {
-        for addr in 0..<mem.count {
-            mem[addr] = 0
+        for addr in 0..<bytes.count {
+            bytes[addr] = 0
         }
     }
 
@@ -26,7 +26,7 @@ public class Memory
                     }
                 }
             }
-            return mem[Int(addr)]
+            return bytes[Int(addr)]
         }
         set(newValue) {
             if addr >= start {
@@ -38,8 +38,15 @@ public class Memory
                         }
                     }
                 }
-                mem[Int(addr)] = newValue
+                bytes[Int(addr)] = newValue
             }
         }
     }
 }
+
+extension Memory {
+    public func replaceSubrange<C>(_ subrange: Range<Int>, with newBytes: C) where C: Collection, C.Element == Byte {
+        bytes.replaceSubrange(subrange, with: newBytes)
+    }
+}
+
