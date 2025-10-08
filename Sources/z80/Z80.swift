@@ -182,10 +182,11 @@ open class Z80
         {
             let dstHL = yyy == 6
             let srcHL = zzz == 6
-            if srcHL && dstHL
+            if srcHL && dstHL // HALT
             {
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Halt = true
+                tStates = 4
                 return tStates
             }
             let reg = srcHL ? mem[Hl] : registers[zzz]
@@ -782,9 +783,6 @@ open class Z80
                 let port = (UShort(registers[A]) << 8) + imm
                 ports.wrPort(port, registers[A])
                 tStates = 11
-            case 0x76:
-                Halt = true
-                tStates = 4
             default:
                 Halt = true
         }
