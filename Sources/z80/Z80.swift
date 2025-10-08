@@ -48,14 +48,14 @@ open class Z80
     private let SP: Byte = 22
     private let PC: Byte = 24
 
-    private(set) var mem: Memory!
+    private var mem: Memory!
     private(set) var registers = Array<Byte>(repeating: 0, count: 26)
 
     private var IFF1 = false
     private var IFF2 = false
     private var IM: Int = 0 // interrupt mode
 
-    private(set) var ports: IPorts!
+    private var ports: IPorts!
 
     public typealias TraceMemory = (_ addr: UShort, _ data: Byte) -> ()
     public typealias TraceOpcode = (_ prefix: Prefix, _ opcode: Byte, _ imm: Byte, _ imm16: UShort, _ dimm: SByte) -> ()
@@ -88,7 +88,7 @@ open class Z80
     private var Iy: UShort { (UShort(registers[IY]) << 8) + registers[IY + 1] }
     private var Pc: UShort { (UShort(registers[PC]) << 8) + registers[PC + 1] }
 
-    public var Halt = false
+    private(set) public var Halt = false
 
     @discardableResult
     open func parse() -> Int
@@ -182,7 +182,7 @@ open class Z80
         {
             let dstHL = yyy == 6
             let srcHL = zzz == 6
-            if srcHL && dstHL // HALT
+            if srcHL && dstHL // xx == 1 && yyy == 6 && zzz == 6 : HALT (0x76)
             {
                 traceOpcode?(.None, opcode, imm, imm16, dimm)
                 Halt = true
@@ -2299,6 +2299,7 @@ open class Z80
         registers[SP + 1] = 0xFF
         IFF1 = false
         IFF2 = false
+        Halt = false
     }
 
     public func getState() -> [Byte] {
