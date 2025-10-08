@@ -782,6 +782,9 @@ open class Z80
                 let port = (UShort(registers[A]) << 8) + imm
                 ports.wrPort(port, registers[A])
                 tStates = 11
+            case 0x76:
+                Halt = true
+                tStates = 4
             default:
                 Halt = true
         }
@@ -2287,7 +2290,7 @@ open class Z80
         return UShort(Fetch()) + (UShort(Fetch()) << 8)
     }
 
-    public func reset()
+    open func reset()
     {
         for r in 0..<registers.count {
             registers[r] = 0
