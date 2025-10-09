@@ -25,31 +25,31 @@ public enum NmiInt {
 
 open class Z80
 {
-    private let B: Byte = 0
-    private let C: Byte = 1
-    private let D: Byte = 2
-    private let E: Byte = 3
-    private let H: Byte = 4
-    private let L: Byte = 5
-    private let F: Byte = 6
-    private let A: Byte = 7
-    private let Bp: Byte = 8
-    private let Cp: Byte = 9
-    private let Dp: Byte = 10
-    private let Ep: Byte = 11
-    private let Hp: Byte = 12
-    private let Lp: Byte = 13
-    private let Fp: Byte = 14
-    private let Ap: Byte = 15
-    private let I: Byte = 16
-    private let R: Byte = 17
-    private let IX: Byte = 18
-    private let IY: Byte = 20
-    private let SP: Byte = 22
-    private let PC: Byte = 24
+    public let B: Byte = 0
+    public let C: Byte = 1
+    public let D: Byte = 2
+    public let E: Byte = 3
+    public let H: Byte = 4
+    public let L: Byte = 5
+    public let F: Byte = 6
+    public let A: Byte = 7
+    public let Bp: Byte = 8
+    public let Cp: Byte = 9
+    public let Dp: Byte = 10
+    public let Ep: Byte = 11
+    public let Hp: Byte = 12
+    public let Lp: Byte = 13
+    public let Fp: Byte = 14
+    public let Ap: Byte = 15
+    public let I: Byte = 16
+    public let R: Byte = 17
+    public let IX: Byte = 18
+    public let IY: Byte = 20
+    public let SP: Byte = 22
+    public let PC: Byte = 24
 
     private var mem: Memory!
-    private(set) var registers = Array<Byte>(repeating: 0, count: 26)
+    private(set) public var registers = Array<Byte>(repeating: 0, count: 26)
 
     private var IFF1 = false
     private var IFF2 = false
@@ -2259,13 +2259,13 @@ open class Z80
         switch condition & 0xFE
         {
             case 0:
-                mask = Flags.Z
+                mask = .Z
             case 2:
-                mask = Flags.C
+                mask = .C
             case 4:
-                mask = Flags.PV
+                mask = .PV
             case 6:
-                mask = Flags.S
+                mask = .S
             default:
                 return false
         }
