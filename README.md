@@ -48,8 +48,6 @@ Console.WriteLine(myZ80.DumpState());
 
 ## Usage example Swift
 
-Copy files from `Sources/z80` to Swift project.
-
 ```swift
 import Foundation
 
@@ -80,11 +78,13 @@ extension Z80 {
 }
 ```
 
+The sample is part of the repository. Use `swift run -Xswiftc -parse-as-library` command to execute.
+
 ### Run Swift test suite
 
 - Open terminal window on MacOS, Linos or Winos
 - Clone repository and CWD into TL folder
-- Exec `swift test` command
+- Exec `swift test -Xswiftc -parse-as-library` command
 
 ## Status
 
